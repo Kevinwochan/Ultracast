@@ -1,0 +1,16 @@
+You should also include in this diary the following information (if applicable) about the project progress:
+- what was planned for the period since the last work diary entry
+- what was finished
+- what were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
+- what was not finished, why this happened, how this affects the overall project progress and what adjustments (if any) are needed so the success of the project is not endangered
+- what is planned for the next period (e.g., next week)
+
+
+Week 1
+
+During this week, we met as a team and decided our group name, the project we would work on (ultraCast), and assigned a scrum master. We discussed our interpretation of certain parts of the project spec - particularly how recommendations to the end user would work, and how that could be implemented. We plan on asking questions about this at the tutorial next week. I set up a when2meet link to help the team to find regular times to meet throughout the week, and we settled on Tuesday 8am, Wednesday 6pm (optional) and Thursday 3pm.
+
+In the coming week, we plan on each reading the project spec and assessment summary more closely, defining all of the user stories, and making a start on other parts of the project proposal. These other parts will decided our Tuesday meeting in Week 2, once we have all read the spec more closely.
+
+
+Week 2
