@@ -1,0 +1,15 @@
+You should also include in this diary the following information (if applicable) about the
+project progress:
+
+- what was planned for the period since the last work diary entry
+- what was finished
+- what were the main technical and non-technical obstacles and how they were
+  overcome (or what was tried and did not work)
+- what was not finished, why this happened, how this affects the overall project
+  progress and what adjustments (if any) are needed so the success of the project is
+  not endangered
+- what is planned for the next period (e.g., next week)
+
+Week 1
+
+This week, we established meeting times outside of the tutorial class, project objectives, the tech stack we wanted to use and a rough plan for the recommendation system. I was voted to be the Scrum Master, so I setup the Jira account and made a temporary GitHub repo for everyone to work in. The GitHub classroom setup instructions will be out next week, so I plan to move everything in this repo at that point.
