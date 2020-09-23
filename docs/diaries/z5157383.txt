@@ -1,0 +1,5 @@
+Week 1:
+Met my group for the first time and coordinated our calenders to set up regular meeting times. 
+Researched each of the project proposals and agreed with my group to work on the "ultraCast" project. 
+Decided on (coarse) roles for group members, I will be a backend dev.
+Began researching the tech. stack that will be used for the backend, currently the best option looks to be flask+mongodb with a graphql interface for the frontend.
