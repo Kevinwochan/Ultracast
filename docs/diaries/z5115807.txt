@@ -1,4 +1,5 @@
-You should also include in this diary the following information (if applicable) about the project progress:
+The contents of the file should be brief but clear.
+You should include in this diary the following information (if applicable) about the project progress:
 - what was planned for the period since the last work diary entry
 - what was finished
 - what were the main technical and non-technical obstacles and how they were overcome (or what was tried and did not work)
