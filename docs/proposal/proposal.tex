@@ -49,9 +49,17 @@
 
 \section{System Architecture}
 
-% Talk about the data/business/presentation layers
-% Talk about the external actors
-% 3rd party technologies used
+The proposed system architecture can be seen in Figure \ref{fig:SysArch}.
+First, we will use MongoDB to store our data, a NoSQL database that is popular for its high scalability.
+This service will be interfaced with the MongoDB-Python driver, available on the MongoDB website.
+Next, we will be using Flask for our web-server: a micro-framework that allows us to quickly develop an MVP solution.
+Flask is written in Python, so connecting to the database via the MongoDB-Python driver should be straightforward.
+Additionally, we will have a recommendation service that will generate recommended podcasts based on the users listening history.
+Finally, we will have a React frontend application that will enable our users to login, search and play podcasts, and get recommendations on ones they may be interested in.
+The React application and Flask application will communicate through a GraphQL API: a scalable alternative to the popular REST API.
+
+The architecture has been designed with the final demonstration in mind, hence, the business and presentation layers are shown to be hosted on the VLab machine.
+Currently, MongoDB is not supported by Debian 6 (the Linux environment on the VLab machine), so we have opted to put the data layer onto an AWS EC2 instance.
 
 \begin{figure}
     \includegraphics[width=\textwidth]{resources/SystemArchitecture}
