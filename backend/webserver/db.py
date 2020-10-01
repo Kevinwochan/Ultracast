@@ -2,7 +2,6 @@ from mongoengine import connect
 
 from models import Department, Employee, Role
 
-# You can connect to a real mongo server instance by your own.
 MONGO_USERNAME = 'ultracast_admin'
 MONGO_PASSWORD = 'vtcXHq7fS$si9$Bi6c&2'
 MONGO_IP = '139.59.227.230'
