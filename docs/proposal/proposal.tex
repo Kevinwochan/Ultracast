@@ -53,21 +53,21 @@ The project objective stories were derived directly from the project objectives.
 
 The mapping of each project objective to the final user story was summarised in Table \ref{table:project_objectives_to_stories}.
 
-\begin{table}[]
-\label{table:project_objectives_to_stories}
-\begin{tabular}{|l|l|}
-\hline
-\textbf{Project Objective}                                                                                                                                                                                                                                                                                              & \textbf{\begin{tabular}[c]{@{}l@{}}Story\\ Key\end{tabular}} \\ \hline
-\begin{tabular}[c]{@{}l@{}}Listeners must be able to search for podcasts that interest them by keywords, \\ resulting in a list of matching podcast titles, where the total number of \\ subscriptions on the ultraCast platform (function described later) for each \\ podcast is shown next to the title\end{tabular} & \begin{tabular}[c]{@{}l@{}}UL-2\\ UL-3\end{tabular}          \\ \hline
-\begin{tabular}[c]{@{}l@{}}Listeners must be able to select a podcast show from returned search results\\ to view its full details, including its title, description, any author details that \\ exist, as well as a list of episodes for the show\end{tabular}                                                         & UL-4                                                         \\ \hline
-\begin{tabular}[c]{@{}l@{}}Listeners must be able to play a selected episode within a podcast show, and \\ once that episode starts being played, the listener must be able to also clearly \\ see this episode marked as "Played"\end{tabular}                                                                         & \begin{tabular}[c]{@{}l@{}}UL-5\\ UL-6\end{tabular}          \\ \hline
-Listeners must be able to subscribe or unsubscribe from a podcast show                                                                                                                                                                                                                                                  & \begin{tabular}[c]{@{}l@{}}UL-7\\ UL-8\end{tabular}          \\ \hline
-\begin{tabular}[c]{@{}l@{}}Listeners must be able to see the latest episode available for each show that \\ they subscribed to in a "Podcast Subscription Preview" panel\end{tabular}                                                                                                                                   & UL-30                                                        \\ \hline
-\begin{tabular}[c]{@{}l@{}}Listeners must be notified by the platform when a new episode for a show \\ they are subscribed appears\end{tabular}                                                                                                                                                                         & UL-9                                                         \\ \hline
-\begin{tabular}[c]{@{}l@{}}Listeners must be able to see a history of the podcast episodes that they have\\ played, sorted in order from most recently played to least recently played\end{tabular}                                                                                                                     & \begin{tabular}[c]{@{}l@{}}UL-10\\ UL-11\end{tabular}        \\ \hline
-\begin{tabular}[c]{@{}l@{}}ultraCast must be able to recommend new podcast shows to a listener based \\ on at least information about the podcast shows they are subscribed to, \\ podcast episodes they have recently played, and their past podcast searches\end{tabular}                                             & \begin{tabular}[c]{@{}l@{}}UL-12\\ UL-13\end{tabular}        \\ \hline
-\end{tabular}
-\caption{Project Objectives to Stories Mapping}
+\begin{table}
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Project Objective}                                             & \textbf{\begin{tabular}[c]{@{}l@{}}Story\\ Key\end{tabular}} \\ \hline
+        \begin{tabular}[c]{@{}l@{}}Listeners must be able to search for podcasts that interest them by keywords, \\ resulting in a list of matching podcast titles, where the total number of \\ subscriptions on the ultraCast platform (function described later) for each \\ podcast is shown next to the title\end{tabular}                                              & \begin{tabular}[c]{@{}l@{}}UL-2\\ UL-3\end{tabular}          \\ \hline
+        \begin{tabular}[c]{@{}l@{}}Listeners must be able to select a podcast show from returned search results\\ to view its full details, including its title, description, any author details that \\ exist, as well as a list of episodes for the show\end{tabular}                                              & UL-4                               \\ \hline
+        \begin{tabular}[c]{@{}l@{}}Listeners must be able to play a selected episode within a podcast show, and \\ once that episode starts being played, the listener must be able to also clearly \\ see this episode marked as "Played"\end{tabular}                                              & \begin{tabular}[c]{@{}l@{}}UL-5\\ UL-6\end{tabular}          \\ \hline
+        Listeners must be able to subscribe or unsubscribe from a podcast show & \begin{tabular}[c]{@{}l@{}}UL-7\\ UL-8\end{tabular}         \\ \hline
+        \begin{tabular}[c]{@{}l@{}}Listeners must be able to see the latest episode available for each show that \\ they subscribed to in a "Podcast Subscription Preview" panel\end{tabular}                                             & UL-30                              \\ \hline
+        \begin{tabular}[c]{@{}l@{}}Listeners must be notified by the platform when a new episode for a show \\ they are subscribed appears\end{tabular}                                             & UL-9                               \\ \hline
+        \begin{tabular}[c]{@{}l@{}}Listeners must be able to see a history of the podcast episodes that they have\\ played, sorted in order from most recently played to least recently played\end{tabular}                                             & \begin{tabular}[c]{@{}l@{}}UL-10\\ UL-11\end{tabular}         \\ \hline
+        \begin{tabular}[c]{@{}l@{}}ultraCast must be able to recommend new podcast shows to a listener based \\ on at least information about the podcast shows they are subscribed to, \\ podcast episodes they have recently played, and their past podcast searches\end{tabular}                                             & \begin{tabular}[c]{@{}l@{}}UL-12\\ UL-13\end{tabular}         \\ \hline
+    \end{tabular}
+    \caption{Project Objectives to Stories Mapping}
+    \label{table:project_objectives_to_stories}
 \end{table}
 
 
@@ -95,14 +95,21 @@ available in other mainstream offerings in the same problem domain.
     \label{fig:jira_novel_user_stories}
 \end{figure}
 
-\todo{format as table using competitiors and user story numbers in figure above}
+%\todo{format as table using competitiors and user story numbers in figure above}
 
-\begin{tabular}{|c||c|c|c}
-    \hline
-    User Story      & Spotify       & Stitcher      \\
-    \hline
-    UL-25           &               &               \\
-\end{tabular}
+\begin{table}
+    \centering
+    \begin{tabular}{|c||c|c|c}
+        \hline
+        User Story      & Spotify       & Stitcher      \\
+        \hline
+        UL-25           &               &               \\
+
+        \hline
+    \end{tabular}
+    \caption{Comparison of novel features with competitiors}
+    \label{table:comparison_features}
+\end{table}
 
 \subsection{Sprints}
 % Must have:
@@ -115,6 +122,7 @@ available in other mainstream offerings in the same problem domain.
 \section{System Architecture}
 
 The proposed system architecture can be seen in Figure \ref{fig:SysArch}.
+It can be seen that our end users will be podcast listeners and content creators.
 First, we will use MongoDB to store our data, a NoSQL database that is popular for its high scalability.
 This service will be interfaced with the MongoDB-Python driver, available on the MongoDB website.
 Next, we will be using Flask for our web-server: a micro-framework that allows us to quickly develop an MVP solution.
