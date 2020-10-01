@@ -1,15 +1,8 @@
-You should also include in this diary the following information (if applicable) about the
-project progress:
-
-- what was planned for the period since the last work diary entry
-- what was finished
-- what were the main technical and non-technical obstacles and how they were
-  overcome (or what was tried and did not work)
-- what was not finished, why this happened, how this affects the overall project
-  progress and what adjustments (if any) are needed so the success of the project is
-  not endangered
-- what is planned for the next period (e.g., next week)
-
 Week 1: 
-This week we decided on the project we wanted to tackle, planned a time everyone was availble for weekly standups and sprints, organised the group into teams (frontend and backend) and voted a Scrum Master.
-Next week we plan on completing the project proposal requirements (breaking down functionaity into user stories and researching existing software we can leverage)
+This week we i attended our first meeting where we decided on the project we wanted to tackle, planned a time everyone was availble for weekly standups and sprints, organised the group into teams (frontend and backend) and voted a Scrum Master.
+Next week we plan on researching existing software we can leverage and agreeing software development architecture and processes.
+
+Week 2:
+Last week we planned on researching existing software we can use and agreeing software development architecture and processes.
+Early in the week, as part of the frontend team, we decided on using ReactJS and MaterialUI to leverage the team's existing skills. With the frontend framework decided, i initialised our frontend codebase with template designs for the Signing in, Registration, Navigation Bar, Side bar, Dashboard and displaying episodes of a podcast.
+For next week, we have delegated components of the project proposal accross the team where i've been assigned to compelte the storyboarding for our user stories.
