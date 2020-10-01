@@ -23,12 +23,6 @@
 
 \section{Background}
 
-\begin{figure}
-    \includegraphics[width=\textwidth]{resources/spongebob}
-    \caption{Background? \cite{Laird2012}}
-    \label{fig:background}
-\end{figure} \todo{delete me}
-
 \subsection{Problem Domain}
 \subsection{Existing Systems}
 
@@ -36,31 +30,31 @@
 
 \subsection{Product Backlog}
 
-The 29 user stories which make up the product backlog, as shown in Figure XXX, were grouped into three categories as described in the sections 2.1.1-3.
-Screenshots of the stories which make up the backlog can be found in sections 2.1.1-3.
+The 29 user stories which make up the product backlog, as shown in Figure \ref{fig:backlog}, were grouped into three categories as described in the sections \ref{sec:project_objectives_stories}, \ref{sec:system_stories} and \ref{sec:novel_features_stories}.
+Screenshots of the stories which make up the backlog can be found in sections \ref{sec:project_objectives_stories}, \ref{sec:system_stories} and \ref{sec:novel_features_stories}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=10cm]{resources/project_backlog}
     \caption{ultraCast Backlog Count}
-    \label{fig:background}
+    \label{fig:backlog}
 \end{figure}
 
-\subsubsection{Project Objectives Stories}
+\subsubsection{Project Objectives Stories} \label{sec:project_objectives_stories}
 
-The project objective stories were derived directly from the project objectives. These JIRA stories can be found in Figure XXX below.
+The project objective stories were derived directly from the project objectives. These JIRA stories can be found in Figure \ref{fig:jira_stories} below.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{resources/objective_stories}
     \caption{JIRA Objective User Stories}
-    \label{fig:background}
+    \label{fig:jira_stories}
 \end{figure}
 
-The mapping of each project objective to the final user story was summarised in Table XXX.
+The mapping of each project objective to the final user story was summarised in Table \ref{table:project_objectives_to_stories}.
 
 \begin{table}[]
-\caption{Project Objectives to Stories Mapping}
+\label{table:project_objectives_to_stories}
 \begin{tabular}{|l|l|}
 \hline
 \textbf{Project Objective}                                                                                                                                                                                                                                                                                              & \textbf{\begin{tabular}[c]{@{}l@{}}Story\\ Key\end{tabular}} \\ \hline
@@ -73,34 +67,42 @@ Listeners must be able to subscribe or unsubscribe from a podcast show          
 \begin{tabular}[c]{@{}l@{}}Listeners must be able to see a history of the podcast episodes that they have\\ played, sorted in order from most recently played to least recently played\end{tabular}                                                                                                                     & \begin{tabular}[c]{@{}l@{}}UL-10\\ UL-11\end{tabular}        \\ \hline
 \begin{tabular}[c]{@{}l@{}}ultraCast must be able to recommend new podcast shows to a listener based \\ on at least information about the podcast shows they are subscribed to, \\ podcast episodes they have recently played, and their past podcast searches\end{tabular}                                             & \begin{tabular}[c]{@{}l@{}}UL-12\\ UL-13\end{tabular}        \\ \hline
 \end{tabular}
+\caption{Project Objectives to Stories Mapping}
 \end{table}
 
 
-\subsubsection{System Stories}
+\subsubsection{System Stories} \label{sec:system_stories}
 
 The system stories were designed to address common features offered by existing offerings in the same problem domain. 
-They can be seen in Figure XXX below.
+They can be seen in Figure \ref{fig:jira_system_user_stories} below.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{resources/system_stories}
     \caption{JIRA System User Stories}
-    \label{fig:background}
+    \label{fig:jira_system_user_stories}
 \end{figure}
 
-\subsubsection{Novel Features Stories}
+\subsubsection{Novel Features Stories} \label{sec:novel_features_stories}
 
-The novel feature user stories, as shown in Figure XXX, were designed to create desirable features that are either uncommon or not 
+The novel feature user stories, as shown in Figure \ref{fig:jira_novel_user_stories}, were designed to create desirable features that are either uncommon or not 
 available in other mainstream offerings in the same problem domain.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{resources/novel_stories}
     \caption{JIRA Novel User Stories}
-    \label{fig:background}
+    \label{fig:jira_novel_user_stories}
 \end{figure}
 
-TODO format as table using competitiors and user story numbers in figure above
+\todo{format as table using competitiors and user story numbers in figure above}
+
+\begin{tabular}{|c||c|c|c}
+    \hline
+    User Story      & Spotify       & Stitcher      \\
+    \hline
+    UL-25           &               &               \\
+\end{tabular}
 
 \subsection{Sprints}
 % Must have:
@@ -124,12 +126,14 @@ The React application and Flask application will communicate through a GraphQL A
 The architecture has been designed with the final demonstration in mind, hence, the business and presentation layers are shown to be hosted on the VLab machine.
 Currently, MongoDB is not supported by Debian 6 (the Linux environment on the VLab machine), so we have opted to put the data layer onto an AWS EC2 instance.
 
-\begin{figure}[h]
+\begin{figure}[ht]
+    \centering
     \includegraphics[width=\textwidth]{resources/SystemArchitecture}
     \caption{Proposed System Architecture}
     \label{fig:SysArch}
 \end{figure}
 
+\newpage
 \bibliography{library.bib}
 \bibliographystyle{plain}
 \end{document}
