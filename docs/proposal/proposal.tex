@@ -54,6 +54,10 @@ The project objective stories were derived directly from the project objectives.
 The mapping of each project objective to the final user story was summarised in Table \ref{table:project_objectives_to_stories}.
 
 \begin{table}
+    \centering
+    \caption{Project Objectives to Stories Mapping}
+    \label{table:project_objectives_to_stories}
+    \bigskip
     \begin{tabular}{|l|l|}
         \hline
         \textbf{Project Objective}                                             & \textbf{\begin{tabular}[c]{@{}l@{}}Story\\ Key\end{tabular}} \\ \hline
@@ -66,8 +70,7 @@ The mapping of each project objective to the final user story was summarised in 
         \begin{tabular}[c]{@{}l@{}}Listeners must be able to see a history of the podcast episodes that they have\\ played, sorted in order from most recently played to least recently played\end{tabular}                                             & \begin{tabular}[c]{@{}l@{}}UL-10\\ UL-11\end{tabular}         \\ \hline
         \begin{tabular}[c]{@{}l@{}}ultraCast must be able to recommend new podcast shows to a listener based \\ on at least information about the podcast shows they are subscribed to, \\ podcast episodes they have recently played, and their past podcast searches\end{tabular}                                             & \begin{tabular}[c]{@{}l@{}}UL-12\\ UL-13\end{tabular}         \\ \hline
     \end{tabular}
-    \caption{Project Objectives to Stories Mapping}
-    \label{table:project_objectives_to_stories}
+    
 \end{table}
 
 
@@ -99,6 +102,9 @@ available in other mainstream offerings in the same problem domain.
 
 \begin{table}
     \centering
+    \caption{Comparison of novel features with competitiors}
+    \label{table:comparison_features}
+    \bigskip
     \begin{tabular}{|c||c|c|c}
         \hline
         User Story      & Spotify       & Stitcher      \\
@@ -107,15 +113,42 @@ available in other mainstream offerings in the same problem domain.
 
         \hline
     \end{tabular}
-    \caption{Comparison of novel features with competitiors}
-    \label{table:comparison_features}
 \end{table}
 
 \subsection{Sprints}
-% Must have:
-%   - Start + end dats of all sprints
-%   - User stories in 1st sprint
-%   - 
+
+The sprint planning will occur on Thursdays and the sprint duration will be exactly 
+one week as seen in Table \ref{fig:sprint_dates}.
+
+\begin{table}[]
+    \centering
+    \caption{Sprint Dates}
+    \label{table:sprint_dates}
+    \bigskip
+    \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{Week} & \textbf{Sprint Start} & \textbf{Sprint End} \\ \hline
+    3-4           & 01/10/20              & 08/10/20            \\ \hline
+    4-5           & 08/10/20              & 15/10/20            \\ \hline
+    5-6           & 15/10/20              & 22/10/20            \\ \hline
+    6-7           & 22/10/20              & 29/10/20            \\ \hline
+    7-8           & 29/10/20              & 05/10/20            \\ \hline
+    8-9           & 05/10/20              & 12/10/20            \\ \hline
+    \end{tabular}
+\end{table}
+
+Relatively few stories were selected for the first sprint, as seen in Figure \ref{fig:first_sprint}
+as there will be a decent amount ofwork in setting up the project infastructure. 
+The sprints that were selected were those thatfocused on creating the data models 
+(e.g. a podcast schema) which will be used later on byother stories, such as UL-2 
+(search for podcasts).
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{resources/sprint1}
+    \caption{First Sprint (01/10/20 - 08/10/20)}
+    \label{fig:first_sprint}
+\end{figure}
 
 \section{Interface and Flow Diagrams}
 
