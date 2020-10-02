@@ -3,28 +3,12 @@ from flask import Flask
 from flask_graphql import GraphQLView
 from schema import schema
 
+# App config
+
 app = Flask(__name__)
 app.debug = True
 
-default_query = '''
-{
-  allEmployees {
-    edges {
-      node {
-        id,
-        name,
-        department {
-          id,
-          name
-        },
-        role {
-          id,
-          name
-        }
-      }
-    }
-  }
-}'''.strip()
+# Graphql rules
 
 app.add_url_rule(
     '/graphql',

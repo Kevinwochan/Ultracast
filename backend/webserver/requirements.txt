@@ -12,7 +12,6 @@ itsdangerous==1.1.0
 Jinja2==2.11.2
 MarkupSafe==1.1.1
 mongoengine==0.20.0
-pkg-resources==0.0.0
 promise==2.3
 pymongo==3.11.0
 Rx==1.6.1
