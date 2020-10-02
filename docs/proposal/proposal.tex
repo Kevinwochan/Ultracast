@@ -8,6 +8,8 @@
 \usepackage{listings}
 \usepackage{url}
 \usepackage{todonotes}
+\usepackage{tabularx}
+\usepackage{amssymb}
 
 \graphicspath{{./resources}}
   
@@ -22,9 +24,95 @@
 \newpage
 
 \section{Background}
-
 \subsection{Problem Domain}
+With over 100 million monthly listeners\cite{musicoomph} and a steadily increasing user base, there is no doubt that podcasts are a greatly enriching source of information and entertainment for a large variety of individuals.
+
+Although they are highly valuable, it can be difficult to find podcasts that are of interest to a particular user amidst the 1 million\cite{musicoomph} that are already available.
+Thus, podcast streaming services (such as Ultracast) have been created, to provide a centralised place for exploring and discovering new podcasts that are valuable to the listener.
+
+However, all of the web based podcast streaming services available lack many important features, and their interfaces leave much to be desired. For example, there is no streaming service that allows the user to bookmark certain parts of a podcast, nor take notes at certain timestamps. It is even difficult to find a service that allows the listener to change the playback speed of the podcast.
+
+capSquad believes that there is no one service that combines all of the most important features together into a single package, leaving space in the market for a superior podcast streaming platform. We seek to fill this gap with our new web-based podcast streaming service, ultraCast.
+
 \subsection{Existing Systems}
+
+There are a number of existing podcast streaming services on the market. The key functionalities of Spotify\cite{spotify}, Sticher\cite{sticher} and Player FM\cite{player_fm} will be discussed in the following sections.
+A summary of the comparison is shown in table \ref{table:comparison_features}.
+
+\begin{table}[ht]
+    \centering
+    \caption{Comparison of existing podcast services}
+    \label{table:podcast_comparison}
+    \bigskip
+    \begin{tabularx}{\linewidth}{|X|c|c|c|}
+    \hline
+    \textbf{Feature} & \textbf{Spotify} & \textbf{Stitcher} & \textbf{Player FM} \\
+    \hline
+    Can see number of subscribers for podcasts & x & x & \checkmark \\
+    \hline
+    Finished episodes are marked as played & \checkmark & \checkmark & x \\
+    \hline
+    Notifications for new episodes added to subscribed podcasts & x & x & x \\
+    \hline
+    Centralised place to view previously listened to episodes & x & x & x \\
+    \hline
+    Recommended podcasts are stylized to the user & \checkmark & x & \checkmark \\
+    \hline
+    Can skip to previous episode & \checkmark & x & \checkmark \\
+    \hline
+    Can adjust playback speed & x & x & \checkmark \\
+    \hline
+    Closed captions & x & x & x \\
+    \hline
+    Ability to bookmark timestamps / take notes & x & x & x \\
+    \hline
+    Can follow other users & \checkmark & x & x \\
+    \hline
+    Can see the latest episode for each subscribed podcast in a preview panel & x & x & x \\
+    \hline
+    \end{tabularx}
+\end{table}
+
+\subsubsection{Spotify\cite{spotify}}
+
+\todo{Do we want to keep the user stories here - I think its a bit confusing}
+
+\begin{itemize}
+    \item Cannot see number of subscribers for podcasts (UL-3)
+    \item No notifications for new episodes added to subscribed podcasts (UL-9)
+    \item No centralised place to view previously listened to episodes (UL-10, 11)
+    \item Cannot adjust playback speed (UL-22)
+    \item No closed captions (UL-25)
+    \item No ability to bookmark timestamps, nor take notes (UL-26)
+    \item Cannot see the latest episode for each subscribed podcast in a preview panel (UL-30)
+\end{itemize}
+
+\subsubsection{Sticher\cite{sticher}}
+
+\begin{itemize}
+    \item Cannot see number of subscribers for podcasts (UL-3)
+    \item No notifications for new episodes added to subscribed podcasts (UL-9)
+    \item No centralised place to view previously listened to episodes (UL-10, 11)
+    \item Recommended podcasts are not stylized to the user (UL-13)
+    \item Cannot skip to previous episode (only next) (UL-20)
+    \item Cannot adjust playback speed (UL-22)
+    \item No closed captions (UL-25)
+    \item No ability to bookmark timestamps, nor take notes (UL-26)
+    \item Cannot follow other users (UL-28)
+    \item Cannot see the latest episode for each subscribed podcast in a preview panel (UL-30)
+\end{itemize}
+
+\subsubsection{Player FM\cite{player_fm}}
+\begin{itemize}
+    \item Finished episodes aren’t marked as played (UL-6)
+    \item No notifications for new episodes added to subscribed podcasts (UL-9)
+    \item No centralised place to view previously listened to episodes (UL-10, 11)
+    \item No closed captions (UL-25)
+    \item No ability to bookmark timestamps, nor take notes (UL-26)
+    \item Cannot follow other users (UL-28)
+    \item Cannot see the latest episode for each subscribed podcast in a preview panel (UL-30)
+\end{itemize}
+
 
 \section{User Stories}
 
