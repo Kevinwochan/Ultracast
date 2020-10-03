@@ -10,12 +10,18 @@
 \usepackage{todonotes}
 \usepackage{tabularx}
 \usepackage{amssymb}
+\usepackage{tablefootnote}
 
 \graphicspath{{./resources}}
   
 \title{COMP3900-H15A-capSquad - Project Proposal}
 \date{\today}
-\author{Daniel Latimer z5115175 \\ Connor O'Shea z5115177 \\ Kevin Chan z5113136 \\ Oliver Richards z5157383 \\ Peter Kerr z5115807} 
+\author{
+    Daniel Latimer \\ z5115175 \and
+    Connor O'Shea \\ z5115177 \and
+    Kevin Chan \\ z5113136 \and
+    Oliver Richards \\ z5157383 \and
+    Peter Kerr \\ z5115807} 
 
 \begin{document}
 
@@ -38,6 +44,15 @@ capSquad believes that there is no one service that combines all of the most imp
 
 There are a number of existing podcast streaming services on the market. Some of the key failings that capSquad aims to rectify with ultraCast are listed in the following section, using Spotify\cite{spotify}, Sticher\cite{sticher} and Player FM\cite{player_fm} as case studies.
 A summary of the comparison is shown in table \ref{table:podcast_comparison}.
+
+All three solutions provide functionalities for users to listen and subscribe to podcasts.
+Podcasts are recommended to users, however, the basis for these recommendations is not clear.
+
+They also allow content creators to add podcasts to the respective platform.
+In this regard Player FM is distinct from Spotify and Sticher, Player FM aggregates podcasts from iTunes or RSS feeds which are added by content creators or listeners. Player FM does not serve the podcasts itself.
+
+As table \ref{table:podcast_comparison} shows, there are a number of key features that are not available on any platform. 
+A podcast service which provides these features will improve the usability and engagement of the platform for listeners.
 
 \begin{table}[ht]
     \centering
@@ -73,6 +88,7 @@ A summary of the comparison is shown in table \ref{table:podcast_comparison}.
     \end{tabularx}
 \end{table}
 
+\iffalse % Just commenting out this section(s)
 \subsubsection{Spotify\cite{spotify}}
 
 \todo{Do we want to keep the user stories here - I think its a bit confusing}
@@ -113,7 +129,10 @@ A summary of the comparison is shown in table \ref{table:podcast_comparison}.
     \item Cannot see the latest episode for each subscribed podcast in a preview panel (UL-30)
 \end{itemize}
 
+\fi
 
+
+\newpage
 \section{User Stories}
 
 \subsection{Product Backlog}
@@ -188,17 +207,24 @@ available in other mainstream offerings in the same problem domain.
 
 %\todo{format as table using competitiors and user story numbers in figure above}
 
-\begin{table}
+\begin{table}[ht]
     \centering
-    \caption{Comparison of novel features with competitiors}
+    \caption{Comparison of proposed novel features with competitiors. User stories are shown in figure \ref{fig:jira_novel_user_stories}}
     \label{table:comparison_features}
     \bigskip
-    \begin{tabular}{|c||c|c|c}
+    \begin{tabular}{|c|c|c|c|}
         \hline
-        User Story      & Spotify       & Stitcher      \\
+        \textbf{User Story}      & \textbf{Spotify}      & \textbf{Stitcher}      & \textbf{Player FM} \\
         \hline
-        UL-25           &               &               \\
-
+        UL-25           & X             & X             & X         \\
+        \hline
+        UL-26           & X             & X             & X         \\
+        \hline
+        UL-27           & \checkmark    & X             & X         \\
+        \hline
+        UL-28           & \checkmark    & X\tablefootnote{Some limited metrics on listening platform and number of view available}             & X         \\
+        \hline
+        UL-29           & X             & X             & X         \\
         \hline
     \end{tabular}
 \end{table}
@@ -206,7 +232,7 @@ available in other mainstream offerings in the same problem domain.
 \subsection{Sprints}
 
 The sprint planning will occur on Thursdays and the sprint duration will be exactly 
-one week as seen in Table \ref{fig:sprint_dates}.
+one week as seen in Table \ref{table:sprint_dates}.
 
 \begin{table}[]
     \centering
@@ -239,6 +265,15 @@ The sprints that were selected were those that focused on creating the data mode
 \end{figure}
 
 \section{Interface and Flow Diagrams}
+
+Identifying recommended podcasts for users involves a non-trivial backend implementation. Thus a flow diagram of the process is shown in figure \ref{fig:recommendation_engine_flowchart}.
+
+\begin{figure}
+    \centering
+    \includegraphics[height=0.5\paperheight]{resources/recommendation_engine}
+    \caption{Flow Diagram of the recommendation process}
+    \label{fig:recommendation_engine_flowchart}
+\end{figure}
 
 \section{System Architecture}
 
