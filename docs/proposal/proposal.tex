@@ -153,7 +153,9 @@ Screenshots of the stories which make up the backlog can be found in sections \r
 The project objective stories were derived directly from the project objectives. These JIRA stories can be found in Figure \ref{fig:jira_stories} below.
 The mapping of each project objective to the final user story was summarised in Table \ref{table:project_objectives_to_stories}.
 
-\begin{figure}[ht]
+\newpage
+
+\begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{resources/objective_stories}
     \caption{JIRA Objective User Stories}
@@ -310,7 +312,7 @@ The React application and Flask application will communicate through a GraphQL A
 The architecture has been designed with the final demonstration in mind, hence, the business and presentation layers are shown to be hosted on the VLab machine.
 Currently, MongoDB is not supported by Debian 6 (the Linux environment on the VLab machine), so we have opted to put the data layer onto an AWS EC2 instance\cite{aws_ec2}.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{resources/SystemArchitecture}
     \caption{Proposed System Architecture}
