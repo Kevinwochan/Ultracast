@@ -12,6 +12,7 @@
 \usepackage{amssymb}
 \usepackage{tablefootnote}
 \usepackage{appendix}
+\usepackage{threeparttable}
 
 \graphicspath{{./resources}}
   
@@ -228,6 +229,7 @@ available in other mainstream offerings in the same problem domain.
     \caption{Comparison of proposed novel features with competitiors. User stories are shown in figure \ref{fig:jira_novel_user_stories}}
     \label{table:comparison_features}
     \bigskip
+    \begin{threeparttable}
     \begin{tabular}{|c|c|c|c|}
         \hline
         \textbf{User Story}      & \textbf{Spotify}      & \textbf{Stitcher}      & \textbf{Player FM} \\
@@ -238,11 +240,15 @@ available in other mainstream offerings in the same problem domain.
         \hline
         UL-27           & \checkmark    & X             & X         \\
         \hline
-        UL-28           & \checkmark    & X\tablefootnote{Some limited metrics on listening platform and number of view available}             & X         \\
+        UL-28           & \checkmark    & X\tnote{1}    & X         \\
         \hline
         UL-29           & X             & X             & X         \\
         \hline
     \end{tabular}
+    \begin{tablenotes}
+    \item[1] Some limited metrics on listening platform and number of view available
+    \end{tablenotes}
+\end{threeparttable}
 \end{table}
 
 \subsection{Sprints}
