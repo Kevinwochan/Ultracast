@@ -251,12 +251,13 @@ available in other mainstream offerings in the same problem domain.
 \end{threeparttable}
 \end{table}
 
+\newpage
 \subsection{Sprints}
 
 The sprint planning will occur on Thursdays and the sprint duration will be exactly 
 one week as seen in Table \ref{table:sprint_dates}.
 
-\begin{table}
+\begin{table}[h]
     \centering
     \caption{Sprint Dates}
     \label{table:sprint_dates}
@@ -279,25 +280,20 @@ The sprints that were selected were those that focused on creating the data mode
 (e.g. a podcast schema) which will be used later on by other stories, such as UL-2 
 (search for podcasts).
 
-\begin{figure}[ht]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{resources/sprint1}
     \caption{First Sprint (01/10/20 - 08/10/20)}
     \label{fig:first_sprint}
 \end{figure}
 
+\newpage
 \section{Interface and Flow Diagrams}
 
-Identifying recommended podcasts for users involves a non-trivial backend implementation. Thus a flow diagram of the process is shown in figure \ref{fig:recommendation_engine_flowchart}.
+Identifying recommended podcasts for users involves a non-trivial backend implementation. Thus a flow diagram of the process is shown in appendix \ref{app:recommendation_engine_flowchart}.
 
 Storyboards for all user stories are shown in appendix \ref{app:storyboards}.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[height=0.5\paperheight]{resources/recommendation_engine}
-    \caption{Flow Diagram of the recommendation process}
-    \label{fig:recommendation_engine_flowchart}
-\end{figure}
 
 \section{System Architecture}
 
@@ -314,7 +310,7 @@ The React application and Flask application will communicate through a GraphQL A
 The architecture has been designed with the final demonstration in mind, hence, the business and presentation layers are shown to be hosted on the VLab machine.
 Currently, MongoDB is not supported by Debian 6 (the Linux environment on the VLab machine), so we have opted to put the data layer onto an AWS EC2 instance\cite{aws_ec2}.
 
-\begin{figure}[ht]
+\begin{figure}
     \centering
     \includegraphics[width=\textwidth]{resources/SystemArchitecture}
     \caption{Proposed System Architecture}
@@ -326,6 +322,10 @@ Currently, MongoDB is not supported by Debian 6 (the Linux environment on the VL
 \bibliographystyle{plain}
 
 \begin{appendices}
+    \section{Recommendation Engine Flow Diagram} \label{app:recommendation_engine_flowchart}
+    \begin{center}
+        \includegraphics[height=0.5\paperheight]{resources/recommendation_engine}
+    \end{center}
 \section{Storyboards}\label{app:storyboards}
 \begin{center}
     \includegraphics[width=\textwidth]{resources/uploading_podcasts}
