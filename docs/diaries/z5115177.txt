@@ -1,0 +1,26 @@
+You should also include in this diary the following information (if applicable)
+about the project progress:
+
+- what was planned for the period since the last work diary entry - what was finished 
+- what were the main technical and non-technical obstacles and how they were
+  overcome (or what was tried and did not work)
+- what was not finished, why this happened, how this affects the overall project
+  progress and what adjustments (if any) are needed so the success of the
+  project is not endangered
+- what is planned for the next period (e.g., next week)
+
+Week 1
+
+Group was formed and the project selected (ultracast) and meeting times
+established. I was selected to be on the backend team. I completed a draft
+of the user stories and aim to have them finialised next week as well as
+consider possible system architecture solutions.
+
+Week 2
+
+The user stories draft were reviewed at the Tuesday meeting and the tech
+stack / system architecture finalised at the Thursday meeting. User stories
+were created in JIRA with points and labels assigned. Next week I aim to
+complete the user story part of the report.
+
+Week 3

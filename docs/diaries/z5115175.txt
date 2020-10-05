@@ -13,3 +13,7 @@ project progress:
 Week 1
 
 This week, we established meeting times outside of the tutorial class, project objectives, the tech stack we wanted to use and a rough plan for the recommendation system. I was voted to be the Scrum Master, so I setup the Jira account and made a temporary GitHub repo for everyone to work in. The GitHub classroom setup instructions will be out next week, so I plan to move everything in this repo at that point.
+
+Week 2
+
+Over the weekend, Connor made user stories, and during the meeting on Tuesday, we went through and reviewed them. We then finalised the tech stack for our application, and started working on our proposal. I've been given the System Architecture role, and I want to finish it by the end of this week. Finally, I setup GitHub classroom, and moved all of the contents from the temporary repo into the classroom repo.
