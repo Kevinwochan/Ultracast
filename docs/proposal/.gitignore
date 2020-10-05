@@ -1,2 +1,9 @@
 build
 *.synctex.gz
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.toc

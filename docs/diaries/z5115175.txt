@@ -17,3 +17,7 @@ This week, we established meeting times outside of the tutorial class, project o
 Week 2
 
 Over the weekend, Connor made user stories, and during the meeting on Tuesday, we went through and reviewed them. We then finalised the tech stack for our application, and started working on our proposal. I've been given the System Architecture role, and I want to finish it by the end of this week. Finally, I setup GitHub classroom, and moved all of the contents from the temporary repo into the classroom repo.
+
+Week 3
+
+This week, our team finished off the proposal assignment. On Thursday, we assigned roles for our first sprint. The sprint focused on setting up the system architecture (i.e. the Flask application, MonogDB database and React frontend). Furthermore, we wanted to create CRUD operations for podcasts. I wanted to learn GraphQL so I was tasked with setting up the API for it on the frontend side. By next week, I hope to have the GraphQL API finished. 
