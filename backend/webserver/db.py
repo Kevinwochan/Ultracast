@@ -47,6 +47,6 @@ def init_db():
         podcast_episode.save()
 
     podcast_episode_meta = models.PodcastEpisodeMetadata(name="first episode", description="my first podcast episode", episode=podcast_episode)
-    #podcast_metadata.episodes.append(podcast_episode_meta)
+    podcast_metadata.episodes.append(podcast_episode_meta)
     podcast_metadata.save()
     print("Done init_db")
