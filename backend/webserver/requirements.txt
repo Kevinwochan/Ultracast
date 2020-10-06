@@ -18,3 +18,4 @@ Rx==1.6.1
 singledispatch==3.4.0.3
 six==1.15.0
 Werkzeug==1.0.1
+flask_cors==3.0.9

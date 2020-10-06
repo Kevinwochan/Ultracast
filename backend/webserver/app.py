@@ -2,11 +2,15 @@ from db import init_db
 from flask import Flask
 from flask_graphql import GraphQLView
 from schema import schema
+from flask_cors import CORS
 
 # App config
 
 app = Flask(__name__)
 app.debug = True
+
+CORS(app, resources={r"/graphql/*": {"origins": "*"}})
+
 
 # Graphql rules
 
