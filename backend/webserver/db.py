@@ -1,36 +1,52 @@
 from mongoengine import connect
 
-from models import Department, Employee, Role
+import models
 
+# Amazon EC2 instance
 MONGO_USERNAME = 'ultracast_admin'
 MONGO_PASSWORD = 'vtcXHq7fS$si9$Bi6c&2'
 MONGO_IP = '139.59.227.230'
 MONGO_AUTH_DB = 'admin'
+'''
+# Local mongo instance
+MONGO_USERNAME = 'ultracast'
+MONGO_PASSWORD = 'abcdefg'
+MONGO_IP = 'localhost'
+MONGO_AUTH_DB = 'admin'
+'''
+
+'''
+To setup a local user, open up mongo terminal and then execute this query:
+use admin
+db.createUser({
+    user: "ultracast", 
+    pwd: "abcdefg",
+    roles: [{role: "readWrite", db: "ultracast_sandbox"}]
+    })
+'''
+
 
 MONGO_URL = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_AUTH_DB}'
+
 
 connect(db='ultracast_sandbox', host=MONGO_URL)
 
 
 def init_db():
     # Create the fixtures
-    engineering = Department(name='Engineering')
-    engineering.save()
+    default_user = models.User(name="oli")
+    default_user.save()
 
-    hr = Department(name='Human Resources')
-    hr.save()
+    podcast_metadata = models.PodcastMetadata(name="oli's podcast", author=default_user, description="a cool podcast")
+    podcast_metadata.save()
+    default_user.published_podcasts.append(podcast_metadata)
+    default_user.save()
+    
+    with open('resources/sample_audio.mp4', 'rb') as audio_file:
+        podcast_episode = models.PodcastEpisode(audio=audio_file)
+        podcast_episode.save()
 
-    manager = Role(name='manager')
-    manager.save()
-
-    engineer = Role(name='engineer')
-    engineer.save()
-
-    peter = Employee(name='Peter', department=engineering, role=engineer)
-    peter.save()
-
-    roy = Employee(name='Roy', department=engineering, role=engineer)
-    roy.save()
-
-    tracy = Employee(name='Tracy', department=hr, role=manager)
-    tracy.save()
+    podcast_episode_meta = models.PodcastEpisodeMetadata(name="first episode", description="my first podcast episode", episode=podcast_episode)
+    podcast_metadata.episodes.append(podcast_episode_meta)
+    podcast_metadata.save()
+    print("Done init_db")
