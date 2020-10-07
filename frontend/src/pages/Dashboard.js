@@ -14,7 +14,6 @@ import FeaturedPost from "../components/FeaturedPodcasts";
 import Sidebar from "../components/Sidebar";
 import LoggedInNavBar from "../components/LoggedInNavBar";
 import axios from "axios";
-import configuration from "../api/configuration";
 
 
 const mainFeaturedPodcast = {
