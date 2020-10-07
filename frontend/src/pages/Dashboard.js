@@ -11,7 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Hero from "../components/Hero";
 import FeaturedPost from "../components/FeaturedPodcasts";
-import LoggedInDrawer from "../components/LoggedInDrawer";
+import Sidebar from "../components/Sidebar";
 import LoggedInNavBar from "../components/LoggedInNavBar";
 
 const mainFeaturedPodcast = {
@@ -116,26 +116,17 @@ const cards = [1, 2, 3, 4, 5, 6];
 export default function Dashboard() {
   const classes = useStyles();
 
-  /* Handles state of the drawer aka left panel */
-  const [open, setOpen] = React.useState(false);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   return (
     <>
-      <LoggedInNavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} />
+      <LoggedInNavBar />
       <div className={classes.root}>
         <CssBaseline />
-        <LoggedInDrawer isOpen={open} handleDrawerClose={handleDrawerClose} />
+        <Sidebar open/>
         <main className={classes.content}>
           {/* Hero unit */}
           <Hero post={mainFeaturedPodcast} />
+          {/* End hero unit */}
           <Container className={classes.cardGrid} maxWidth="md">
-            {/* End hero unit */}
             <Grid container spacing={4}>
               {featuredPodcasts.map((post) => (
                 <FeaturedPost key={post.title} post={post} />
