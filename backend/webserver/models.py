@@ -19,7 +19,7 @@ class PodcastEpisodeMetadata(mongoengine.EmbeddedDocument):
 
 class PodcastMetadata(mongoengine.Document):
     meta = {'collection': 'podcast_metadata'}
-    name = mongofields.StringField()
+    name = mongofields.StringField(required=True)
     # Bi-directional relationship with User
     # Consider the User to own the PodcastMetadata
     author = mongofields.ReferenceField('User', required=True)

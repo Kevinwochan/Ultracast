@@ -2,6 +2,8 @@ import graphene
 import graphql
 from graphene.relay import Node
 from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
+import graphene_file_upload
+import graphene_file_upload.scalars
 import models
 
 '''
@@ -37,7 +39,7 @@ class CreatePodcastEpisodeMutation(graphene.Mutation):
         podcast_metadata_id = graphene.ID(required=True)
         name = graphene.String()
         description = graphene.String()
-        #audio = graphene_file_upload.scalars.Upload(required=True)
+        audio = graphene_file_upload.scalars.Upload(required=True)
 
     def mutate(self, info, podcast_metadata_id=None, name=None, description=None, audio=None):
         episode = models.PodcastEpisode(audio=audio)
@@ -45,24 +47,14 @@ class CreatePodcastEpisodeMutation(graphene.Mutation):
         episode_metadata = models.PodcastEpisodeMetadata(name=name, description=description, episode=episode)
         podcast_metadata = models.PodcastMetadata.objects(id=podcast_metadata_id).get()
         podcast_metadata.episodes.append(episode_metadata)
-        print(podcast_metadata, flush=True)
         podcast_metadata.save()
 
-        return CreatePodcastEpisodeMutation(podcast_episode=PodcastEpisode(episode), podcast_metadata=PodcastMetadata(podcast_metadata))
-
-
-class DummyMutation(graphene.Mutation):
-    data = graphene.Field(graphene.String)
-    class Arguments:
-        data = graphene.String()
-    def mutate(self, info, data=None):
-        return DummyMutation(data=data)
+        return CreatePodcastEpisodeMutation(podcast_episode=episode,
+                podcast_metadata=podcast_metadata)
 
 class Mutations(graphene.ObjectType):
     create_podcast_episode = CreatePodcastEpisodeMutation.Field()
-    create_dummy = DummyMutation.Field()
 
-#schema = graphene.Schema(query=Query, types=[PodcastEpisode, PodcastMetadata, PodcastEpisodeMetadata, User])
 schema = graphene.Schema(query=Query, mutation=Mutations, types=[PodcastEpisode, PodcastMetadata, User])
 
 def saveSchema(path: str):
