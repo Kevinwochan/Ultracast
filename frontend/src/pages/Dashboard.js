@@ -13,6 +13,9 @@ import Hero from "../components/Hero";
 import FeaturedPost from "../components/FeaturedPodcasts";
 import Sidebar from "../components/Sidebar";
 import LoggedInNavBar from "../components/LoggedInNavBar";
+import axios from "axios";
+import configuration from "../api/configuration";
+
 
 const mainFeaturedPodcast = {
   title: "Title of a featured podcast/podcaster/most recommended item",
@@ -121,7 +124,7 @@ export default function Dashboard() {
       <LoggedInNavBar />
       <div className={classes.root}>
         <CssBaseline />
-        <Sidebar open/>
+        <Sidebar />
         <main className={classes.content}>
           {/* Hero unit */}
           <Hero post={mainFeaturedPodcast} />

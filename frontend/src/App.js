@@ -5,6 +5,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
+import History from "./pages/History";
 
 export default function App() {
   return (
@@ -21,6 +22,9 @@ export default function App() {
         </Route>
         <Route path="/podcast">
           <Podcast />
+        </Route>
+        <Route path="/history">
+          <History />
         </Route>
         <Route path="/">
           <Dashboard />
