@@ -12,7 +12,7 @@ npm install --dev
 npm start
 ```
 or run with any of the other react scripts
-  
+  ```
 "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -22,7 +22,7 @@ or run with any of the other react scripts
     "dev:start": "nodemon ./server-build/index.js",
     "dev": "npm-run-all --parallel build dev:*"
   },
-
+```
 ## Architecture
 ### Dependencies
 **Core**
