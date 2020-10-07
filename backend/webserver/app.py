@@ -3,6 +3,7 @@ from flask import Flask
 from flask_graphql import GraphQLView
 from schema import schema
 from flask_cors import CORS
+from graphene_file_upload.flask import FileUploadGraphQLView
 
 # App config
 
@@ -16,7 +17,8 @@ CORS(app, resources={r"/graphql/*": {"origins": "*"}})
 
 app.add_url_rule(
     '/graphql',
-    view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
+    view_func=FileUploadGraphQLView.as_view('graphql', schema=schema, graphiql=True)
+    #view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
 )
 
 if __name__ == '__main__':

@@ -8,7 +8,8 @@ class PodcastEpisode(mongoengine.Document):
     # Storing in a seperate collection to avoid having to collect the audio file to see metadata
     meta = {'collection': 'podcast_episode'}
     # Consider the PodcastEpisodeMetadata to own the PodcastEpisode (for deletion purposes)
-    audio = mongofields.FileField(required=True) 
+    #audio = mongofields.FileField(required=True) 
+    audio = mongofields.FileField(required=False) 
 
 class PodcastEpisodeMetadata(mongoengine.EmbeddedDocument):
     name = mongofields.StringField()
