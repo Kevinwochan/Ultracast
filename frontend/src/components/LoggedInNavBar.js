@@ -5,6 +5,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
+import CardMedia from "@material-ui/core/CardMedia";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import clsx from "clsx";
@@ -32,7 +33,7 @@ export default function LoggedInNavBar() {
       <Toolbar className={classes.toolbar}>
         <Typography variant="h6" className={classes.title}>
           <Link className={classes.link} to="/">
-            SiteLogo
+            <img src="/branding/7.png" style={{ width: 150 }} />
           </Link>
         </Typography>
         <Button color="inherit">

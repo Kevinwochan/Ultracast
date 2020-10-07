@@ -13,8 +13,8 @@ import Hero from "../components/Hero";
 import FeaturedPost from "../components/FeaturedPodcasts";
 import Sidebar from "../components/Sidebar";
 import LoggedInNavBar from "../components/LoggedInNavBar";
+import Page from "../common/Page";
 import axios from "axios";
-
 
 const mainFeaturedPodcast = {
   title: "Title of a featured podcast/podcaster/most recommended item",
@@ -119,51 +119,44 @@ export default function Dashboard() {
   const classes = useStyles();
 
   return (
-    <>
-      <LoggedInNavBar />
-      <div className={classes.root}>
-        <CssBaseline />
-        <Sidebar />
-        <main className={classes.content}>
-          {/* Hero unit */}
-          <Hero post={mainFeaturedPodcast} />
-          {/* End hero unit */}
-          <Container className={classes.cardGrid} maxWidth="md">
-            <Grid container spacing={4}>
-              {featuredPodcasts.map((post) => (
-                <FeaturedPost key={post.title} post={post} />
-              ))}
+    <Page>
+      {/* Hero unit */}
+      <Hero post={mainFeaturedPodcast} />
+      {/* End hero unit */}
+      <Container className={classes.cardGrid} maxWidth="md">
+        <Grid container spacing={4}>
+          {featuredPodcasts.map((post) => (
+            <FeaturedPost key={post.title} post={post} />
+          ))}
+        </Grid>
+        <Grid container spacing={4}>
+          {cards.map((card) => (
+            <Grid item key={card} xs={12} sm={6} md={4}>
+              <Card className={classes.card}>
+                <CardMedia
+                  className={classes.cardMedia}
+                  image="https://source.unsplash.com/random"
+                  title="Image title"
+                />
+                <CardContent className={classes.cardContent}>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    Heading
+                  </Typography>
+                  <Typography>
+                    This is a media card. You can use this section to describe
+                    the content.
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button size="small" color="primary">
+                    View
+                  </Button>
+                </CardActions>
+              </Card>
             </Grid>
-            <Grid container spacing={4}>
-              {cards.map((card) => (
-                <Grid item key={card} xs={12} sm={6} md={4}>
-                  <Card className={classes.card}>
-                    <CardMedia
-                      className={classes.cardMedia}
-                      image="https://source.unsplash.com/random"
-                      title="Image title"
-                    />
-                    <CardContent className={classes.cardContent}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        Heading
-                      </Typography>
-                      <Typography>
-                        This is a media card. You can use this section to
-                        describe the content.
-                      </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button size="small" color="primary">
-                        View
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Container>
-        </main>
-      </div>
-    </>
+          ))}
+        </Grid>
+      </Container>
+    </Page>
   );
 }
