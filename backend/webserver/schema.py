@@ -31,6 +31,24 @@ class Query(graphene.ObjectType):
     all_podcast_metadata = MongoengineConnectionField(PodcastMetadata)
     all_user = MongoengineConnectionField(User)
 
+class DeletePodcastEpisode(graphene.Mutation):
+    success = graphene.Boolean()
+
+    class Arguments:
+        # Can provide either id
+        podcast_episode_id = graphene.ID(required=True)
+
+    def mutate(self, info, podcast_episode_id):
+        podcast_episode = models.PodcastEpisode.objects(id=podcast_episode_id).get()
+        podcast_metadata = models.PodcastMetadata.objects(episodes__episode=podcast_episode).get()
+        podcast_metadata.episodes.filter(episode=podcast_episode).delete()
+        podcast_metadata.save()
+
+        podcast_episode.delete()
+
+        return DeletePodcastEpisode(success=True)
+
+
 class CreatePodcastEpisodeMutation(graphene.Mutation):
     podcast_episode = graphene.Field(PodcastEpisode)
     podcast_metadata = graphene.Field(PodcastMetadata)
@@ -54,11 +72,13 @@ class CreatePodcastEpisodeMutation(graphene.Mutation):
 
 class Mutations(graphene.ObjectType):
     create_podcast_episode = CreatePodcastEpisodeMutation.Field()
+    delete_podcast_episode = DeletePodcastEpisode.Field()
 
 schema = graphene.Schema(query=Query, mutation=Mutations, types=[PodcastEpisode, PodcastMetadata, User])
 
 def saveSchema(path: str):
     with open(path, "w") as fp:
+        fp.write('"""\nGenerated file. Do not push into git or modify!\n"""\n')
         schema_str = graphql.utils.schema_printer.print_schema(schema)
         fp.write(schema_str)
 
