@@ -1,6 +1,7 @@
 from mongoengine import connect
 
 import models
+import schema
 
 # Amazon EC2 instance
 MONGO_USERNAME = 'ultracast_admin'
@@ -33,6 +34,8 @@ connect(db='ultracast_sandbox', host=MONGO_URL)
 
 
 def init_db():
+    # Save out the graphql schema
+    schema.saveSchema("schema.graphql")
     # Create the fixtures
     default_user = models.User(name="oli")
     default_user.save()
@@ -47,6 +50,6 @@ def init_db():
         podcast_episode.save()
 
     podcast_episode_meta = models.PodcastEpisodeMetadata(name="first episode", description="my first podcast episode", episode=podcast_episode)
-    podcast_metadata.episodes.append(podcast_episode_meta)
+    #podcast_metadata.episodes.append(podcast_episode_meta)
     podcast_metadata.save()
     print("Done init_db")
