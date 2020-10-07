@@ -25,25 +25,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedInNavBar({handleDrawerOpen, isOpen}) {
+export default function LoggedInNavBar() {
   const classes = useStyles();
   return (
     <AppBar position="static">
       <Toolbar className={classes.toolbar}>
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="open drawer"
-          className={clsx(classes.menuButton, isOpen && classes.menuButtonHidden)}
-          onClick={handleDrawerOpen}
-        >
-          <MenuIcon />
-        </IconButton>
         <Typography variant="h6" className={classes.title}>
           <Link className={classes.link} to="/">
-            Home
+            SiteLogo
           </Link>
         </Typography>
+        <Button color="inherit">
+          <Link className={classes.link} to="/upload">
+            Upload
+          </Link>
+        </Button>
         <Button color="inherit">
           <Link className={classes.link} to="/logout">
             Log Out
