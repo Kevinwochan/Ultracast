@@ -2,31 +2,8 @@ import React from "react";
 import AudioPlayer from "material-ui-audio-player";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import LoggedInDrawer from "../components/LoggedInDrawer";
+import Sidebar from "../components/Sidebar";
 import LoggedInNavBar from "../components/LoggedInNavBar";
-
-const featuredPodcasts = [
-  {
-    title: "Featured podcast 1",
-    date: "Nov 12",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    image: "https://source.unsplash.com/random",
-    imageText: "Image Text",
-    page: "/podcast/1",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  },
-  {
-    title: "Featured podcast 2",
-    date: "Nov 11",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    image: "https://source.unsplash.com/random",
-    imageText: "Image Text",
-    page: "/podcast/1",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  },
-];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -99,22 +76,15 @@ const useStyles = makeStyles((theme) => ({
 export default function Podcast({ podcast }) {
   const classes = useStyles();
 
-  /* Handles state of the drawer aka left panel */
-  const [open, setOpen] = React.useState(false);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   return (
     <>
       <CssBaseline />
-      <LoggedInNavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} />
+      <LoggedInNavBar />
       <div className={classes.root}>
-        <LoggedInDrawer isOpen={open} handleDrawerClose={handleDrawerClose} />
-        <AudioPlayer src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
+        <Sidebar />
+        <main className={classes.content}>
+          <AudioPlayer src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
+        </main>
       </div>
     </>
   );
