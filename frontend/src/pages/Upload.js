@@ -25,6 +25,7 @@ export default function Upload() {
       label: "",
       value: "",
     },
+    audioFile: "",
     title: "",
     description: "",
   });
@@ -71,6 +72,8 @@ export default function Upload() {
         }));
       });
   };
+
+  console.log(state);
 
   return (
     <Page>
@@ -200,6 +203,17 @@ const Fields = ({ image, allPodcasts, setState }) => {
     }));
   };
 
+  const handleAudio = (event) => {
+    if (!event.target.files) {
+      return;
+    }
+
+    setState((prevState) => ({
+      ...prevState,
+      audioFile: event.target.files[0],
+    }));
+  };
+
   return (
     <form className={classes.fields} noValidate autoComplete="off">
       <div className={classes.mediaContainer}>
@@ -254,17 +268,19 @@ const Fields = ({ image, allPodcasts, setState }) => {
           </MenuItem>
         ))}
       </TextField>
+      <input type="file" id="audio" onChange={handleAudio} />
     </form>
   );
 };
 
 // Cancel, submit and upload actions
-const Actions = (state) => {
+const Actions = ({ state }) => {
   const classes = useStyles();
 
   const createPodcast = () => {
-    const query = `mutation createPodcast($podcast: String, $title: String, $description: String) {
-      createPodcastEpisode(podcastMetadataId: $podcast, name: $title, description: $description) {
+    console.log(state);
+    const query = `mutation createPodcast($podcast: String, $title: String, $description: String, $audioFile: Upload!) {
+      createPodcastEpisode(podcastMetadataId: $podcast, name: $title, description: $description, audio: $audioFile) {
         podcastMetadata {
             name
         }
@@ -283,6 +299,7 @@ const Actions = (state) => {
           podcast: state.podcast.value,
           title: state.title,
           description: state.description,
+          audioFile: state.audioFile,
         },
       }),
     })
@@ -304,7 +321,7 @@ const Actions = (state) => {
           color="secondary"
           variant="contained"
           startIcon={<CloudUploadIcon />}
-          // onClick={createPodcast}
+          onClick={createPodcast}
         >
           <Typography variant="button">Upload</Typography>
         </Button>
