@@ -1,3 +1,6 @@
+'''
+Schema for making GraphQL queries and mutations
+'''
 import graphene
 import graphql
 from graphene.relay import Node
@@ -70,7 +73,31 @@ class CreatePodcastEpisodeMutation(graphene.Mutation):
         return CreatePodcastEpisodeMutation(podcast_episode=episode,
                 podcast_metadata=podcast_metadata)
 
+class CreateUser(graphene.Mutation):
+    '''
+    Inserts a user into MongoDB
+    '''
+    success = graphene.Boolean()
+
+    class Arguments:
+        username = graphene.String(required=True)
+        password = graphene.String(required=True)
+        email = graphene.String(required=True)
+
+    def mutate(self, info, username=None, password=None, email=None):
+        new_user = models.User(username=username, password=password, email=email)
+        new_user.save()
+        success = True
+        return CreateUser(success=success)
+
 class Mutations(graphene.ObjectType):
+    '''
+    User mutations
+    '''
+    create_user = CreateUser.Field()
+    '''
+    Podcast mutations
+    '''
     create_podcast_episode = CreatePodcastEpisodeMutation.Field()
     delete_podcast_episode = DeletePodcastEpisode.Field()
 
