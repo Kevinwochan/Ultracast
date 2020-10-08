@@ -11,24 +11,28 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
+import Fade from "@material-ui/core/Fade";
 import Page from "../common/Page";
 import theme from "../theme";
+import { extractFiles } from "extract-files";
 
 export default function Upload() {
   const classes = useStyles();
-
-  // ! State management should always be done in the top-level component :)
-  const [state, setState] = useState({
+  const originalState = {
     image: "http://placehold.jp/150x150.png",
     allPodcasts: [],
     podcast: {
       label: "",
       value: "",
     },
-    audioFile: "",
+    audioFile: null,
+    duration: "",
     title: "",
     description: "",
-  });
+  };
+
+  // ! State management should always be done in the top-level component :)
+  const [state, setState] = useState(originalState);
 
   useEffect(() => {
     getPodcastNames();
@@ -41,6 +45,7 @@ export default function Upload() {
           node{
             id
             name
+            description
           }
         }
       }
@@ -63,6 +68,7 @@ export default function Upload() {
           names.push({
             value: item.node.id,
             label: item.node.name,
+            description: item.node.description,
           });
         }
 
@@ -73,35 +79,38 @@ export default function Upload() {
       });
   };
 
-  console.log(state);
+  const resetFields = () => {
+    setState(originalState);
+  };
 
   return (
     <Page>
       <Grid container className={classes.center}>
-        <Grid item xs={12} sm={4}>
-          <Box mr={2}>
-            <Preview
-              image={state.image}
-              title={state.title}
-              description={state.description}
-              podcast={state.podcast.label}
-              episode={state.allPodcasts.length + 1}
-            />
-          </Box>
-        </Grid>
         <Grid item xs={12} sm={8} lg={6}>
-          <h2>Upload your next episode</h2>
+          <Box my={2}>
+            <Typography variant="h5">
+              <b>Upload your next episode</b>
+            </Typography>
+          </Box>
           <Paper>
-            <Box p={5} my={3}>
-              <Fields
-                image={state.image}
-                allPodcasts={state.allPodcasts}
-                podcast={state.podcast}
-                setState={setState}
-              />
+            <Box p={5} mb={3}>
+              <Fields state={state} setState={setState} />
             </Box>
           </Paper>
-          <Actions state={state} />
+          <Actions state={state} resetFields={resetFields} />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Fade in={state.title} timeout={750}>
+            <Box ml={2}>
+              <Preview
+                image={state.image}
+                title={state.title}
+                description={state.description}
+                podcast={state.podcast.label}
+                duration={state.duration}
+              />
+            </Box>
+          </Fade>
         </Grid>
       </Grid>
     </Page>
@@ -143,7 +152,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Preview = ({ image, title, description, podcast, episode }) => {
+const Preview = ({ image, title, description, podcast, duration }) => {
   const classes = useStyles();
 
   return (
@@ -163,12 +172,12 @@ const Preview = ({ image, title, description, podcast, episode }) => {
         </div>
         <Box mx={3} mt={1}>
           <Typography variant="h5" align="left" display="block">
-            Episode {episode}: {title}
+            Latest Episode: {title}
           </Typography>
         </Box>
         <Box mx={3}>
           <Typography variant="caption" display="block">
-            Length: 24min
+            {duration !== "" ? `Length: ${duration}` : ""}
           </Typography>
         </Box>
         <Box m={3}>
@@ -182,19 +191,23 @@ const Preview = ({ image, title, description, podcast, episode }) => {
   );
 };
 
-const Fields = ({ image, allPodcasts, setState }) => {
+const Fields = ({ state, setState }) => {
+  const allPodcasts = state.allPodcasts;
   const classes = useStyles();
 
   const handleChange = (event) => {
+    const { id, value } = event.target;
+
     setState((prevState) => ({
       ...prevState,
-      [event.target.id]: event.target.value,
+      [id]: value,
     }));
   };
 
   const handlePodcast = (event) => {
+    const { value } = event.target;
     const podcastItem = allPodcasts.filter((item) => {
-      return item.value === event.target.value ? true : false;
+      return item.value === value ? true : false;
     });
 
     setState((prevState) => ({
@@ -204,13 +217,30 @@ const Fields = ({ image, allPodcasts, setState }) => {
   };
 
   const handleAudio = (event) => {
-    if (!event.target.files) {
-      return;
-    }
+    const file = event.target.files[0];
+
+    // Change the UI of the button (there's a better way with React ik)
+    const button = event.target.parentElement;
+    button.children[0].innerText = "Audio Track Uploaded!";
+    button.style.background = "#4bb543";
+    button.parentElement.style.background = "#4bb543";
+    button.style.color = "#fff";
+
+    // Get the length of the video
+    var vid = document.createElement("video");
+    var fileURL = URL.createObjectURL(file);
+    vid.src = fileURL;
+    vid.ondurationchange = function () {
+      const minutes = Math.floor(this.duration / 60);
+      setState((prevState) => ({
+        ...prevState,
+        duration: `${minutes} min`,
+      }));
+    };
 
     setState((prevState) => ({
       ...prevState,
-      audioFile: event.target.files[0],
+      audioFile: file,
     }));
   };
 
@@ -220,16 +250,16 @@ const Fields = ({ image, allPodcasts, setState }) => {
         {/* TODO image upload */}
         <CardMedia
           className={classes.media}
-          image={image}
+          image={state.image}
           title="Upload podcast image"
         />
         <CardContent className={classes.mediaText}>
-          <Typography gutterBottom variant="h6">
+          <Typography gutterBottom variant="subtitle1">
             Image Guidelines
           </Typography>
           <Typography variant="body2" color="textSecondary">
-            Your cover image should be at least 150px x 150px. For best results,
-            use a square image.
+            - Use a 150px x 150px image. <br />- File type should be either PNG
+            or JPEG
           </Typography>
         </CardContent>
       </div>
@@ -238,7 +268,8 @@ const Fields = ({ image, allPodcasts, setState }) => {
         label="Title"
         fullWidth
         variant="outlined"
-        onBlur={handleChange}
+        value={state.title}
+        onChange={handleChange}
       />
       <TextField
         id="description"
@@ -248,63 +279,75 @@ const Fields = ({ image, allPodcasts, setState }) => {
         style={{ margin: `${theme.spacing(3)}px 0px` }}
         variant="outlined"
         label="Description"
-        onBlur={handleChange}
+        value={state.description}
+        onChange={handleChange}
       />
       <TextField
         id="podcast"
         variant="outlined"
         select
         fullWidth
+        value={state.podcast.value || ""}
         onChange={handlePodcast}
         label="Podcast Series"
       >
         {allPodcasts.map((option) => (
-          <MenuItem
-            key={option.value}
-            value={option.value}
-            data-name={option.label}
-          >
+          <MenuItem key={option.value} value={option.value}>
             {option.label}
           </MenuItem>
         ))}
       </TextField>
-      <input type="file" id="audio" onChange={handleAudio} />
+      <Button
+        variant="contained"
+        component="label"
+        style={{ marginTop: theme.spacing(3) }}
+      >
+        <Typography gutterBottom variant="button">
+          Upload audio track
+        </Typography>
+
+        <input type="file" style={{ display: "none" }} onChange={handleAudio} />
+      </Button>
     </form>
   );
 };
 
 // Cancel, submit and upload actions
-const Actions = ({ state }) => {
+const Actions = ({ state, resetFields }) => {
   const classes = useStyles();
 
   const createPodcast = () => {
-    console.log(state);
-    const query = `mutation createPodcast($podcast: String, $title: String, $description: String, $audioFile: Upload!) {
-      createPodcastEpisode(podcastMetadataId: $podcast, name: $title, description: $description, audio: $audioFile) {
-        podcastMetadata {
+    const fetchOptions = graphqlFetchOptions({
+      query: `
+      mutation createPodcast(
+        $podcast: ID!
+        $title: String
+        $description: String
+        $audioFile: Upload!
+      ) {
+        createPodcastEpisode(
+          podcastMetadataId: $podcast
+          name: $title
+          description: $description
+          audio: $audioFile
+        ) {
+          podcastMetadata {
             name
+          }
         }
-      } 
-  }`;
-
-    fetch("http://localhost:5000/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
+      }
+    `,
+      variables: {
+        podcast: state.podcast.value,
+        title: state.title,
+        description: state.description,
+        audioFile: state.audioFile,
       },
-      body: JSON.stringify({
-        query,
-        variables: {
-          podcast: state.podcast.value,
-          title: state.title,
-          description: state.description,
-          audioFile: state.audioFile,
-        },
-      }),
-    })
+    });
+    fetch("http://localhost:5000/graphql", fetchOptions)
       .then((r) => r.json())
       .then((data) => {
+        // TODO resolve/reject and show message
         console.log(data);
       });
   };
@@ -312,7 +355,12 @@ const Actions = ({ state }) => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={6} className={classes.center}>
-        <Button color="primary" variant="contained" startIcon={<CancelIcon />}>
+        <Button
+          color="primary"
+          variant="contained"
+          startIcon={<CancelIcon />}
+          onClick={resetFields}
+        >
           <Typography variant="button">Cancel</Typography>
         </Button>
       </Grid>
@@ -329,3 +377,44 @@ const Actions = ({ state }) => {
     </Grid>
   );
 };
+
+// Taken from:
+// https://github.com/jaydenseric/graphql-react/blob/1b1234de5de46b7a0029903a1446dcc061f37d09/src/universal/graphqlFetchOptions.mjs
+function graphqlFetchOptions(operation) {
+  const fetchOptions = {
+    url: "http://localhost:5000/graphql",
+    method: "POST",
+    headers: { Accept: "application/json" },
+  };
+
+  const { clone, files } = extractFiles(operation);
+  const operationJSON = JSON.stringify(clone);
+
+  if (files.size) {
+    // See the GraphQL multipart request spec:
+    // https://github.com/jaydenseric/graphql-multipart-request-spec
+
+    const form = new FormData();
+
+    form.append("operations", operationJSON);
+
+    const map = {};
+    let i = 0;
+    files.forEach((paths) => {
+      map[++i] = paths;
+    });
+    form.append("map", JSON.stringify(map));
+
+    i = 0;
+    files.forEach((paths, file) => {
+      form.append(`${++i}`, file, file.name);
+    });
+
+    fetchOptions.body = form;
+  } else {
+    fetchOptions.headers["Content-Type"] = "application/json";
+    fetchOptions.body = operationJSON;
+  }
+
+  return fetchOptions;
+}
