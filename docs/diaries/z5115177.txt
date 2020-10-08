@@ -24,3 +24,8 @@ were created in JIRA with points and labels assigned. Next week I aim to
 complete the user story part of the report.
 
 Week 3
+
+Finished the user story section for the project proposal. Also set up
+a basic flask app (UL-31), setup mongodb on a remote server (UL-32) and
+setup a basic working example of graph-ql to connect the remote mongodb
+instance to the backend webserver (UL-33).
