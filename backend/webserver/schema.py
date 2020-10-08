@@ -76,16 +76,21 @@ class CreatePodcastEpisodeMutation(graphene.Mutation):
 class CreateUser(graphene.Mutation):
     '''
     Inserts a user into MongoDB
+    Sample payload
+    mutation {
+        createUser(email: "test@test.com", password: "password") {
+        success
+        }
+    }
     '''
     success = graphene.Boolean()
 
     class Arguments:
-        username = graphene.String(required=True)
         password = graphene.String(required=True)
         email = graphene.String(required=True)
 
-    def mutate(self, info, username=None, password=None, email=None):
-        new_user = models.User(username=username, password=password, email=email)
+    def mutate(self, info, password=None, email=None):
+        new_user = models.User(password=password, email=email)
         new_user.save()
         success = True
         return CreateUser(success=success)

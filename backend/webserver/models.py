@@ -44,7 +44,6 @@ class User(mongoengine.Document):
     User Authentication
     '''
     email = mongofields.StringField(required=True)
-    username = mongofields.StringField(required=True)
     password = mongofields.StringField(required=True)
     '''
     User usage data
