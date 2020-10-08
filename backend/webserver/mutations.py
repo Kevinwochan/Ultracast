@@ -1,6 +1,6 @@
 import graphene
 import graphql
-from graphene.relay import Node
+from graphene.relay import Node, ClientIDMutation
 from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 import graphene_file_upload
 import graphene_file_upload.scalars
@@ -83,8 +83,52 @@ class CreatePodcastEpisodeMutation(graphene.Mutation):
         return CreatePodcastEpisodeMutation(podcast_episode=episode,
                 podcast_metadata=podcast_metadata)
 
+'''
+class CreatePodcastMetadata(graphene.Mutation):
+    podcast = graphene.Field(query.PodcastMetadata)
+    success = graphene.Boolean()
+
+    class Arguments:
+        podcast_metadata = graphene.Field(query.PodcastMetadata, required=True)
+
+    def mutate(self, info, podcast_metadata):
+        models.PodcastMetadata
+'''
+
+class CreatePodcastMetadata(ClientIDMutation):
+    '''
+    Trying things out relay style...
+    See https://docs.graphene-python.org/en/latest/relay/mutations/
+    and https://github.com/graphql-python/graphene/blob/master/graphene/relay/mutation.py
+    '''
+    success = graphene.Boolean()
+    podcast_metadata = graphene.Field(query.PodcastMetadata)
+    class Input:
+        name = graphene.String(required=True)
+        author = graphene.ID(required=True)
+        description = graphene.String()
+    
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, **input):
+        author = Node.get_node_from_global_id(info, input["author"], only_type=query.User)
+        if author is None:
+            raise ValueError("author {} does not exist".format(input["author"]))
+        podcast_metadata_args = input
+        podcast_metadata_args["author"] = author.id
+        
+        # De dictionary the kwargs (by design match up with the model)
+        podcast_metadata = models.PodcastMetadata(**podcast_metadata_args)
+        podcast_metadata.save()
+
+        author.published_podcasts.append(podcast_metadata)
+        author.save()
+
+        return CreatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
+
 
 class Mutations(graphene.ObjectType):
     create_podcast_episode = CreatePodcastEpisodeMutation.Field()
     delete_podcast_episode = DeletePodcastEpisode.Field()
     update_podcast_episode = UpdatePodcastEpisode.Field()
+
+    create_podcast_metadata = CreatePodcastMetadata.Field()
