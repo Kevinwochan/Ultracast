@@ -27,9 +27,9 @@ db.createUser({
 '''
 
 
-MONGO_URL = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_AUTH_DB}'
+#MONGO_URL = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_AUTH_DB}'
 
 
-connect(db='ultracast_sandbox', host=MONGO_URL)
+connect(db=MONGO_AUTH_DB, username=MONGO_USERNAME, password=MONGO_PASSWORD, host=MONGO_IP)
 
 
