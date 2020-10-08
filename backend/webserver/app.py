@@ -1,4 +1,4 @@
-from db import init_db
+import db
 from flask import Flask
 from flask_graphql import GraphQLView
 from schema import schema
@@ -22,5 +22,4 @@ app.add_url_rule(
 )
 
 if __name__ == '__main__':
-    init_db()
     app.run()
