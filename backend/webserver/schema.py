@@ -40,7 +40,7 @@ class DeletePodcastEpisode(graphene.Mutation):
 
     def mutate(self, info, podcast_episode_id):
         # Lookup the mongodb object from the relay Node ID
-        podcast_episode = Node.get_node_from_global_id(info=info, global_id=podcast_episode_id)
+        podcast_episode = Node.get_node_from_global_id(info=info, global_id=podcast_episode_id, only_type=PodcastEpisode)
 
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=podcast_episode).get()
         podcast_metadata.episodes.filter(episode=podcast_episode).delete()
@@ -65,7 +65,7 @@ class CreatePodcastEpisodeMutation(graphene.Mutation):
         episode = models.PodcastEpisode(audio=audio)
         episode.save()
         episode_metadata = models.PodcastEpisodeMetadata(name=name, description=description, episode=episode)
-        podcast_metadata = Node.get_node_from_global_id(podcast_metadata_id, info)
+        podcast_metadata = Node.get_node_from_global_id(info, podcast_metadata_id, only_type=PodcastMetadata)
         podcast_metadata.episodes.append(episode_metadata)
         podcast_metadata.save()
 
