@@ -36,6 +36,7 @@ connect(db='ultracast_sandbox', host=MONGO_URL)
 def init_db():
     # Save out the graphql schema
     schema.saveSchema("schema.graphql")
+    '''
     # Create the fixtures
     default_user = models.User(name="oli")
 
@@ -52,3 +53,4 @@ def init_db():
     default_user.save()
     podcast_metadata.save()
     print("Done init_db")
+    '''
