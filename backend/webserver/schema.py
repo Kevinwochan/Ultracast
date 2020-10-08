@@ -6,18 +6,25 @@ import graphene_file_upload
 import graphene_file_upload.scalars
 import models
 
-'''
-Don't put embedded documents as classes here. It seems to break graphene somehow
-'''
 
 class PodcastEpisode(MongoengineObjectType):
     class Meta:
         model = models.PodcastEpisode
         interfaces = (Node,)
 
+class PodcastEpisodeMetadata(MongoengineObjectType):
+    class Meta:
+        model = models.PodcastEpisodeMetadata
+        interfaces = (Node, )
+
 class PodcastMetadata(MongoengineObjectType):
     class Meta:
         model = models.PodcastMetadata
+        interfaces = (Node,)
+
+class ListenHistoryEntry(MongoengineObjectType):
+    class Meta:
+        model = models.ListenHistoryEntry
         interfaces = (Node,)
 
 class User(MongoengineObjectType):
@@ -80,7 +87,6 @@ schema = graphene.Schema(query=Query, mutation=Mutations, types=[PodcastEpisode,
 
 def saveSchema(path: str):
     with open(path, "w") as fp:
-        fp.write('"""\nGenerated file. Do not push into git or modify!\n"""\n')
         schema_str = graphql.utils.schema_printer.print_schema(schema)
         fp.write(schema_str)
 
