@@ -8,6 +8,7 @@ MONGO_USERNAME = 'ultracast_admin'
 MONGO_PASSWORD = 'vtcXHq7fS$si9$Bi6c&2'
 MONGO_IP = '139.59.227.230'
 MONGO_AUTH_DB = 'admin'
+MONGO_DB = 'ultracast_sandbox'
 '''
 # Local mongo instance
 MONGO_USERNAME = 'ultracast'
@@ -26,10 +27,8 @@ db.createUser({
     })
 '''
 
+MONGO_URI = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_DB}?authSource={MONGO_AUTH_DB}'
 
-#MONGO_URL = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_AUTH_DB}'
-
-
-connect(db=MONGO_AUTH_DB, username=MONGO_USERNAME, password=MONGO_PASSWORD, host=MONGO_IP)
+connect(host=MONGO_URI)
 
 
