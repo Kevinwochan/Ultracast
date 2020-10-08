@@ -219,7 +219,7 @@ const Fields = ({ state, setState }) => {
   const handleAudio = (event) => {
     const file = event.target.files[0];
 
-    // Change the UI of the button (there's a better way with React ik)
+    // TODO make this a component that changes back on the cancel action event
     const button = event.target.parentElement;
     button.children[0].innerText = "Audio Track Uploaded!";
     button.style.background = "#4bb543";
@@ -318,27 +318,16 @@ const Actions = ({ state, resetFields }) => {
 
   const createPodcast = () => {
     const fetchOptions = graphqlFetchOptions({
-      query: `
-      mutation createPodcast(
-        $podcast: ID!
-        $title: String
-        $description: String
-        $audioFile: Upload!
-      ) {
-        createPodcastEpisode(
-          podcastMetadataId: $podcast
-          name: $title
-          description: $description
-          audio: $audioFile
-        ) {
+      query: `mutation createPodcast($podcast: ID! $title: String $description: String $audioFile: Upload!) {
+        createPodcastEpisode(podcastMetadataId: $podcast name: $title description: $description audio: $audioFile) {
           podcastMetadata {
             name
           }
         }
-      }
-    `,
+      }`,
       variables: {
         podcast: state.podcast.value,
+        // podcast: "5f7d756d73f1b06154752d26",
         title: state.title,
         description: state.description,
         audioFile: state.audioFile,
@@ -347,8 +336,13 @@ const Actions = ({ state, resetFields }) => {
     fetch("http://localhost:5000/graphql", fetchOptions)
       .then((r) => r.json())
       .then((data) => {
-        // TODO resolve/reject and show message
-        console.log(data);
+        if (data.errors) {
+          throw data.errors;
+        } else {
+          console.log(
+            `Episode added to ${data.data.createPodcastEpisode.podcastMetadata.name}`
+          );
+        }
       });
   };
 
