@@ -101,6 +101,7 @@ class CreatePodcastMetadata(ClientIDMutation):
         name = graphene.String(required=True)
         author = graphene.ID(required=True)
         description = graphene.String()
+        cover = graphene_file_upload.scalars.Upload()
     
     @classmethod
     def mutate_and_get_payload(cls, root, info, **input):

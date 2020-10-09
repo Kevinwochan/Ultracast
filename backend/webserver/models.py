@@ -26,6 +26,7 @@ class PodcastMetadata(mongoengine.Document):
     publish_date = mongofields.DateTimeField(default=datetime.datetime.now)
     description = mongofields.StringField()
     episodes = mongofields.EmbeddedDocumentListField(PodcastEpisodeMetadata)
+    cover = mongofields.FileField()
 
 class ListenHistoryEntry(mongoengine.EmbeddedDocument):
     episode_metadata = mongofields.ReferenceField(
