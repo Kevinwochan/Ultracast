@@ -8,16 +8,20 @@ import models
 import mutations
 import query
 
-class DeletePodcastEpisode(graphene.Mutation):
+class DeletePodcastEpisode(ClientIDMutation):
     success = graphene.Boolean()
 
-    class Arguments:
+    class Input:
         # Can provide either id
         podcast_episode_id = graphene.ID(required=True)
 
-    def mutate(self, info, podcast_episode_id):
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, podcast_episode_id):
         # Lookup the mongodb object from the relay Node ID
         podcast_episode = Node.get_node_from_global_id(info=info, global_id=podcast_episode_id, only_type=query.PodcastEpisode)
+        if podcast_episode is None:
+            raise ValueError("Invalid podcastEpisodeId: {}".format(
+                podcast_episode_id))
 
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=podcast_episode).get()
         podcast_metadata.episodes.filter(episode=podcast_episode).delete()
@@ -27,19 +31,20 @@ class DeletePodcastEpisode(graphene.Mutation):
 
         return DeletePodcastEpisode(success=True)
 
-class UpdatePodcastEpisode(graphene.Mutation):
+class UpdatePodcastEpisode(ClientIDMutation):
     podcast_episode = graphene.Field(query.PodcastEpisode)
     podcast_metadata = graphene.Field(query.PodcastMetadata)
     podcast_episode_metadata = graphene.Field(query.PodcastEpisodeMetadata)
     success = graphene.Boolean()
 
-    class Arguments:
+    class Input:
         podcast_id = graphene.ID(required=True)
         name = graphene.String()
         description = graphene.String()
         audio = graphene_file_upload.scalars.Upload()
 
-    def mutate(self, info, podcast_id, name=None, description=None, audio=None):
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, podcast_id, name=None, description=None, audio=None):
         # Retrieve the episode
         episode = Node.get_node_from_global_id(info, podcast_id, only_type=query.PodcastEpisode)
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=episode).get()
@@ -62,17 +67,18 @@ class UpdatePodcastEpisode(graphene.Mutation):
             podcast_metadata=podcast_metadata, 
             podcast_episode_metadata=podcast_episode_metadata)
 
-class CreatePodcastEpisodeMutation(graphene.Mutation):
+class CreatePodcastEpisodeMutation(ClientIDMutation):
     podcast_episode = graphene.Field(query.PodcastEpisode)
     podcast_metadata = graphene.Field(query.PodcastMetadata)
 
-    class Arguments:
+    class Input:
         podcast_metadata_id = graphene.ID(required=True)
         name = graphene.String()
         description = graphene.String()
         audio = graphene_file_upload.scalars.Upload(required=True)
 
-    def mutate(self, info, podcast_metadata_id=None, name=None, description=None, audio=None):
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, name=None, description=None, audio=None):
         episode = models.PodcastEpisode(audio=audio)
         episode.save()
         episode_metadata = models.PodcastEpisodeMetadata(name=name, description=description, episode=episode)
@@ -82,18 +88,6 @@ class CreatePodcastEpisodeMutation(graphene.Mutation):
 
         return CreatePodcastEpisodeMutation(podcast_episode=episode,
                 podcast_metadata=podcast_metadata)
-
-'''
-class CreatePodcastMetadata(graphene.Mutation):
-    podcast = graphene.Field(query.PodcastMetadata)
-    success = graphene.Boolean()
-
-    class Arguments:
-        podcast_metadata = graphene.Field(query.PodcastMetadata, required=True)
-
-    def mutate(self, info, podcast_metadata):
-        models.PodcastMetadata
-'''
 
 class CreatePodcastMetadata(ClientIDMutation):
     '''
@@ -130,5 +124,4 @@ class Mutations(graphene.ObjectType):
     create_podcast_episode = CreatePodcastEpisodeMutation.Field()
     delete_podcast_episode = DeletePodcastEpisode.Field()
     update_podcast_episode = UpdatePodcastEpisode.Field()
-
     create_podcast_metadata = CreatePodcastMetadata.Field()

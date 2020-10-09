@@ -3,8 +3,6 @@ import models
 import schema
 
 def init_db():
-    # Save out the graphql schema
-    schema.saveSchema("schema.graphql")
     # Create the fixtures
     default_user = models.User(name="oli")
     default_user.save()
