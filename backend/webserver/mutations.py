@@ -8,6 +8,24 @@ import models
 import mutations
 import query
 
+'''
+Trying things out relay style...
+See https://docs.graphene-python.org/en/latest/relay/mutations/
+and https://github.com/graphql-python/graphene/blob/master/graphene/relay/mutation.py
+'''
+
+def get_node_from_global_id(info, global_id, only_type):
+    '''
+    Does the same thing as Node.get_node_from_global_id, but throws an exception instead of returning None
+    '''
+    node = Node.get_node_from_global_id(info, global_id, only_type=only_type)
+    if node is None:
+        raise ValueError("Invalid id for type {}: {}".format(only_type.__name__, global_id))
+    return node
+
+###########################################################################################################
+#                                           PodcastEpisode                                                #
+###########################################################################################################
 class DeletePodcastEpisode(ClientIDMutation):
     success = graphene.Boolean()
 
@@ -19,9 +37,6 @@ class DeletePodcastEpisode(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_episode_id):
         # Lookup the mongodb object from the relay Node ID
         podcast_episode = Node.get_node_from_global_id(info=info, global_id=podcast_episode_id, only_type=query.PodcastEpisode)
-        if podcast_episode is None:
-            raise ValueError("Invalid podcastEpisodeId: {}".format(
-                podcast_episode_id))
 
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=podcast_episode).get()
         podcast_metadata.episodes.filter(episode=podcast_episode).delete()
@@ -46,7 +61,7 @@ class UpdatePodcastEpisode(ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, root, info, podcast_id, name=None, description=None, audio=None):
         # Retrieve the episode
-        episode = Node.get_node_from_global_id(info, podcast_id, only_type=query.PodcastEpisode)
+        episode = get_node_from_global_id(info, podcast_id, only_type=query.PodcastEpisode)
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=episode).get()
         podcast_episode_metadata = podcast_metadata.episodes.filter(episode=episode).get()
         
@@ -65,7 +80,8 @@ class UpdatePodcastEpisode(ClientIDMutation):
         success = True
         return UpdatePodcastEpisode(podcast_episode=episode, 
             podcast_metadata=podcast_metadata, 
-            podcast_episode_metadata=podcast_episode_metadata)
+            podcast_episode_metadata=podcast_episode_metadata,
+            success=success)
 
 class CreatePodcastEpisodeMutation(ClientIDMutation):
     podcast_episode = graphene.Field(query.PodcastEpisode)
@@ -82,19 +98,18 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
         episode = models.PodcastEpisode(audio=audio)
         episode.save()
         episode_metadata = models.PodcastEpisodeMetadata(name=name, description=description, episode=episode)
-        podcast_metadata = Node.get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
+        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         podcast_metadata.episodes.append(episode_metadata)
         podcast_metadata.save()
 
         return CreatePodcastEpisodeMutation(podcast_episode=episode,
                 podcast_metadata=podcast_metadata)
 
+###########################################################################################################
+#                                           PodcastMetadata                                               #
+###########################################################################################################
+
 class CreatePodcastMetadata(ClientIDMutation):
-    '''
-    Trying things out relay style...
-    See https://docs.graphene-python.org/en/latest/relay/mutations/
-    and https://github.com/graphql-python/graphene/blob/master/graphene/relay/mutation.py
-    '''
     success = graphene.Boolean()
     podcast_metadata = graphene.Field(query.PodcastMetadata)
     class Input:
@@ -105,9 +120,7 @@ class CreatePodcastMetadata(ClientIDMutation):
     
     @classmethod
     def mutate_and_get_payload(cls, root, info, **input):
-        author = Node.get_node_from_global_id(info, input["author"], only_type=query.User)
-        if author is None:
-            raise ValueError("author {} does not exist".format(input["author"]))
+        author = get_node_from_global_id(info, input["author"], only_type=query.User)
         podcast_metadata_args = input
         podcast_metadata_args["author"] = author.id
         
@@ -119,6 +132,7 @@ class CreatePodcastMetadata(ClientIDMutation):
         author.save()
 
         return CreatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
+
 
 
 class Mutations(graphene.ObjectType):
