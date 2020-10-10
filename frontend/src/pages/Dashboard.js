@@ -13,6 +13,8 @@ import Hero from "../components/Hero";
 import FeaturedPost from "../components/FeaturedPodcasts";
 import LoggedInDrawer from "../components/LoggedInDrawer";
 import LoggedInNavBar from "../components/LoggedInNavBar";
+import Drawer from "../components/LoggedInDrawer";
+import NavBar from "../components/NavBar";
 
 const mainFeaturedPodcast = {
   title: "Title of a featured podcast/podcaster/most recommended item",
@@ -113,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
 
 const cards = [1, 2, 3, 4, 5, 6];
 
-export default function Dashboard({cookies}) {
+export default function Dashboard({ cookies, handleCookie }) {
   const classes = useStyles();
 
   /* Handles state of the drawer aka left panel */
@@ -127,7 +129,12 @@ export default function Dashboard({cookies}) {
 
   return (
     <>
-      <LoggedInNavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} />
+      {cookies.loggedin ? (
+        <LoggedInNavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} handleCookie={handleCookie}/>
+      ) : (
+        <NavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} />
+      )}
+
       <div className={classes.root}>
         <CssBaseline />
         <LoggedInDrawer isOpen={open} handleDrawerClose={handleDrawerClose} />

@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import clsx from "clsx";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,8 +26,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedInNavBar({handleDrawerOpen, isOpen}) {
+export default function LoggedInNavBar({handleDrawerOpen, isOpen, handleCookie}) {
   const classes = useStyles();
+
+  const handleLogout = (handleCookie) => {
+    handleCookie("loggedin", null);
+    useHistory.push('/');
+  }
+
   return (
     <AppBar position="static">
       <Toolbar className={classes.toolbar}>
@@ -45,7 +52,7 @@ export default function LoggedInNavBar({handleDrawerOpen, isOpen}) {
           </Link>
         </Typography>
         <Button color="inherit">
-          <Link className={classes.link} to="/logout">
+          <Link className={classes.link} to="/" onClick={handleLogout(handleCookie)}>
             Log Out
           </Link>
         </Button>

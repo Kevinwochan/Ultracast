@@ -8,10 +8,14 @@ import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
 
 export default function App() {
-  const [cookies, setCookie] = useCookies();
+  const [cookies, setCookie, removeCookie] = useCookies();
 
   function handleCookie(key, value) {
-    setCookie(key, value, { path: "/" });
+    if (value === null) {
+      removeCookie(key);
+    } else {
+      setCookie(key, value, { path: "/" });
+    }
   }
 
   return (
@@ -30,7 +34,7 @@ export default function App() {
           <Podcast />
         </Route>
         <Route path="/">
-          <Dashboard />
+          <Dashboard cookies={cookies} handleCookie={handleCookie} />
         </Route>
       </Switch>
     </Router>
