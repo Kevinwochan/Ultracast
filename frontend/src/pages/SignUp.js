@@ -14,6 +14,7 @@ import Copyright from "../components/Copyright";
 import NavBar from "../components/NavBar";
 import axios from "axios";
 import configuration from "../api/configuration";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -35,11 +36,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp() {
+export default function SignUp({handleCookie}) {
   const classes = useStyles();
 
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
+  const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -48,7 +50,7 @@ export default function SignUp() {
         configuration.BACKEND_ENDPOINT,
         JSON.stringify({
           query:
-            "mutation($email: String!, $password: String!) {createUser(email: $email, password: $password) {success}}",
+            "mutation($email: String!, $password: String!) {createUser(input: {email: $email, password: $password}) {success}}",
           variables: {
             email: `${emailRef.current.value}`,
             password: `${passwordRef.current.value}`,
@@ -63,8 +65,13 @@ export default function SignUp() {
       )
       .then((response) => {
         console.log(response);
+        console.log(response.data.data.createUser.success);
+        if (response.data.data.createUser.success){
+          handleCookie("loggedin", true);
+          history.push("/");
+        }
       })
-      .catch((err) => {});
+      .catch((err) => {console.log(err)});
   };
 
   return (
