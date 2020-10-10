@@ -92,7 +92,7 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
         podcast_metadata_id = graphene.ID(required=True)
         name = graphene.String()
         description = graphene.String()
-        audio = graphene_file_upload.scalars.Upload(required=True)
+        audio = graphene_file_upload.scalars.Upload(required=False)
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, name=None, description=None, audio=None):
@@ -156,7 +156,7 @@ class DeletePodcastMetadata(ClientIDMutation):
         models.User.objects(subscribed_podcasts=podcast_metadata).update(pull__subscribed_podcasts=podcast_metadata)
 
         # Remove podcast_metadata from the authors published set
-        podcast_metadata.author.update(pull__published_episodes=podcast_metadata)
+        podcast_metadata.author.update(pull__published_podcasts=podcast_metadata)
 
         # Bye bby
         podcast_metadata.delete()
@@ -196,6 +196,7 @@ class Mutations(graphene.ObjectType):
     delete_podcast_episode = DeletePodcastEpisode.Field()
     update_podcast_episode = UpdatePodcastEpisode.Field()
     create_podcast_metadata = CreatePodcastMetadata.Field()
+    delete_podcast_metadata = DeletePodcastMetadata.Field()
     '''
     User mutations
     '''

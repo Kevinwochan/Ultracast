@@ -39,6 +39,10 @@ class ListenHistoryEntry(mongoengine.EmbeddedDocument):
 class User(mongoengine.Document):
     meta = {'collection': 'user'}
     '''
+    General
+    '''
+    name = mongoengine.StringField()
+    '''
     User Authentication
     '''
     email = mongofields.StringField(required=True)
