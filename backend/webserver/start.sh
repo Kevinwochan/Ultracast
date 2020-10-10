@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 
 # Install virtualenv
 if [ -z "$(pip3 list 2> /dev/null | grep virtualenv)" ]; then

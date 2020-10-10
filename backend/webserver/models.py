@@ -28,10 +28,8 @@ class PodcastMetadata(mongoengine.Document):
     author = mongofields.ReferenceField('User', required=True)
     publish_date = mongofields.DateTimeField(default=datetime.datetime.now)
     description = mongofields.StringField()
-
-    # I'm having an issue with graphene + lists of embedded documents (not sure why...)
-    # Comment out for now
     episodes = mongofields.EmbeddedDocumentListField(PodcastEpisodeMetadata)
+    cover = mongofields.FileField()
 
 class ListenHistoryEntry(mongoengine.EmbeddedDocument):
     episode_metadata = mongofields.ReferenceField(
