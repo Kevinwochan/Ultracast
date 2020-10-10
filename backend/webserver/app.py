@@ -1,7 +1,8 @@
-import db
+from . import db
+from .schema import schema
+
 from flask import Flask
 from flask_graphql import GraphQLView
-from schema import schema
 from flask_cors import CORS
 from graphene_file_upload.flask import FileUploadGraphQLView
 

@@ -17,4 +17,5 @@ if [ -n "$(diff <( pip freeze) <( cat requirements.txt))" ]; then
     pip install -r requirements.txt
 fi
 
+cd webserver
 flask run

@@ -1,12 +1,13 @@
+from . import models
+from . import mutations
+from . import query
+
 import graphene
 import graphql
 from graphene.relay import Node, ClientIDMutation
 from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 import graphene_file_upload
 import graphene_file_upload.scalars
-import models
-import mutations
-import query
 
 '''
 Trying things out relay style...
@@ -134,9 +135,39 @@ class CreatePodcastMetadata(ClientIDMutation):
         return CreatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
 
+class CreateUser(ClientIDMutation):
+    '''
+    Inserts a user into MongoDB
+    Sample payload
+    mutation {
+        createUser(input: {email: "test@test.com", password: "pass"} ) {
+        success
+        }
+    }
+    '''
+    success = graphene.Boolean()
+
+    class Input:
+        password = graphene.String(required=True)
+        email = graphene.String(required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, **input):
+        new_user = models.User(password=input["password"], email=input["email"])
+        new_user.save()
+        success = True
+        return CreateUser(success=success)
 
 class Mutations(graphene.ObjectType):
+    '''
+    Podcast mutations
+    '''
     create_podcast_episode = CreatePodcastEpisodeMutation.Field()
     delete_podcast_episode = DeletePodcastEpisode.Field()
     update_podcast_episode = UpdatePodcastEpisode.Field()
     create_podcast_metadata = CreatePodcastMetadata.Field()
+    '''
+    User mutations
+    '''
+    create_user = CreateUser.Field()
+

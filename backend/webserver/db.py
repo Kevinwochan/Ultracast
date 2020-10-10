@@ -1,7 +1,7 @@
-from mongoengine import connect
+from . import models
+from . import schema
 
-import models
-import schema
+from mongoengine import connect
 
 # Amazon EC2 instance
 MONGO_USERNAME = 'ultracast_admin'

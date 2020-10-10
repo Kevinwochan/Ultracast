@@ -1,6 +1,9 @@
+'''
+Schema for MongoDB
+'''
+
 import mongoengine
 import mongoengine.fields as mongofields
-
 import datetime
 
 
@@ -35,7 +38,14 @@ class ListenHistoryEntry(mongoengine.EmbeddedDocument):
 
 class User(mongoengine.Document):
     meta = {'collection': 'user'}
-    name = mongofields.StringField(required=True)
+    '''
+    User Authentication
+    '''
+    email = mongofields.StringField(required=True)
+    password = mongofields.StringField(required=True)
+    '''
+    User usage data
+    '''
     subscribed_podcasts = mongofields.ListField(mongofields.ReferenceField(PodcastMetadata), default=list)
     # I'm having an issue with graphene + lists of embedded documents (not sure why...)
     # Comment out for now

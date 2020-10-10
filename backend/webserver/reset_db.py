@@ -1,5 +1,5 @@
-import db
-import models
+from . import db
+from . import models
 
 import mongoengine
 import mongoengine.connection

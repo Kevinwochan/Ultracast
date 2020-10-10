@@ -1,10 +1,11 @@
+from . import models
+
 import graphene
 import graphql
 from graphene.relay import Node
 from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 import graphene_file_upload
 import graphene_file_upload.scalars
-import models
 
 class PodcastEpisode(MongoengineObjectType):
     class Meta:
