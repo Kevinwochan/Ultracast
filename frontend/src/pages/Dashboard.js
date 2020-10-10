@@ -13,7 +13,6 @@ import Hero from "../components/Hero";
 import FeaturedPost from "../components/FeaturedPodcasts";
 import LoggedInDrawer from "../components/LoggedInDrawer";
 import LoggedInNavBar from "../components/LoggedInNavBar";
-import Drawer from "../components/LoggedInDrawer";
 import NavBar from "../components/NavBar";
 
 const mainFeaturedPodcast = {
@@ -130,7 +129,7 @@ export default function Dashboard({ cookies, handleCookie }) {
   return (
     <>
       {cookies.loggedin ? (
-        <LoggedInNavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} handleCookie={handleCookie}/>
+        <LoggedInNavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} handleCookie={handleCookie} />
       ) : (
         <NavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} />
       )}

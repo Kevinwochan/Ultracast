@@ -22,16 +22,16 @@ export default function App() {
     <Router>
       <Switch>
         <Route path="/upload">
-          <Upload />
+          <Upload handleCookie={handleCookie}/>
         </Route>
         <Route path="/signin">
-          <SignIn />
+          <SignIn handleCookie={handleCookie} />
         </Route>
         <Route path="/signup">
           <SignUp handleCookie={handleCookie} />
         </Route>
         <Route path="/podcast">
-          <Podcast />
+          <Podcast handleCookie={handleCookie} />
         </Route>
         <Route path="/">
           <Dashboard cookies={cookies} handleCookie={handleCookie} />

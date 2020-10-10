@@ -96,7 +96,7 @@ const useStyles = makeStyles((theme) => ({
   This should become a overlay component in the future
   or a constant bottom navbar like spotify
 */
-export default function Podcast({ podcast }) {
+export default function Podcast({ podcast, handleCookie }) {
   const classes = useStyles();
 
   /* Handles state of the drawer aka left panel */
@@ -111,7 +111,7 @@ export default function Podcast({ podcast }) {
   return (
     <>
       <CssBaseline />
-      <LoggedInNavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} />
+      <LoggedInNavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} handleCookie={handleCookie} />
       <div className={classes.root}>
         <LoggedInDrawer isOpen={open} handleDrawerClose={handleDrawerClose} />
         <AudioPlayer src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />

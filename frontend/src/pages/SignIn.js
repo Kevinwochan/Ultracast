@@ -13,9 +13,11 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
-import NavBar from '../components/NavBar';
+import NavBar from "../components/NavBar";
 import axios from "axios";
 import configuration from "../api/configuration";
+import { useHistory } from "react-router-dom";
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -37,14 +39,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+export default function SignIn({ handleCookie }) {
   const classes = useStyles();
 
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
 
+  const history = useHistory();
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    /*
     axios
       .post(
         configuration.BACKEND_ENDPOINT,
@@ -66,7 +71,9 @@ export default function SignIn() {
       .then((response) => {
         console.log(response);
       })
-      .catch((err) => {console.log(err)});
+      .catch((err) => {console.log(err)});*/
+    handleCookie("loggedin", true);
+    history.push('/in');
   };
 
   return (
