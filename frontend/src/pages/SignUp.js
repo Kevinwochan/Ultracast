@@ -11,10 +11,10 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
-import NavBar from "../components/NavBar";
 import axios from "axios";
 import configuration from "../api/configuration";
 import { useHistory } from "react-router-dom";
+import Page from "../common/Page";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp({handleCookie}) {
+export default function SignUp({handleCookie, cookies}) {
   const classes = useStyles();
 
   const emailRef = React.useRef();
@@ -76,10 +76,8 @@ export default function SignUp({handleCookie}) {
 
   return (
     <>
-      <NavBar />
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <div className={classes.paper}>
+      <Page cookies={cookies} handleCookie={handleCookie}>
+        <Container maxWidth="xs" component="main" className={classes.paper}>
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
@@ -131,11 +129,11 @@ export default function SignUp({handleCookie}) {
               </Grid>
             </Grid>
           </form>
-        </div>
+        </Container>
         <Box mt={5}>
           <Copyright />
         </Box>
-      </Container>
+      </Page>
     </>
   );
 }

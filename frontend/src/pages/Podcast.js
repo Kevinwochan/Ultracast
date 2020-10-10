@@ -1,32 +1,7 @@
 import React from "react";
 import AudioPlayer from "material-ui-audio-player";
 import { makeStyles } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import LoggedInDrawer from "../components/LoggedInDrawer";
-import LoggedInNavBar from "../components/LoggedInNavBar";
-
-const featuredPodcasts = [
-  {
-    title: "Featured podcast 1",
-    date: "Nov 12",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    image: "https://source.unsplash.com/random",
-    imageText: "Image Text",
-    page: "/podcast/1",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  },
-  {
-    title: "Featured podcast 2",
-    date: "Nov 11",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    image: "https://source.unsplash.com/random",
-    imageText: "Image Text",
-    page: "/podcast/1",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  },
-];
+import Page from "../common/Page";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -96,26 +71,14 @@ const useStyles = makeStyles((theme) => ({
   This should become a overlay component in the future
   or a constant bottom navbar like spotify
 */
-export default function Podcast({ podcast, handleCookie }) {
+export default function Podcast({ podcast, cookies, handleCookie }) {
   const classes = useStyles();
-
-  /* Handles state of the drawer aka left panel */
-  const [open, setOpen] = React.useState(false);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
 
   return (
     <>
-      <CssBaseline />
-      <LoggedInNavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} handleCookie={handleCookie} />
-      <div className={classes.root}>
-        <LoggedInDrawer isOpen={open} handleDrawerClose={handleDrawerClose} />
+      <Page cookies={cookies} handleCookie={handleCookie}>
         <AudioPlayer src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
-      </div>
+      </Page>
     </>
   );
 }

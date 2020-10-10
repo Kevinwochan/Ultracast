@@ -5,9 +5,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import clsx from "clsx";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedInNavBar({handleDrawerOpen, isOpen, handleCookie}) {
+export default function LoggedInNavBar({handleCookie}) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -37,20 +35,16 @@ export default function LoggedInNavBar({handleDrawerOpen, isOpen, handleCookie})
   return (
     <AppBar position="static">
       <Toolbar className={classes.toolbar}>
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="open drawer"
-          className={clsx(classes.menuButton, isOpen && classes.menuButtonHidden)}
-          onClick={handleDrawerOpen}
-        >
-          <MenuIcon />
-        </IconButton>
         <Typography variant="h6" className={classes.title}>
           <Link className={classes.link} to="/">
-            Home
+            <img src="/branding/7.png" style={{ width: 150 }} alt="ultracast"/>
           </Link>
         </Typography>
+        <Button color="inherit">
+          <Link className={classes.link} to="/upload">
+            Upload
+          </Link>
+        </Button>
         <Button color="inherit" onClick={handleLogout}>
           <Link className={classes.link}>
             Log Out

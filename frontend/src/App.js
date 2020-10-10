@@ -6,6 +6,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
+import History from "./pages/History";
 
 export default function App() {
   const [cookies, setCookie, removeCookie] = useCookies();
@@ -22,16 +23,19 @@ export default function App() {
     <Router>
       <Switch>
         <Route path="/upload">
-          <Upload handleCookie={handleCookie}/>
+          <Upload cookies={cookies} handleCookie={handleCookie} />
         </Route>
         <Route path="/signin">
-          <SignIn handleCookie={handleCookie} />
+          <SignIn cookies={cookies} handleCookie={handleCookie} />
         </Route>
         <Route path="/signup">
-          <SignUp handleCookie={handleCookie} />
+          <SignUp cookies={cookies} handleCookie={handleCookie} />
         </Route>
         <Route path="/podcast">
-          <Podcast handleCookie={handleCookie} />
+          <Podcast cookies={cookies} handleCookie={handleCookie} />
+        </Route>
+        <Route path="/history">
+          <History cookies={cookies} handleCookie={handleCookie} />
         </Route>
         <Route path="/">
           <Dashboard cookies={cookies} handleCookie={handleCookie} />

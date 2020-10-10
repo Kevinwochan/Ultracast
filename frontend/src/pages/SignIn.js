@@ -1,7 +1,6 @@
 import React from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -13,11 +12,10 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
-import NavBar from "../components/NavBar";
 import axios from "axios";
 import configuration from "../api/configuration";
+import Page from "../common/Page";
 import { useHistory } from "react-router-dom";
-
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -39,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn({ handleCookie }) {
+export default function SignIn({ handleCookie, cookies }) {
   const classes = useStyles();
 
   const emailRef = React.useRef();
@@ -73,15 +71,13 @@ export default function SignIn({ handleCookie }) {
       })
       .catch((err) => {console.log(err)});*/
     handleCookie("loggedin", true);
-    history.push('/in');
+    history.push("/in");
   };
 
   return (
     <>
-      <NavBar />
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <div className={classes.paper}>
+      <Page cookies={cookies} handleCookie={handleCookie}>
+        <Container maxWidth="xs" component="main" className={classes.paper}>
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
@@ -137,11 +133,11 @@ export default function SignIn({ handleCookie }) {
               </Grid>
             </Grid>
           </form>
-        </div>
+        </Container>
         <Box mt={8}>
           <Copyright />
         </Box>
-      </Container>
+      </Page>
     </>
   );
 }

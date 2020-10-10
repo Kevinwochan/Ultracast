@@ -4,16 +4,13 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Hero from "../components/Hero";
 import FeaturedPost from "../components/FeaturedPodcasts";
-import LoggedInDrawer from "../components/LoggedInDrawer";
-import LoggedInNavBar from "../components/LoggedInNavBar";
-import NavBar from "../components/NavBar";
+import Page from "../common/Page";
 
 const mainFeaturedPodcast = {
   title: "Title of a featured podcast/podcaster/most recommended item",
@@ -117,66 +114,45 @@ const cards = [1, 2, 3, 4, 5, 6];
 export default function Dashboard({ cookies, handleCookie }) {
   const classes = useStyles();
 
-  /* Handles state of the drawer aka left panel */
-  const [open, setOpen] = React.useState(false);
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   return (
-    <>
-      {cookies.loggedin ? (
-        <LoggedInNavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} handleCookie={handleCookie} />
-      ) : (
-        <NavBar isOpen={open} handleDrawerOpen={handleDrawerOpen} />
-      )}
-
-      <div className={classes.root}>
-        <CssBaseline />
-        <LoggedInDrawer isOpen={open} handleDrawerClose={handleDrawerClose} />
-        <main className={classes.content}>
-          {/* Hero unit */}
-          <Hero post={mainFeaturedPodcast} />
-          <Container className={classes.cardGrid} maxWidth="md">
-            {/* End hero unit */}
-            <Grid container spacing={4}>
-              {featuredPodcasts.map((post) => (
-                <FeaturedPost key={post.title} post={post} />
-              ))}
+    <Page cookies={cookies} handleCookie={handleCookie}>
+      {/* Hero unit */}
+      <Hero post={mainFeaturedPodcast} />
+      <Container className={classes.cardGrid} maxWidth="md">
+        {/* End hero unit */}
+        <Grid container spacing={4}>
+          {featuredPodcasts.map((post) => (
+            <FeaturedPost key={post.title} post={post} />
+          ))}
+        </Grid>
+        <Grid container spacing={4}>
+          {cards.map((card) => (
+            <Grid item key={card} xs={12} sm={6} md={4}>
+              <Card className={classes.card}>
+                <CardMedia
+                  className={classes.cardMedia}
+                  image="https://source.unsplash.com/random"
+                  title="Image title"
+                />
+                <CardContent className={classes.cardContent}>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    Heading
+                  </Typography>
+                  <Typography>
+                    This is a media card. You can use this section to describe
+                    the content.
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button size="small" color="primary">
+                    View
+                  </Button>
+                </CardActions>
+              </Card>
             </Grid>
-            <Grid container spacing={4}>
-              {cards.map((card) => (
-                <Grid item key={card} xs={12} sm={6} md={4}>
-                  <Card className={classes.card}>
-                    <CardMedia
-                      className={classes.cardMedia}
-                      image="https://source.unsplash.com/random"
-                      title="Image title"
-                    />
-                    <CardContent className={classes.cardContent}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        Heading
-                      </Typography>
-                      <Typography>
-                        This is a media card. You can use this section to
-                        describe the content.
-                      </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button size="small" color="primary">
-                        View
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Container>
-        </main>
-      </div>
-    </>
+          ))}
+        </Grid>
+      </Container>
+    </Page>
   );
 }
