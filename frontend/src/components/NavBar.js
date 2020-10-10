@@ -29,8 +29,10 @@ export default function NavBar(){
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" className={classes.title}>
-          <Link className={classes.link} to="/">Home</Link>
+      <Typography variant="h6" className={classes.title}>
+          <Link className={classes.link} to="/">
+            <img src="/branding/7.png" style={{ width: 150 }} alt="ultracast"/>
+          </Link>
         </Typography>
           <Button color="inherit"><Link className={classes.link} to="/signup">Sign Up</Link></Button>
           <Button color="inherit"><Link className={classes.link} to="/signin">Sign In</Link></Button>
