@@ -134,6 +134,35 @@ class CreatePodcastMetadata(ClientIDMutation):
 
         return CreatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
+class DeletePodcastMetadata(ClientIDMutation):
+    num_deleted_episodes = graphene.Int()
+    success = graphene.Boolean()
+
+    class Input:
+        podcast_metadata_id = graphene.ID(required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, podcast_metadata_id):
+        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, 
+                only_type=query.PodcastMetadata)
+        
+        # Track through deleting all episodes
+        num_deleted = 0
+        for episode_metadata in podcast_metadata.episodes:
+            episode_metadata.episode.delete()
+            num_deleted += 1
+
+        # Remove podcast from all users subscriptions
+        models.User.objects(subscribed_podcasts=podcast_metadata).update(pull__subscribed_podcasts=podcast_metadata)
+
+        # Remove podcast_metadata from the authors published set
+        podcast_metadata.author.update(pull__published_episodes=podcast_metadata)
+
+        # Bye bby
+        podcast_metadata.delete()
+        
+        success = True
+        return DeletePodcastMetadata(num_deleted_episodes=num_deleted, success=success)
 
 class CreateUser(ClientIDMutation):
     '''
@@ -146,6 +175,7 @@ class CreateUser(ClientIDMutation):
     }
     '''
     success = graphene.Boolean()
+    user = graphene.Field(query.User)
 
     class Input:
         password = graphene.String(required=True)
@@ -156,7 +186,7 @@ class CreateUser(ClientIDMutation):
         new_user = models.User(password=input["password"], email=input["email"])
         new_user.save()
         success = True
-        return CreateUser(success=success)
+        return CreateUser(success=success, user=new_user)
 
 class Mutations(graphene.ObjectType):
     '''
