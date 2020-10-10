@@ -14,6 +14,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
 import NavBar from '../components/NavBar';
+import axios from "axios";
+import configuration from "../api/configuration";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -38,6 +40,35 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
   const classes = useStyles();
 
+  const emailRef = React.useRef();
+  const passwordRef = React.useRef();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios
+      .post(
+        configuration.BACKEND_ENDPOINT,
+        JSON.stringify({
+          query:
+            "query($email: String!, $password: String!) {isUser(email: $email, password: $password) {jwt}}",
+          variables: {
+            email: `${emailRef.current.value}`,
+            password: `${passwordRef.current.value}`,
+          },
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => {console.log(err)});
+  };
+
   return (
     <>
       <NavBar />
@@ -50,7 +81,7 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} noValidate onSubmit={handleSubmit}>
             <TextField
               variant="outlined"
               margin="normal"

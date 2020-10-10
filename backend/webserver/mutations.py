@@ -139,7 +139,7 @@ class CreateUser(ClientIDMutation):
     Inserts a user into MongoDB
     Sample payload
     mutation {
-        createUser(email: "test@test.com", password: "password") {
+        createUser(input: {email: "test@test.com", password: "pass"} ) {
         success
         }
     }
@@ -151,8 +151,8 @@ class CreateUser(ClientIDMutation):
         email = graphene.String(required=True)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, password=None, email=None):
-        new_user = models.User(password=password, email=email)
+    def mutate_and_get_payload(cls, root, info, **input):
+        new_user = models.User(password=input["password"], email=input["email"])
         new_user.save()
         success = True
         return CreateUser(success=success)
