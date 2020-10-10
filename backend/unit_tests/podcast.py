@@ -159,3 +159,25 @@ class CreatePodcastTest(snapshottest.TestCase):
             '''
 
         self.assertMatchSnapshot(self.client.execute(check_user_query, variables={"user_id": self.user_id}))
+
+    def test_update_podcast(self):
+        podcast_metadata_id = self.createPodcast()
+
+        update_query = '''
+            mutation update_podcast($podcast_id: ID!) {
+                  updatePodcastMetadata(input: {
+                    podcastMetadataId: $podcast_id
+                    name: "an updated name"
+                    description: "an updated description"
+                    
+                  }){
+                    success
+                    podcastMetadata {
+                        description
+                        name
+                  }
+                }
+            }
+            '''
+        variables = {"podcast_id": podcast_metadata_id}
+        self.assertMatchSnapshot(self.client.execute(update_query, variables=variables))

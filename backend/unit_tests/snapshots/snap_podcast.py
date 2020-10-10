@@ -57,3 +57,15 @@ snapshots['CreatePodcastTest::test_delete_podcast_no_episode 1'] = {
         }
     }
 }
+
+snapshots['CreatePodcastTest::test_update_podcast 1'] = {
+    'data': {
+        'updatePodcastMetadata': {
+            'podcastMetadata': {
+                'description': 'an updated description',
+                'name': 'an updated name'
+            },
+            'success': True
+        }
+    }
+}

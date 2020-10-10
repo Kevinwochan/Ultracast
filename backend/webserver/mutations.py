@@ -153,16 +153,37 @@ class DeletePodcastMetadata(ClientIDMutation):
             num_deleted += 1
 
         # Remove podcast from all users subscriptions
-        models.User.objects(subscribed_podcasts=podcast_metadata).update(pull__subscribed_podcasts=podcast_metadata)
+        models.User.objects(subscribed_podcasts=podcast_metadata).modify(pull__subscribed_podcasts=podcast_metadata)
 
         # Remove podcast_metadata from the authors published set
-        podcast_metadata.author.update(pull__published_podcasts=podcast_metadata)
+        podcast_metadata.author.modify(pull__published_podcasts=podcast_metadata)
 
         # Bye bby
         podcast_metadata.delete()
         
         success = True
         return DeletePodcastMetadata(num_deleted_episodes=num_deleted, success=success)
+
+class UpdatePodcastMetadata(ClientIDMutation):
+    success = graphene.Boolean()
+    podcast_metadata = graphene.Field(query.PodcastMetadata)
+
+    class Input:
+        podcast_metadata_id = graphene.ID(required=True)
+        name = graphene.String()
+        description = graphene.String()
+        cover = graphene_file_upload.scalars.Upload()
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, podcast_metadata_id, **kwargs):
+        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, query.PodcastMetadata)
+
+        # Remove None's from kwargs
+        filtered_args = {k: v for k, v in kwargs.items() if v is not None}
+        podcast_metadata.modify(**filtered_args)
+
+        return UpdatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
+
 
 class CreateUser(ClientIDMutation):
     '''
@@ -197,6 +218,7 @@ class Mutations(graphene.ObjectType):
     update_podcast_episode = UpdatePodcastEpisode.Field()
     create_podcast_metadata = CreatePodcastMetadata.Field()
     delete_podcast_metadata = DeletePodcastMetadata.Field()
+    update_podcast_metadata = UpdatePodcastMetadata.Field()
     '''
     User mutations
     '''
