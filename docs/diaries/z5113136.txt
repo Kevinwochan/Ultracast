@@ -6,3 +6,10 @@ Week 2:
 Last week we planned on researching existing software we can use and agreeing software development architecture and processes.
 Early in the week, as part of the frontend team, we decided on using ReactJS and MaterialUI to leverage the team's existing skills. With the frontend framework decided, i initialised our frontend codebase with template designs for the Signing in, Registration, Navigation Bar, Side bar, Dashboard and displaying episodes of a podcast.
 For next week, we have delegated components of the project proposal accross the team where i've been assigned to compelte the storyboarding for our user stories.
+
+Week 3: 
+Last week, I was assigned to storyboards our user stories for the project proposal.
+Over the week, I was able to complete 80% of the 30 User Stories the team generated, with Oli helping me by completeing the remaining storyboards. After attending our weekly standup, we started using Jira to assign and distribute tasks for each User Story.
+For next week, I have been assigned to architect the integration between the frontend and backend.
+
+
