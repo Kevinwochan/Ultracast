@@ -36,7 +36,7 @@ class DeletePodcastEpisode(ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, root, info, podcast_episode_id):
         # Lookup the mongodb object from the relay Node ID
-        podcast_episode = Node.get_node_from_global_id(info=info, global_id=podcast_episode_id, only_type=query.PodcastEpisode)
+        podcast_episode = get_node_from_global_id(info=info, global_id=podcast_episode_id, only_type=query.PodcastEpisode)
 
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=podcast_episode).get()
         podcast_metadata.episodes.filter(episode=podcast_episode).delete()
