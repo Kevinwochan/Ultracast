@@ -27,7 +27,8 @@ export default function LoggedInNavBar({handleCookie}) {
   const classes = useStyles();
   const history = useHistory();
 
-  const handleLogout = () => {
+  const handleLogout = (e) => {
+    e.preventDefault();
     handleCookie("loggedin", null);
     history.push('/');
   }
@@ -46,7 +47,7 @@ export default function LoggedInNavBar({handleCookie}) {
           </Link>
         </Button>
         <Button color="inherit" onClick={handleLogout}>
-          <Link className={classes.link} to="/">
+          <Link className={classes.link}>
             Log Out
           </Link>
         </Button>
