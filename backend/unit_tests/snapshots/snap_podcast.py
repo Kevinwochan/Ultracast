@@ -11,14 +11,33 @@ snapshots['CreatePodcastTest::test_create_podcast 1'] = {
     'data': {
         'createPodcastMetadata': {
             'podcastMetadata': {
+                'category': 'a test category',
                 'description': 'a description',
                 'episodes': {
                     'edges': [
                     ]
                 },
-                'name': 'testy_podcast'
+                'keywords': [
+                    'keyword1',
+                    'key2'
+                ],
+                'name': 'testy_podcast',
+                'subCategory': 'a subcategory'
             },
             'success': True
+        }
+    }
+}
+
+snapshots['CreatePodcastTest::test_create_podcast_episode 1'] = {
+    'data': {
+        'createPodcastEpisode': {
+            'podcastMetadata': {
+                'description': 'a description',
+                'keywords': [
+                ],
+                'name': 'testy_podcast'
+            }
         }
     }
 }
@@ -63,6 +82,11 @@ snapshots['CreatePodcastTest::test_update_podcast 1'] = {
         'updatePodcastMetadata': {
             'podcastMetadata': {
                 'description': 'an updated description',
+                'keywords': [
+                    'one new keyword',
+                    'two',
+                    'three'
+                ],
                 'name': 'an updated name'
             },
             'success': True

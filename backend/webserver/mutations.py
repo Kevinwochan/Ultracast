@@ -58,9 +58,10 @@ class UpdatePodcastEpisode(ClientIDMutation):
         name = graphene.String()
         description = graphene.String()
         audio = graphene_file_upload.scalars.Upload()
+        keywords = graphene.List(graphene.String)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, podcast_id, name=None, description=None, audio=None):
+    def mutate_and_get_payload(cls, root, info, podcast_id, name=None, description=None, audio=None, keywords=None):
         # Retrieve the episode
         episode = get_node_from_global_id(info, podcast_id, only_type=query.PodcastEpisode)
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=episode).get()
@@ -73,6 +74,8 @@ class UpdatePodcastEpisode(ClientIDMutation):
             podcast_episode_metadata.description = description
         if audio is not None:
             episode.audio = audio
+        if keywords is not None:
+            podcast_episode_metadata.keywords = keywords
 
         # Save out our changes
         episode.save()
@@ -93,12 +96,14 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
         name = graphene.String()
         description = graphene.String()
         audio = graphene_file_upload.scalars.Upload(required=False)
+        keywords = graphene.List(graphene.String)
+
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, name=None, description=None, audio=None):
+    def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
         episode = models.PodcastEpisode(audio=audio)
         episode.save()
-        episode_metadata = models.PodcastEpisodeMetadata(name=name, description=description, episode=episode)
+        episode_metadata = models.PodcastEpisodeMetadata(**kwargs)
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         podcast_metadata.episodes.append(episode_metadata)
         podcast_metadata.save()
@@ -118,6 +123,9 @@ class CreatePodcastMetadata(ClientIDMutation):
         author = graphene.ID(required=True)
         description = graphene.String()
         cover = graphene_file_upload.scalars.Upload()
+        category = graphene.String()
+        sub_category = graphene.String()
+        keywords = graphene.List(graphene.String)
     
     @classmethod
     def mutate_and_get_payload(cls, root, info, **input):
@@ -149,7 +157,8 @@ class DeletePodcastMetadata(ClientIDMutation):
         # Track through deleting all episodes
         num_deleted = 0
         for episode_metadata in podcast_metadata.episodes:
-            episode_metadata.episode.delete()
+            if (episode_metadata.episode is not None): 
+                episode_metadata.episode.delete()
             num_deleted += 1
 
         # Remove podcast from all users subscriptions
@@ -173,6 +182,9 @@ class UpdatePodcastMetadata(ClientIDMutation):
         name = graphene.String()
         description = graphene.String()
         cover = graphene_file_upload.scalars.Upload()
+        category = graphene.String()
+        sub_category = graphene.String()
+        keywords = graphene.List(graphene.String)
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id, **kwargs):

@@ -29,17 +29,23 @@ class CreatePodcastTest(snapshottest.TestCase):
         # Create a podcast
         create_podcast_query =  \
             '''
-              mutation  c($id: ID!) {
+              mutation  c($id: ID!, $keywords: [String]!) {
                 createPodcastMetadata (input: {
                   author: $id
                   name: "testy_podcast"
                   description: "a description"
+                  category: "a test category"
+                  subCategory: "a subcategory"
+                  keywords: $keywords
 
                 }) {
                   success
                   podcastMetadata {
                     description
                     name
+                    category
+                    subCategory
+                    keywords
                     episodes {
                       edges {
                         node {
@@ -51,8 +57,10 @@ class CreatePodcastTest(snapshottest.TestCase):
                 }
               }
               '''
-        result = self.client.execute(create_podcast_query, variables={'id': self.user_id})
+        result = self.client.execute(create_podcast_query, 
+                variables={'id': self.user_id, 'keywords': ['keyword1', 'key2']})
         self.assertMatchSnapshot(result)
+
 
     def createPodcast(self):
         '''
@@ -86,6 +94,30 @@ class CreatePodcastTest(snapshottest.TestCase):
         result = self.client.execute(create_podcast_query, variables={'id': self.user_id})
         podcast_metadata_id = result["data"]["createPodcastMetadata"]["podcastMetadata"]["id"]
         return podcast_metadata_id
+
+    def test_create_podcast_episode(self):
+        podcast_id = self.createPodcast()
+        query = '''
+            mutation createPodcast($podcast: ID!, $title: String, $description: String, $keywords: [String]!) {
+                createPodcastEpisode(input: {podcastMetadataId: $podcast, name: $title, description: $description, keywords: $keywords}) {
+                    podcastMetadata {
+                        name
+                        description
+                        keywords
+                    }
+                } 
+            }
+            '''
+        variables = {"podcast": podcast_id, 
+                "title": 
+                "podcast episode title", 
+                "description": "a smart descr",
+                "keywords": ["key1", "k2", "k3"]
+                }
+        
+        result = self.client.execute(query, variables=variables)
+        self.assertMatchSnapshot(result)
+
 
     def createPodcastEpisode(self, podcast_id):
         query = '''
@@ -169,12 +201,14 @@ class CreatePodcastTest(snapshottest.TestCase):
                     podcastMetadataId: $podcast_id
                     name: "an updated name"
                     description: "an updated description"
+                    keywords: ["one new keyword", "two", "three"]
                     
                   }){
                     success
                     podcastMetadata {
                         description
                         name
+                        keywords
                   }
                 }
             }
