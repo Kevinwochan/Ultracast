@@ -29,7 +29,7 @@ export default function Page({ children, handleCookie, cookies }) {
         <NavBar />
       )}
       <div className={classes.root}>
-        <Sidebar />
+        {cookies.loggedin && <Sidebar />}
         <main className={classes.content}>{children}</main>
       </div>
     </ThemeProvider>
