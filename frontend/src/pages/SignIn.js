@@ -26,7 +26,9 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+    // TODO for some reason, theme here is the default theme :/
+    // backgroundColor: theme.palette.secondary.main,
+    backgroundColor: "#ffde59",
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -79,7 +81,7 @@ export default function SignIn({ handleCookie, cookies }) {
       <Page cookies={cookies} handleCookie={handleCookie}>
         <Container maxWidth="xs" component="main" className={classes.paper}>
           <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
+            <LockOutlinedIcon color="primary" />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
@@ -134,7 +136,7 @@ export default function SignIn({ handleCookie, cookies }) {
             </Grid>
           </form>
         </Container>
-        <Box mt={8}>
+        <Box mt={25}>
           <Copyright />
         </Box>
       </Page>

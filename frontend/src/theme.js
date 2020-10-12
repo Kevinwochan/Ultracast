@@ -1,8 +1,7 @@
-import { red } from "@material-ui/core/colors";
 import { createMuiTheme } from "@material-ui/core/styles";
 
 // A custom theme for this app
-const theme = createMuiTheme({
+const ultraCastTheme = createMuiTheme({
   typography: {
     fontFamily: [
       "-apple-system",
@@ -29,22 +28,31 @@ const theme = createMuiTheme({
       },
     },
   },
+
+  // https://material.io/resources/color/#!/?view.left=0&view.right=1&primary.color=102b33&secondary.color=FFDE59&secondary.text.color=000000&primary.text.color=ffffff
   palette: {
     primary: {
-      main: "#102B32",
+      light: "#3a545c",
+      main: "#102b33",
+      dark: "#00000c",
+      contrastText: "#ffffff",
     },
     secondary: {
-      main: "#026078",
-    },
-    error: {
-      main: red.A400,
+      light: "#ffff8b",
+      main: "#ffde59",
+      dark: "#c9ad24",
+      contrastText: "#000000",
     },
     background: {
       default: "#f8f8f8",
     },
   },
+  // TODO: figure out how to make custom variables
+  // navBar: {
+  //   height: 70,
+  // },
 });
 
 // third colour: FFDE59
 
-export default theme;
+export default ultraCastTheme;

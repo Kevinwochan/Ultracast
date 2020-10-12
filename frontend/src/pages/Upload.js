@@ -17,7 +17,7 @@ import Page from "../common/Page";
 import theme from "../theme";
 import { extractFiles } from "extract-files";
 
-export default function Upload({cookies, handleCookie}) {
+export default function Upload({ cookies, handleCookie }) {
   const classes = useStyles();
   const originalState = {
     image: "http://placehold.jp/150x150.png",
@@ -89,13 +89,13 @@ export default function Upload({cookies, handleCookie}) {
     <Page cookies={cookies} handleCookie={handleCookie}>
       <Grid container className={classes.center}>
         <Grid item xs={12} sm={8} lg={6}>
-          <Box my={2}>
+          {/* <Box my={2}>
             <Typography variant="h5">
               <b>Upload your next episode</b>
             </Typography>
-          </Box>
+          </Box> */}
           <Paper>
-            <Box p={5} mb={3}>
+            <Box p={5} my={3}>
               <Fields state={state} setState={setState} />
             </Box>
           </Paper>
@@ -143,7 +143,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   preview: {
-    height: "92vh",
+    minHeight: "calc(100vh - 70px)",
+    // minHeight: "calc(100vh - ${theme.navBar.height})",
     background:
       "linear-gradient(0deg, rgba(226,180,0,1) 0%, rgba(253,187,45,1) 25%)",
   },
@@ -284,23 +285,23 @@ const Fields = ({ state, setState }) => {
       </TextField>
       {state.isNewPodcast && (
         <>
-        <TextField
-          id="podcastTitle"
-          fullWidth
-          variant="outlined"
-          label="New Podcast Title"
-          onChange={handleChange}
-        />
           <TextField
-          id="podcastDescription"
-          multiline
-          fullWidth
-          rows={3}
-          style={{ margin: `${theme.spacing(3)}px 0px` }}
-          variant="outlined"
-          label="Podcast Description"
-          onChange={handleChange}
-        />
+            id="podcastTitle"
+            fullWidth
+            variant="outlined"
+            label="New Podcast Title"
+            onChange={handleChange}
+          />
+          <TextField
+            id="podcastDescription"
+            multiline
+            fullWidth
+            rows={3}
+            style={{ margin: `${theme.spacing(3)}px 0px` }}
+            variant="outlined"
+            label="Podcast Description"
+            onChange={handleChange}
+          />
         </>
       )}
       <TextField
@@ -343,7 +344,7 @@ const Actions = ({ state, resetFields }) => {
 
   const createPodcastMeta = () => {
     /* TODO: implement thus */
-  }
+  };
 
   const createPodcast = () => {
     const fetchOptions = graphqlFetchOptions({
@@ -410,7 +411,7 @@ const Actions = ({ state, resetFields }) => {
     <Grid container spacing={3}>
       <Grid item lg className={classes.center}>
         <Button
-          color="secondary"
+          color="primary"
           variant="contained"
           startIcon={<DeleteIcon />}
           onClick={deletePodcast}
@@ -430,7 +431,7 @@ const Actions = ({ state, resetFields }) => {
       </Grid>
       <Grid item lg className={classes.center}>
         <Button
-          color="secondary"
+          color="primary"
           variant="contained"
           startIcon={<CloudUploadIcon />}
           onClick={createPodcast}
