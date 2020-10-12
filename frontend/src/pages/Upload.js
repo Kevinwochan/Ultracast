@@ -5,6 +5,7 @@ import Box from "@material-ui/core/Box";
 import TextField from "@material-ui/core/TextField";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import CancelIcon from "@material-ui/icons/Cancel";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
@@ -20,7 +21,7 @@ export default function Upload() {
   const classes = useStyles();
   const originalState = {
     image: "http://placehold.jp/150x150.png",
-    allPodcasts: [],
+    allPodcasts: [{ label: "Create new podcast", value: "new-podcast" }],
     podcast: {
       label: "",
       value: "",
@@ -29,6 +30,7 @@ export default function Upload() {
     duration: "",
     title: "",
     description: "",
+    isNewPodcast: false,
   };
 
   // ! State management should always be done in the top-level component :)
@@ -74,7 +76,7 @@ export default function Upload() {
 
         setState((prevState) => ({
           ...prevState,
-          allPodcasts: names,
+          allPodcasts: names + "New Podcast",
         }));
       });
   };
@@ -212,6 +214,7 @@ const Fields = ({ state, setState }) => {
 
     setState((prevState) => ({
       ...prevState,
+      isNewPodcast: value === "new-podcast",
       podcast: podcastItem[0],
     }));
   };
@@ -264,6 +267,43 @@ const Fields = ({ state, setState }) => {
         </CardContent>
       </div>
       <TextField
+        id="podcast"
+        variant="outlined"
+        select
+        fullWidth
+        value={state.podcast.value || ""}
+        style={{ margin: `${theme.spacing(3)}px 0px` }}
+        onChange={handlePodcast}
+        label="Podcast Series"
+      >
+        {allPodcasts.map((option) => (
+          <MenuItem key={option.label} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </TextField>
+      {state.isNewPodcast && (
+        <>
+        <TextField
+          id="podcastTitle"
+          fullWidth
+          variant="outlined"
+          label="New Podcast Title"
+          onChange={handleChange}
+        />
+          <TextField
+          id="podcastDescription"
+          multiline
+          fullWidth
+          rows={3}
+          style={{ margin: `${theme.spacing(3)}px 0px` }}
+          variant="outlined"
+          label="Podcast Description"
+          onChange={handleChange}
+        />
+        </>
+      )}
+      <TextField
         id="title"
         label="Title"
         fullWidth
@@ -282,21 +322,6 @@ const Fields = ({ state, setState }) => {
         value={state.description}
         onChange={handleChange}
       />
-      <TextField
-        id="podcast"
-        variant="outlined"
-        select
-        fullWidth
-        value={state.podcast.value || ""}
-        onChange={handlePodcast}
-        label="Podcast Series"
-      >
-        {allPodcasts.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </TextField>
       <Button
         variant="contained"
         component="label"
@@ -315,6 +340,10 @@ const Fields = ({ state, setState }) => {
 // Cancel, submit and upload actions
 const Actions = ({ state, resetFields }) => {
   const classes = useStyles();
+
+  const createPodcastMeta = () => {
+    /* TODO: implement thus */
+  }
 
   const createPodcast = () => {
     const fetchOptions = graphqlFetchOptions({
@@ -346,9 +375,50 @@ const Actions = ({ state, resetFields }) => {
       });
   };
 
+  const deletePodcast = () => {
+    /* TODO: implement this
+    const fetchOptions = graphqlFetchOptions({
+      query: `mutation createPodcast($podcast: ID! $title: String $description: String $audioFile: Upload!) {
+        createPodcastEpisode(podcastMetadataId: $podcast name: $title description: $description audio: $audioFile) {
+          podcastMetadata {
+            name
+          }
+        }
+      }`,
+      variables: {
+        podcast: state.podcast.value,
+        // podcast: "5f7d756d73f1b06154752d26",
+        title: state.title,
+        description: state.description,
+        audioFile: state.audioFile,
+      },
+    });
+    fetch("http://localhost:5000/graphql", fetchOptions)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.errors) {
+          throw data.errors;
+        } else {
+          console.log(
+            `Episode added to ${data.data.createPodcastEpisode.podcastMetadata.name}`
+          );
+        }
+      });*/
+  };
+
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} sm={6} className={classes.center}>
+      <Grid item lg className={classes.center}>
+        <Button
+          color="secondary"
+          variant="contained"
+          startIcon={<DeleteIcon />}
+          onClick={deletePodcast}
+        >
+          <Typography variant="button">Delete</Typography>
+        </Button>
+      </Grid>
+      <Grid item lg className={classes.center}>
         <Button
           color="primary"
           variant="contained"
@@ -358,7 +428,7 @@ const Actions = ({ state, resetFields }) => {
           <Typography variant="button">Cancel</Typography>
         </Button>
       </Grid>
-      <Grid item xs={12} sm={6} className={classes.center}>
+      <Grid item lg className={classes.center}>
         <Button
           color="secondary"
           variant="contained"
