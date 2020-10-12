@@ -6,8 +6,8 @@ import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
-    width: 128,
-    height: 128,
+    width: 150,
+    height: 150,
   },
 }));
 
@@ -64,39 +64,41 @@ export default function Playlist({ episodes }) {
   const classes = useStyles();
   return (
     <>
-      <Grid container md={12}>
+      <Grid container spacing={8}>
         <Grid item lg={3}></Grid>
-        <Grid container lg={8}>
+        <Grid item container lg={8} alignItems="center">
           <Grid item xs>
-            <Typography variant="subtitle1">Podcast</Typography>
+            <Typography variant="subtitle2">Podcast</Typography>
           </Grid>
           <Grid item xs>
-            <Typography variant="subtitle1">Author</Typography>
+            <Typography variant="subtitle2">Author</Typography>
           </Grid>
         </Grid>
       </Grid>
+
       {episodes.map((episode, index) => {
         return (
           <>
-            <Grid container md={12}>
+            <Grid container alignItems="center">
               <Grid item lg={1}>
                 <Typography gutterBottom variant="subtitle1">
                   {index + 1}
                 </Typography>
               </Grid>
-              <Grid item lg={2}>
-                <img
-                  src={
-                    episode.image
-                      ? episode.image
-                      : "https://source.unsplash.com/random"
-                  }
-                  className={classes.podcastCover}
-                ></img>
-              </Grid>
-              <Grid item lg={8}>
-                <Grid item xs container direction="column" spacing={2}>
-                  <Grid item xs>
+              <Grid item lg={11} container spacing={2}>
+                <Grid item>
+                  <img
+                    src={
+                      episode.image
+                        ? episode.image
+                        : "https://source.unsplash.com/random"
+                    }
+                    alt="podcast cover"
+                    className={classes.podcastCover}
+                  ></img>
+                </Grid>
+                <Grid item lg={8} container direction="column">
+                  <Grid item spacing={1}>
                     <Typography gutterBottom variant="subtitle1">
                       <Grid container>
                         <Grid item xs>
@@ -111,15 +113,13 @@ export default function Playlist({ episodes }) {
                       {episode.description}
                     </Typography>
                   </Grid>
-                  <Grid item xs>
-                    <AudioPlayer
-                      useStyles={PlayerStyles}
-                      src={episode.url}
-                      elevation={1}
-                      rounded={false}
-                      spacing={0}
-                    />
-                  </Grid>
+                  <AudioPlayer
+                    useStyles={PlayerStyles}
+                    src={episode.url}
+                    elevation={0}
+                    rounded={false}
+                    spacing={1}
+                  />
                 </Grid>
               </Grid>
             </Grid>
