@@ -28,13 +28,13 @@ const episodes = [
 
 const useStyles = makeStyles((theme) => ({}));
 
-export default function History() {
+export default function History({cookies, handleCookie}) {
   const classes = useStyles();
 
   return (
-    <Page>
-      <Container maxWidth="md">
-        <Typography variant="h1" gutterBottom>
+    <Page cookies={cookies} handleCookie={handleCookie} >
+      <Container maxWidth="lg">
+        <Typography variant="h5" gutterBottom>
           History
         </Typography>
         <Playlist episodes={episodes} />

@@ -1,3 +1,6 @@
+'''
+Schema for making GraphQL queries and mutations
+'''
 import graphene
 import graphql
 from graphene.relay import Node

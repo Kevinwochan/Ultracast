@@ -4,17 +4,13 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Hero from "../components/Hero";
 import FeaturedPost from "../components/FeaturedPodcasts";
-import Sidebar from "../components/Sidebar";
-import LoggedInNavBar from "../components/LoggedInNavBar";
 import Page from "../common/Page";
-import axios from "axios";
 
 const mainFeaturedPodcast = {
   title: "Title of a featured podcast/podcaster/most recommended item",
@@ -115,15 +111,15 @@ const useStyles = makeStyles((theme) => ({
 
 const cards = [1, 2, 3, 4, 5, 6];
 
-export default function Dashboard() {
+export default function Dashboard({ cookies, handleCookie }) {
   const classes = useStyles();
 
   return (
-    <Page>
+    <Page cookies={cookies} handleCookie={handleCookie}>
       {/* Hero unit */}
       <Hero post={mainFeaturedPodcast} />
-      {/* End hero unit */}
       <Container className={classes.cardGrid} maxWidth="md">
+        {/* End hero unit */}
         <Grid container spacing={4}>
           {featuredPodcasts.map((post) => (
             <FeaturedPost key={post.title} post={post} />

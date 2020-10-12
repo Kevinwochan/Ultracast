@@ -1,14 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import CardMedia from "@material-ui/core/CardMedia";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import clsx from "clsx";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,14 +23,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedInNavBar() {
+export default function LoggedInNavBar({handleCookie}) {
   const classes = useStyles();
+  const history = useHistory();
+
+  const handleLogout = () => {
+    handleCookie("loggedin", null);
+    history.push('/');
+  }
+
   return (
     <AppBar position="static">
       <Toolbar className={classes.toolbar}>
         <Typography variant="h6" className={classes.title}>
           <Link className={classes.link} to="/">
-            <img src="/branding/7.png" style={{ width: 150 }} />
+            <img src="/branding/7.png" style={{ width: 150 }} alt="ultracast"/>
           </Link>
         </Typography>
         <Button color="inherit">
@@ -41,8 +45,8 @@ export default function LoggedInNavBar() {
             Upload
           </Link>
         </Button>
-        <Button color="inherit">
-          <Link className={classes.link} to="/logout">
+        <Button color="inherit" onClick={handleLogout}>
+          <Link className={classes.link} to="/">
             Log Out
           </Link>
         </Button>

@@ -1,9 +1,7 @@
 import React from "react";
 import AudioPlayer from "material-ui-audio-player";
 import { makeStyles } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Sidebar from "../components/Sidebar";
-import LoggedInNavBar from "../components/LoggedInNavBar";
+import Page from "../common/Page";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -73,19 +71,14 @@ const useStyles = makeStyles((theme) => ({
   This should become a overlay component in the future
   or a constant bottom navbar like spotify
 */
-export default function Podcast({ podcast }) {
+export default function Podcast({ podcast, cookies, handleCookie }) {
   const classes = useStyles();
 
   return (
     <>
-      <CssBaseline />
-      <LoggedInNavBar />
-      <div className={classes.root}>
-        <Sidebar />
-        <main className={classes.content}>
-          <AudioPlayer src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
-        </main>
-      </div>
+      <Page cookies={cookies} handleCookie={handleCookie}>
+        <AudioPlayer src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
+      </Page>
     </>
   );
 }

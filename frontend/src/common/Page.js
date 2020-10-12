@@ -4,6 +4,7 @@ import theme from "../theme";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Sidebar from "../components/Sidebar";
 import LoggedInNavBar from "../components/LoggedInNavBar";
+import NavBar from "../components/NavBar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,15 +17,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Page({ children }) {
+export default function Page({ children, handleCookie, cookies }) {
   const classes = useStyles();
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <LoggedInNavBar />
+      {cookies.loggedin ? (
+        <LoggedInNavBar handleCookie={handleCookie} />
+      ) : (
+        <NavBar />
+      )}
       <div className={classes.root}>
-        <Sidebar />
+        {cookies.loggedin && <Sidebar />}
         <main className={classes.content}>{children}</main>
       </div>
     </ThemeProvider>

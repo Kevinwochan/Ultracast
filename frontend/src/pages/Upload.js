@@ -17,7 +17,7 @@ import Page from "../common/Page";
 import theme from "../theme";
 import { extractFiles } from "extract-files";
 
-export default function Upload() {
+export default function Upload({cookies, handleCookie}) {
   const classes = useStyles();
   const originalState = {
     image: "http://placehold.jp/150x150.png",
@@ -86,7 +86,7 @@ export default function Upload() {
   };
 
   return (
-    <Page>
+    <Page cookies={cookies} handleCookie={handleCookie}>
       <Grid container className={classes.center}>
         <Grid item xs={12} sm={8} lg={6}>
           <Box my={2}>

@@ -36,7 +36,7 @@ class DeletePodcastEpisode(ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, root, info, podcast_episode_id):
         # Lookup the mongodb object from the relay Node ID
-        podcast_episode = Node.get_node_from_global_id(info=info, global_id=podcast_episode_id, only_type=query.PodcastEpisode)
+        podcast_episode = get_node_from_global_id(info=info, global_id=podcast_episode_id, only_type=query.PodcastEpisode)
 
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=podcast_episode).get()
         podcast_metadata.episodes.filter(episode=podcast_episode).delete()
@@ -134,9 +134,39 @@ class CreatePodcastMetadata(ClientIDMutation):
         return CreatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
 
+class CreateUser(ClientIDMutation):
+    '''
+    Inserts a user into MongoDB
+    Sample payload
+    mutation {
+        createUser(input: {email: "test@test.com", password: "pass"} ) {
+        success
+        }
+    }
+    '''
+    success = graphene.Boolean()
+
+    class Input:
+        password = graphene.String(required=True)
+        email = graphene.String(required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, **input):
+        new_user = models.User(password=input["password"], email=input["email"])
+        new_user.save()
+        success = True
+        return CreateUser(success=success)
 
 class Mutations(graphene.ObjectType):
+    '''
+    Podcast mutations
+    '''
     create_podcast_episode = CreatePodcastEpisodeMutation.Field()
     delete_podcast_episode = DeletePodcastEpisode.Field()
     update_podcast_episode = UpdatePodcastEpisode.Field()
     create_podcast_metadata = CreatePodcastMetadata.Field()
+    '''
+    User mutations
+    '''
+    create_user = CreateUser.Field()
+
