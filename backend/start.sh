@@ -8,6 +8,7 @@ fi
 # Create env
 if [ ! -d "./env" ]; then
     python3 -m virtualenv env
+    pip install -e . # Install backend as editable package - lets us to imports!
 fi
 
 source ./env/bin/activate

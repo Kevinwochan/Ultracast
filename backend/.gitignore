@@ -3,3 +3,4 @@ __pycache__
 *.csv
 .~*
 *.mp3
+backend.egg-info
