@@ -112,15 +112,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LoggedInNavBar({ handleCookie, openState, children }) {
   const classes = useStyles();
-  const history = useHistory();
   const [open, setOpen] = openState;
-
-  //! May have broken log out - sorry :(
-  const handleLogout = (e) => {
-    e.preventDefault();
-    handleCookie("loggedin", null);
-    history.push("/");
-  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -140,7 +132,7 @@ export default function LoggedInNavBar({ handleCookie, openState, children }) {
       >
         <Toolbar className={classes.toolbar}>
           <Logo classes={classes} />
-          <AccountOptions classes={classes} logout={handleLogout} />
+          <AccountOptions classes={classes} handleCookie={handleCookie}/>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -243,10 +235,9 @@ const CreatorSideBar = ({ classes, open }) => {
       icon: <PublishIcon />,
       link: "/upload",
     },
-
-    // TODO add other creator actions here
   ];
 
+  
   return (
     <List>
       {creatorItems.map((item) => (
@@ -263,8 +254,9 @@ const CreatorSideBar = ({ classes, open }) => {
   );
 };
 
-const AccountOptions = ({ classes, logout }) => {
+const AccountOptions = ({ classes, handleCookie }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const history = useHistory();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -272,6 +264,12 @@ const AccountOptions = ({ classes, logout }) => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    handleCookie("loggedin", null);
+    history.push("/");
   };
 
   return (
@@ -314,7 +312,7 @@ const AccountOptions = ({ classes, logout }) => {
             Account Settings
           </Link>
         </MenuItem>
-        <MenuItem onClick={logout}>Log Out</MenuItem>
+        <MenuItem onClick={handleLogout}>Log Out</MenuItem>
       </Menu>
     </div>
   );
