@@ -25,7 +25,9 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+    // TODO for some reason, theme here is the default theme :/
+    // backgroundColor: theme.palette.secondary.main,
+    backgroundColor: "#ffde59",
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -36,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp({handleCookie, cookies}) {
+export default function SignUp({ handleCookie, cookies }) {
   const classes = useStyles();
 
   const emailRef = React.useRef();
@@ -44,7 +46,7 @@ export default function SignUp({handleCookie, cookies}) {
   const history = useHistory();
 
   const handleSubmit = (e) => {
-    e.preventDefault();/*
+    e.preventDefault(); /*
     axios
       .post(
         configuration.BACKEND_ENDPOINT,
@@ -72,8 +74,8 @@ export default function SignUp({handleCookie, cookies}) {
         }
       })
       .catch((err) => {console.log(err)});*/
-      handleCookie("loggedin", true);
-      history.push("/in");
+    handleCookie("loggedin", true);
+    history.push("/in");
   };
 
   return (
@@ -81,7 +83,7 @@ export default function SignUp({handleCookie, cookies}) {
       <Page cookies={cookies} handleCookie={handleCookie}>
         <Container maxWidth="xs" component="main" className={classes.paper}>
           <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
+            <LockOutlinedIcon color="primary" />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up

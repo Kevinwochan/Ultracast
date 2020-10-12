@@ -4,15 +4,18 @@ import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import Avatar from "@material-ui/core/Avatar";
+import PersonIcon from "@material-ui/icons/Person";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
 import Tooltip from "@material-ui/core/Tooltip";
 import HomeIcon from "@material-ui/icons/Home";
 import SearchIcon from "@material-ui/icons/Search";
@@ -42,6 +45,12 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    // TODO for some reason, theme here is the default theme :/
+    // backgroundColor: theme.palette.secondary.main,
+    backgroundColor: "#ffde59",
   },
   menuButton: {
     "&:hover": {
@@ -106,45 +115,12 @@ export default function LoggedInNavBar({ handleCookie, openState, children }) {
   const history = useHistory();
   const [open, setOpen] = openState;
 
+  //! May have broken log out - sorry :(
   const handleLogout = (e) => {
     e.preventDefault();
     handleCookie("loggedin", null);
     history.push("/");
   };
-
-  //! To change the sidebar menu items, modify this
-  const listenerItems = [
-    {
-      name: "Home",
-      icon: <HomeIcon />,
-      link: "/",
-    },
-    {
-      name: "Search",
-      icon: <SearchIcon />,
-      link: "/search",
-    },
-    {
-      name: "Explore",
-      icon: <ExploreIcon />,
-      link: "/explore",
-    },
-    {
-      name: "Library",
-      icon: <LibraryMusicIcon />,
-      link: "/library",
-    },
-
-    // TODO add recommended, history, friends and subscribed
-  ];
-
-  const creatorItems = [
-    {
-      name: "Upload",
-      icon: <PublishIcon />,
-      link: "/upload",
-    },
-  ];
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -164,9 +140,7 @@ export default function LoggedInNavBar({ handleCookie, openState, children }) {
       >
         <Toolbar className={classes.toolbar}>
           <Logo classes={classes} />
-          <Button color="inherit" onClick={handleLogout}>
-            <Link className={classes.toolbarLink}>Log Out</Link>
-          </Button>
+          <AccountOptions classes={classes} logout={handleLogout} />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -182,31 +156,9 @@ export default function LoggedInNavBar({ handleCookie, openState, children }) {
           }),
         }}
       >
-        <List>
-          {listenerItems.map((item) => (
-            <Link to={item.link} className={classes.link} key={item.link}>
-              <Tooltip title={open ? "" : item.name} placement="right">
-                <ListItem button key={item.name}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.name} />
-                </ListItem>
-              </Tooltip>
-            </Link>
-          ))}
-        </List>
+        <ListenerSideBar classes={classes} open={open} />
         <Divider />
-        <List>
-          {creatorItems.map((item) => (
-            <Link to={item.link} className={classes.link} key={item.link}>
-              <Tooltip title={open ? "" : item.name} placement="right">
-                <ListItem button key={item.name}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.name} />
-                </ListItem>
-              </Tooltip>
-            </Link>
-          ))}
-        </List>
+        <CreatorSideBar classes={classes} open={open} />
         <Divider />
         <IconButton
           color="inherit"
@@ -241,3 +193,129 @@ const Logo = ({ classes }) => (
     <img src="/branding/9.svg" alt="ultracast" />
   </Link>
 );
+
+const ListenerSideBar = ({ classes, open }) => {
+  const listenerItems = [
+    {
+      name: "Home",
+      icon: <HomeIcon />,
+      link: "/",
+    },
+    {
+      name: "Search",
+      icon: <SearchIcon />,
+      link: "/search",
+    },
+    {
+      name: "Explore",
+      icon: <ExploreIcon />,
+      link: "/explore",
+    },
+    {
+      name: "Library",
+      icon: <LibraryMusicIcon />,
+      link: "/library",
+    },
+
+    // TODO add recommended, history, friends and subscribed
+  ];
+
+  return (
+    <List>
+      {listenerItems.map((item) => (
+        <Link to={item.link} className={classes.link} key={item.link}>
+          <Tooltip title={open ? "" : item.name} placement="right">
+            <ListItem button key={item.name}>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.name} />
+            </ListItem>
+          </Tooltip>
+        </Link>
+      ))}
+    </List>
+  );
+};
+
+const CreatorSideBar = ({ classes, open }) => {
+  const creatorItems = [
+    {
+      name: "Upload",
+      icon: <PublishIcon />,
+      link: "/upload",
+    },
+
+    // TODO add other creator actions here
+  ];
+
+  return (
+    <List>
+      {creatorItems.map((item) => (
+        <Link to={item.link} className={classes.link} key={item.link}>
+          <Tooltip title={open ? "" : item.name} placement="right">
+            <ListItem button key={item.name}>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.name} />
+            </ListItem>
+          </Tooltip>
+        </Link>
+      ))}
+    </List>
+  );
+};
+
+const AccountOptions = ({ classes, logout }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div>
+      <IconButton
+        aria-label="account of current user"
+        aria-controls="menu-appbar"
+        aria-haspopup="true"
+        onClick={handleMenu}
+        color="inherit"
+      >
+        <Avatar className={classes.avatar}>
+          <PersonIcon color="primary" />
+        </Avatar>
+      </IconButton>
+      <Menu
+        id="menu-appbar"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        getContentAnchorEl={null}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleClose}>
+          <Link to="/profile" className={classes.link}>
+            Profile
+          </Link>
+        </MenuItem>
+        <MenuItem>
+          {" "}
+          <Link to="/profile" className={classes.link}>
+            Account Settings
+          </Link>
+        </MenuItem>
+        <MenuItem onClick={logout}>Log Out</MenuItem>
+      </Menu>
+    </div>
+  );
+};
