@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom";
 import { useCookies } from "react-cookie";
 import Upload from "./pages/Upload";
 import SignIn from "./pages/SignIn";
@@ -7,6 +12,26 @@ import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
 import History from "./pages/History";
+
+function PrivateRoute({ cookies, children, ...rest }) {
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        cookies.loggedin ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/signin",
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
+  );
+}
 
 export default function App() {
   const [cookies, setCookie, removeCookie] = useCookies();
@@ -23,7 +48,9 @@ export default function App() {
     <Router>
       <Switch>
         <Route path="/upload">
-          <Upload cookies={cookies} handleCookie={handleCookie} />
+          <PrivateRoute cookies={cookies}>
+            <Upload cookies={cookies} handleCookie={handleCookie} />
+          </PrivateRoute>
         </Route>
         <Route path="/signin">
           <SignIn cookies={cookies} handleCookie={handleCookie} />
@@ -32,13 +59,19 @@ export default function App() {
           <SignUp cookies={cookies} handleCookie={handleCookie} />
         </Route>
         <Route path="/podcast">
-          <Podcast cookies={cookies} handleCookie={handleCookie} />
+          <PrivateRoute cookies={cookies}>
+            <Podcast cookies={cookies} handleCookie={handleCookie} />
+          </PrivateRoute>
         </Route>
         <Route path="/history">
-          <History cookies={cookies} handleCookie={handleCookie} />
+          <PrivateRoute cookies={cookies}>
+            <History cookies={cookies} handleCookie={handleCookie} />
+          </PrivateRoute>
         </Route>
         <Route path="/">
-          <Dashboard cookies={cookies} handleCookie={handleCookie} />
+          <PrivateRoute cookies={cookies}>
+            <Dashboard cookies={cookies} handleCookie={handleCookie} />
+          </PrivateRoute>
         </Route>
       </Switch>
     </Router>

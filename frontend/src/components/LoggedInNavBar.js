@@ -46,7 +46,7 @@ export default function LoggedInNavBar({handleCookie}) {
           </Link>
         </Button>
         <Button color="inherit" onClick={handleLogout}>
-          <Link className={classes.link}>
+          <Link className={classes.link} to="/">
             Log Out
           </Link>
         </Button>
