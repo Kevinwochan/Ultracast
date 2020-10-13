@@ -18,3 +18,20 @@ class APITestCast(snapshottest.TestCase):
                 }
             }
                 '''))
+
+    def test_user_with_name(self):
+        client = graphene.test.Client(schema)
+
+        self.assertMatchSnapshot(client.execute(''' 
+            mutation create_user {
+                createUser(input: {email: "test@test.com" password: "password" name: "my name"}) {
+                    success
+                    user {
+                        email
+                        password
+                        name
+                    }
+                }
+            }
+                '''))
+

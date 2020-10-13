@@ -235,10 +235,11 @@ class CreateUser(ClientIDMutation):
     class Input:
         password = graphene.String(required=True)
         email = graphene.String(required=True)
+        name = graphene.String()
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, **input):
-        new_user = models.User(password=input["password"], email=input["email"])
+        new_user = models.User(**input)
         new_user.save()
         success = True
         return CreateUser(success=success, user=new_user)
