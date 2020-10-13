@@ -196,6 +196,28 @@ class UpdatePodcastMetadata(ClientIDMutation):
 
         return UpdatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
+class CreateUser(ClientIDMutation):
+    '''
+    Inserts a user into MongoDB
+    Sample payload
+    mutation {
+        createUser(input: {email: "test@test.com", password: "pass"} ) {
+        success
+        }
+    }
+    '''
+    success = graphene.Boolean()
+
+    class Input:
+        password = graphene.String(required=True)
+        email = graphene.String(required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, **input):
+        new_user = models.User(password=input["password"], email=input["email"])
+        new_user.save()
+        success = True
+        return CreateUser(success=success)
 
 class CreateUser(ClientIDMutation):
     '''

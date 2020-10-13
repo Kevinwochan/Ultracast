@@ -72,7 +72,7 @@ export default function Hero({post}) {
             <Button
               variant="contained"
               color="primary"
-              href="#contained-buttons"
+              href={post.page}
             >
               {post.linkText}
             </Button>
