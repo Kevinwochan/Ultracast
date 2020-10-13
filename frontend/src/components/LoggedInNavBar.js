@@ -23,6 +23,7 @@ import ExploreIcon from "@material-ui/icons/Explore";
 import PublishIcon from "@material-ui/icons/Publish";
 import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
 import HistoryIcon from '@material-ui/icons/History';
+import ShowChartIcon from '@material-ui/icons/ShowChart';
 import { Link, useHistory } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -207,7 +208,7 @@ const ListenerSideBar = ({ classes, open }) => {
     {
       name: "Library",
       icon: <LibraryMusicIcon />,
-      link: "/library",
+      link: "/author/1",
     },
     {
       name: "History",
@@ -240,6 +241,11 @@ const CreatorSideBar = ({ classes, open }) => {
       name: "Upload",
       icon: <PublishIcon />,
       link: "/upload",
+    },
+    {
+      name: "Analytics",
+      icon: <ShowChartIcon />,
+      link: "/analytics",
     },
   ];
 

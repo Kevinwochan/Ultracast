@@ -13,32 +13,33 @@ import FeaturedPost from "../components/FeaturedPodcasts";
 import Page from "../common/Page";
 
 const mainFeaturedPodcast = {
-  title: "Title of a featured podcast/podcaster/most recommended item",
+  title: "Oliver's True Crime Series",
+  date: "Nov 12",
   description:
-    "Multiple lines of text that form the lede, informing new readers quickly and efficiently about what's most interesting in this post's contents.",
+    "In this innovative podcast, retired cold case investigator Paul Holes and true crime journalist Billy Jensen team up to tackle unsolved crimes and missing person cases each week...",
   image: "https://source.unsplash.com/random",
-  imgText: "main image description",
-  linkText: "Continue reading…",
+  imageText: "Image Text",
   page: "/podcast/1",
   url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+  linkText: "Listen Now"
 };
 
 const featuredPodcasts = [
   {
-    title: "Featured podcast 1",
+    title: "73 Questions with Oliver",
     date: "Nov 12",
     description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
+      "73 Questions Answered By Your Favorite Celebs...",
     image: "https://source.unsplash.com/random",
     imageText: "Image Text",
     page: "/podcast/1",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
   },
   {
-    title: "Featured podcast 2",
-    date: "Nov 11",
+    title: "The Politics of Pandemic Relief",
+    date: "Nov 12",
     description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
+      "In March, Congress pushed through a relief package ...",
     image: "https://source.unsplash.com/random",
     imageText: "Image Text",
     page: "/podcast/1",
@@ -118,7 +119,7 @@ export default function Dashboard({ cookies, handleCookie }) {
     <Page cookies={cookies} handleCookie={handleCookie}>
       {/* Hero unit */}
       <Hero post={mainFeaturedPodcast} />
-      <Container className={classes.cardGrid} maxWidth="md">
+      <Container className={classes.cardGrid} maxWidth="lg">
         {/* End hero unit */}
         <Grid container spacing={4}>
           {featuredPodcasts.map((post) => (
@@ -126,7 +127,7 @@ export default function Dashboard({ cookies, handleCookie }) {
           ))}
         </Grid>
         <Grid container spacing={4}>
-          {cards.map((card) => (
+          {cards.map((card, index) => (
             <Grid item key={card} xs={12} sm={6} md={4}>
               <Card className={classes.card}>
                 <CardMedia
@@ -136,16 +137,15 @@ export default function Dashboard({ cookies, handleCookie }) {
                 />
                 <CardContent className={classes.cardContent}>
                   <Typography gutterBottom variant="h5" component="h2">
-                    Heading
+                    Podcast {index}
                   </Typography>
                   <Typography>
-                    This is a media card. You can use this section to describe
-                    the content.
+                    Exciting podcast content coming soon
                   </Typography>
                 </CardContent>
                 <CardActions>
                   <Button size="small" color="primary">
-                    View
+                    View podcast
                   </Button>
                 </CardActions>
               </Card>

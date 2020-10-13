@@ -25,6 +25,11 @@ const ultraCastTheme = createMuiTheme({
           "-webkit-font-smoothing": "antialiased",
           "-moz-osx-font-smoothing": "grayscale",
         },
+        a: {
+          color: "inherit", /* blue colors for links too */
+          textDecoration: "inherit", /* no underline */
+          fontWeight: "bold",
+        },
       },
     },
   },

@@ -41,6 +41,7 @@ export default function Upload({ cookies, handleCookie }) {
   }, []);
 
   const getPodcastNames = () => {
+    /*
     const query = `query getPodcastNames {
       allPodcastMetadata {
         edges {
@@ -48,9 +49,6 @@ export default function Upload({ cookies, handleCookie }) {
             id
             name
             description
-            author {
-              id
-            }
           }
         }
       }
@@ -74,17 +72,14 @@ export default function Upload({ cookies, handleCookie }) {
             value: item.node.id,
             label: item.node.name,
             description: item.node.description,
-            author: item.node.author.id,
           });
         }
-
-        names.filter((item) => item.value === "VXNlcjo1ZjgzMGJhZjEzYjIwNmM1NTBjZmM2YWI="); /* TODO: dynamic author*/
 
         setState((prevState) => ({
           ...prevState,
           allPodcasts: names,
         }));
-      });
+      });*/
   };
 
   const resetFields = () => {
@@ -351,24 +346,12 @@ const Actions = ({ state, resetFields }) => {
   const createPodcastMeta = () => {
     const fetchOptions = graphqlFetchOptions({
       query: `
-      mutation ($author: ID! $name: String! $description: String) {
-        createPodcastMetadata (input: {
-          author: $author
-          name: $name
-          description: $description
-        }) {
-          success
-          podcastMetadata {
-            id
-          }
-        }
-      }
+
       `,
       variables: {
         name: state.podcastTitle,
-        author: "VXNlcjo1ZjdlZmU5ZDM4OTVlMmUzNjhlZjU5NjY=" /* TODO: dynamic authors */,
+        author: "5f7ef4bfe9fab5c274588d30" /* TODO: dynamic authors */,
         description: state.podcastDescription,
-        /* TODO: add categories and keywords */
       },
     });
     fetch("http://localhost:5000/graphql", fetchOptions)
@@ -387,7 +370,7 @@ const Actions = ({ state, resetFields }) => {
       createPodcastMeta();
     }
     const fetchOptions = graphqlFetchOptions({
-      query: `mutation ($podcast: ID!, $title: String, $description: String, $audioFile: Upload!) {
+      query: `mutation createPodcast($podcast: ID!, $title: String, $description: String, $audioFile: Upload!) {
         createPodcastEpisode(input: {audio: $audioFile, description: $description, name: $title,  podcastMetadataId: $podcast}) {
           podcastEpisode {
             id

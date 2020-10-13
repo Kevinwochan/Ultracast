@@ -73,7 +73,7 @@ export default function SignIn({ handleCookie, cookies }) {
       })
       .catch((err) => {console.log(err)});*/
     handleCookie("loggedin", true);
-    history.push("/in");
+    history.push("/");
   };
 
   return (

@@ -1,84 +1,143 @@
-import React from "react";
-import AudioPlayer from "material-ui-audio-player";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import EpisodePlaylist from "../components/EpisodePlaylist";
 import Page from "../common/Page";
+import Container from "@material-ui/core/Container";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
+import Grid from "@material-ui/core/Grid";
+import { Link } from "react-router-dom";
+
+const podcast = {
+  id: 1,
+  title: "Oliver's True Crime Series",
+  description:
+    "In this innovative podcast, retired cold case investigator Paul Holes and true crime journalist Billy Jensen team up to tackle unsolved crimes and missing person cases each week. They invite listeners to contribute their own research and theories, so you can put on your own Sherlock hat.",
+  author: { name: "Oliver Productions", id: 1 },
+};
+
+const episodes = [
+  {
+    title: "Episode 1: Giving Lawyer X a Voice",
+    description:
+      "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
+    image: "https://source.unsplash.com/random",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    author: { name: "Oli", id: 1 },
+    podcast: { id: 1, title: "Oli's True Crime Series" },
+  },
+  {
+    title: "Episode 2",
+    description:
+      "This is a wider card with supporting text below as a natural lead-in to additional content.",
+    image: "https://source.unsplash.com/random",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    author: { name: "Oli", id: 1 },
+    podcast: { id: 1, title: "Oli's True Crime Series" },
+  },
+  {
+    title: "Episode 3",
+    description:
+      "This is a wider card with supporting text below as a natural lead-in to additional content.",
+    image: "https://source.unsplash.com/random",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    author: { name: "Oli", id: 1 },
+    podcast: { id: 1, title: "Oli's True Crime Series" },
+  },
+  {
+    title: "Episode 4",
+    description:
+      "This is a wider card with supporting text below as a natural lead-in to additional content.",
+    image: "https://source.unsplash.com/random",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    author: { name: "Oli", id: 1 },
+    podcast: { id: 1, title: "Oli's True Crime Series" },
+  },
+  {
+    title: "Episode 5",
+    description:
+      "This is a wider card with supporting text below as a natural lead-in to additional content.",
+    image: "https://source.unsplash.com/random",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    author: { name: "Oli", id: 1 },
+    podcast: { id: 1, title: "Oli's True Crime Series" },
+  },
+];
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-  toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
-  },
-  toolbarIcon: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: "0 8px",
-    ...theme.mixins.toolbar,
-  },
-  menuButton: {
-    marginRight: 36,
-  },
-  menuButtonHidden: {
-    display: "none",
-  },
-  title: {
-    flexGrow: 1,
-  },
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    overflow: "auto",
-  },
-  container: {},
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-  },
-  fixedHeight: {
-    height: 240,
-  },
-
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
-  },
-  heroButtons: {
-    marginTop: theme.spacing(4),
-  },
-  cardGrid: {
+  podcastHero: {
+    background: "white",
+    paddingLeft: theme.spacing(8),
     paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
+    marginBottom: theme.spacing(3),
+    minHeight: 300,
   },
-  card: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-  },
-  cardMedia: {
-    paddingTop: "56.25%", // 16:9
-  },
-  cardContent: {
-    flexGrow: 1,
+  podcastCover: {
+    width: 300,
+    height: 300,
   },
 }));
 
-/* 
-  For selecting a single podcast to listen to 
-  This should become a overlay component in the future
-  or a constant bottom navbar like spotify
-*/
-export default function Podcast({ podcast, cookies, handleCookie }) {
+export default function Podcast({ cookies, handleCookie }) {
   const classes = useStyles();
+  const [subscribed, setSubscription] = useState(false);
+
+  const toggleSubscription = () => {
+    setSubscription(!subscribed);
+  }
 
   return (
-    <>
-      <Page cookies={cookies} handleCookie={handleCookie}>
-        <AudioPlayer src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
-      </Page>
-    </>
+    <Page cookies={cookies} handleCookie={handleCookie}>
+      <Grid container>
+        <Grid item xs className={classes.podcastHero}>
+          <Typography variant="h4" paragraph>
+            {podcast.title}
+          </Typography>
+          <Typography variant="subtitle2" paragraph>
+            <Link to={`/author/${podcast.author.id}`}>
+              By: {podcast.author.name}
+            </Link>
+          </Typography>
+          <Typography variant="body2" paragraph>
+            {podcast.description}
+          </Typography>
+          {subscribed ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<AddIcon />}
+              onClick={toggleSubscription}
+            >
+              Subscribe
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<RemoveIcon />}
+              onClick={toggleSubscription}
+            >
+              Unsubscribe
+            </Button>
+          )}
+        </Grid>
+        <Grid item>
+          <img
+            src={
+              podcast.cover
+                ? podcast.cover
+                : "https://source.unsplash.com/random"
+            }
+            alt="podcast cover"
+            className={classes.podcastCover}
+          ></img>
+        </Grid>
+      </Grid>
+      <Container maxWidth="lg">
+        <EpisodePlaylist episodes={episodes} />
+      </Container>
+    </Page>
   );
 }

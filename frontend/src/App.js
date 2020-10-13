@@ -12,6 +12,8 @@ import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
 import History from "./pages/History";
+import Author from "./pages/Author";
+import Analytics from "./pages/Analytics";
 
 function PrivateRoute({ cookies, children, ...rest }) {
   return (
@@ -66,6 +68,16 @@ export default function App() {
         <Route path="/history">
           <PrivateRoute cookies={cookies}>
             <History cookies={cookies} handleCookie={handleCookie} />
+          </PrivateRoute>
+        </Route>
+        <Route path="/author">
+          <PrivateRoute cookies={cookies}>
+            <Author cookies={cookies} handleCookie={handleCookie} />
+          </PrivateRoute>
+        </Route>
+        <Route path="/analytics">
+          <PrivateRoute cookies={cookies}>
+            <Analytics cookies={cookies} handleCookie={handleCookie} />
           </PrivateRoute>
         </Route>
         <Route path="/">

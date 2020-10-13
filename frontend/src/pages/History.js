@@ -12,8 +12,8 @@ const episodes = [
       "This is a wider card with supporting text below as a natural lead-in to additional content.",
     image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: "Joe rogan",
-    podcast: "Joe Rogan Show",
+    author: { name: "Oliver Productions", id: 1},
+    podcast: { id: 1, title: "Oli's True Crime Series"},
   },
   {
     title: "Episode 2",
@@ -21,8 +21,8 @@ const episodes = [
       "This is a wider card with supporting text below as a natural lead-in to additional content.",
     image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: "Joe Rogan",
-    podcast: "Joe Rogan Show",
+    author: { name: "Oliver Productions", id: 1},
+    podcast: { id: 1, title: "Oli's True Crime Series"},
   },
 ];
 
@@ -34,9 +34,6 @@ export default function History({cookies, handleCookie}) {
   return (
     <Page cookies={cookies} handleCookie={handleCookie} >
       <Container maxWidth="lg">
-        <Typography variant="h5" gutterBottom>
-          History
-        </Typography>
         <Playlist episodes={episodes} />
       </Container>
     </Page>
