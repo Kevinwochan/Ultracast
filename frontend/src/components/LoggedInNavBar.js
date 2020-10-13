@@ -22,6 +22,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ExploreIcon from "@material-ui/icons/Explore";
 import PublishIcon from "@material-ui/icons/Publish";
 import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
+import HistoryIcon from '@material-ui/icons/History';
 import { Link, useHistory } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -136,7 +137,7 @@ export default function LoggedInNavBar({ handleCookie, openState, children }) {
         </Toolbar>
       </AppBar>
       <Drawer
-        variant="permanent"
+        variant="permanent" 
         className={clsx(classes.drawer, {
           [classes.drawerOpen]: open,
           [classes.drawerClose]: !open,
@@ -207,6 +208,11 @@ const ListenerSideBar = ({ classes, open }) => {
       name: "Library",
       icon: <LibraryMusicIcon />,
       link: "/library",
+    },
+    {
+      name: "History",
+      icon: <HistoryIcon />,
+      link: "/History",
     },
 
     // TODO add recommended, history, friends and subscribed
@@ -307,7 +313,6 @@ const AccountOptions = ({ classes, handleCookie }) => {
           </Link>
         </MenuItem>
         <MenuItem>
-          {" "}
           <Link to="/profile" className={classes.link}>
             Account Settings
           </Link>

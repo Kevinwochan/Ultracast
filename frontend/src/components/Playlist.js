@@ -9,6 +9,14 @@ const useStyles = makeStyles((theme) => ({
     width: 150,
     height: 150,
   },
+  card:{
+    background: "white",
+    padding: theme.spacing(3),
+  },
+  order:{
+    margin: "auto",
+    textAlign: "center",
+  }
 }));
 
 const PlayerStyles = makeStyles((theme) => ({
@@ -64,24 +72,12 @@ export default function Playlist({ episodes }) {
   const classes = useStyles();
   return (
     <>
-      <Grid container spacing={8}>
-        <Grid item lg={3}></Grid>
-        <Grid item container lg={8} alignItems="center">
-          <Grid item xs>
-            <Typography variant="subtitle2">Podcast</Typography>
-          </Grid>
-          <Grid item xs>
-            <Typography variant="subtitle2">Author</Typography>
-          </Grid>
-        </Grid>
-      </Grid>
-
       {episodes.map((episode, index) => {
         return (
           <>
-            <Grid container alignItems="center">
+            <Grid container alignItems="center" className={classes.card}>
               <Grid item lg={1}>
-                <Typography gutterBottom variant="subtitle1">
+                <Typography gutterBottom variant="subtitle1" className={classes.order}>
                   {index + 1}
                 </Typography>
               </Grid>
