@@ -18,3 +18,9 @@ Week 4:
 Last week, I was assigned to architect the integration between the frontend and backend.
 This week, i completed my assigned task by initialising a cofiguration file in the frontend that determined the API endpoint the frontend application would use as well as implementing the web pages for displaying multiple podcasts on a page.
 For next week, I have been assigned to implement the frontend for allowing a user to log out and the backend for allowing a user to log into our application as well as integrating this with the already completed sign in page.
+
+Week 5:
+Last week, i was assigned to implement the frontend and backend for user authenticaiton.
+This week i spent most of my week reading through documentation for the backend 3rd party software (Graphene, GraphQL and Relay) as well as researching existing implementations for use authentication. I was unable to complete the assigned task in the planned week. My biggest challenge was understanding how Graphene worked, i found the documentation provided was scarce and could not find many example usages to reference. Although i was not able to implement the backend functionality for this, i was able to implement session management in the frontend and redirect unauthenticated users to the login page. In preparation for our progressive demo, i have inserted the expected structured data that will be available from our backend to demonstrate the progress of the frontend.
+Next week, I will be working more closely with Oli (who has figured out how this all works) to implement the backend requirements for this user story.
+
