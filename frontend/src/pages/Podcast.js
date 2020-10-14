@@ -80,16 +80,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Podcast({ cookies, handleCookie }) {
+export default function Podcast() {
   const classes = useStyles();
   const [subscribed, setSubscription] = useState(false);
 
   const toggleSubscription = () => {
     setSubscription(!subscribed);
-  }
+  };
 
   return (
-    <Page cookies={cookies} handleCookie={handleCookie}>
+    <>
       <Grid container>
         <Grid item xs className={classes.podcastHero}>
           <Typography variant="h4" paragraph>
@@ -138,6 +138,6 @@ export default function Podcast({ cookies, handleCookie }) {
       <Container maxWidth="lg">
         <EpisodePlaylist episodes={episodes} />
       </Container>
-    </Page>
+    </>
   );
 }

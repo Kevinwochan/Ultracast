@@ -17,7 +17,7 @@ import Page from "../common/Page";
 import theme from "../theme";
 import { extractFiles } from "extract-files";
 
-export default function Upload({ cookies, handleCookie }) {
+export default function Upload() {
   const classes = useStyles();
   const originalState = {
     image: "http://placehold.jp/150x150.png",
@@ -78,7 +78,9 @@ export default function Upload({ cookies, handleCookie }) {
           });
         }
 
-        names.filter((item) => item.value === "VXNlcjo1ZjgzMGJhZjEzYjIwNmM1NTBjZmM2YWI="); /* TODO: dynamic author*/
+        names.filter(
+          (item) => item.value === "VXNlcjo1ZjgzMGJhZjEzYjIwNmM1NTBjZmM2YWI="
+        ); /* TODO: dynamic author*/
 
         setState((prevState) => ({
           ...prevState,
@@ -92,36 +94,29 @@ export default function Upload({ cookies, handleCookie }) {
   };
 
   return (
-    <Page cookies={cookies} handleCookie={handleCookie}>
-      <Grid container className={classes.center}>
-        <Grid item xs={12} sm={8} lg={6}>
-          {/* <Box my={2}>
-            <Typography variant="h5">
-              <b>Upload your next episode</b>
-            </Typography>
-          </Box> */}
-          <Paper>
-            <Box p={5} my={3}>
-              <Fields state={state} setState={setState} />
-            </Box>
-          </Paper>
-          <Actions state={state} resetFields={resetFields} />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Fade in={state.title} timeout={750}>
-            <Box ml={2}>
-              <Preview
-                image={state.image}
-                title={state.title}
-                description={state.description}
-                podcast={state.podcast.label}
-                duration={state.duration}
-              />
-            </Box>
-          </Fade>
-        </Grid>
+    <Grid container className={classes.center}>
+      <Grid item xs={12} sm={8} lg={6}>
+        <Paper>
+          <Box p={5} my={3}>
+            <Fields state={state} setState={setState} />
+          </Box>
+        </Paper>
+        <Actions state={state} resetFields={resetFields} />
       </Grid>
-    </Page>
+      <Grid item xs={12} sm={4}>
+        <Fade in={state.title} timeout={750}>
+          <Box ml={2}>
+            <Preview
+              image={state.image}
+              title={state.title}
+              description={state.description}
+              podcast={state.podcast.label}
+              duration={state.duration}
+            />
+          </Box>
+        </Fade>
+      </Grid>
+    </Grid>
   );
 }
 
@@ -366,7 +361,8 @@ const Actions = ({ state, resetFields }) => {
       `,
       variables: {
         name: state.podcastTitle,
-        author: "VXNlcjo1ZjdlZmU5ZDM4OTVlMmUzNjhlZjU5NjY=" /* TODO: dynamic authors */,
+        author:
+          "VXNlcjo1ZjdlZmU5ZDM4OTVlMmUzNjhlZjU5NjY=" /* TODO: dynamic authors */,
         description: state.podcastDescription,
         /* TODO: add categories and keywords */
       },

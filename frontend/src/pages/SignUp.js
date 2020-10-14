@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp({ handleCookie, cookies }) {
+export default function SignUp({ handleCookie }) {
   const classes = useStyles();
 
   const emailRef = React.useRef();
@@ -80,64 +80,62 @@ export default function SignUp({ handleCookie, cookies }) {
 
   return (
     <>
-      <Page cookies={cookies} handleCookie={handleCookie}>
-        <Container maxWidth="xs" component="main" className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon color="primary" />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
-          <form className={classes.form} noValidate onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  inputRef={emailRef}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  inputRef={passwordRef}
-                />
-              </Grid>
+      <Container maxWidth="xs" component="main" className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon color="primary" />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign up
+        </Typography>
+        <form className={classes.form} noValidate onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                inputRef={emailRef}
+              />
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Sign Up
-            </Button>
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Link href="/signin" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                inputRef={passwordRef}
+              />
             </Grid>
-          </form>
-        </Container>
-        <Box mt={5}>
-          <Copyright />
-        </Box>
-      </Page>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Sign Up
+          </Button>
+          <Grid container justify="flex-end">
+            <Grid item>
+              <Link href="/signin" variant="body2">
+                Already have an account? Sign in
+              </Link>
+            </Grid>
+          </Grid>
+        </form>
+      </Container>
+      <Box mt={5}>
+        <Copyright />
+      </Box>
     </>
   );
 }

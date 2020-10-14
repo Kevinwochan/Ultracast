@@ -22,7 +22,7 @@ import { mainListItems, secondaryListItems } from "./Analytics/listItems";
 import Chart from "./Analytics/Chart";
 import Deposits from "./Analytics/Deposits";
 import Orders from "./Analytics/Orders";
-import Page from "../common/Page"
+import Page from "../common/Page";
 
 function Copyright() {
   return (
@@ -118,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Analytics({cookies, handleCookie}) {
+export default function Analytics() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -130,32 +130,30 @@ export default function Analytics({cookies, handleCookie}) {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
-    <Page cookies={cookies} handleCookie={handleCookie}>
-      <Container maxWidth="lg" className={classes.container}>
-        <Grid container spacing={3}>
-          {/* Chart */}
-          <Grid item xs={12} md={8} lg={9}>
-            <Paper className={fixedHeightPaper}>
-              <Chart />
-            </Paper>
-          </Grid>
-          {/* Recent Deposits */}
-          <Grid item xs={12} md={4} lg={3}>
-            <Paper className={fixedHeightPaper}>
-              <Deposits />
-            </Paper>
-          </Grid>
-          {/* Recent Orders */}
-          <Grid item xs={12}>
-            <Paper className={classes.paper}>
-              <Orders />
-            </Paper>
-          </Grid>
+    <Container maxWidth="lg" className={classes.container}>
+      <Grid container spacing={3}>
+        {/* Chart */}
+        <Grid item xs={12} md={8} lg={9}>
+          <Paper className={fixedHeightPaper}>
+            <Chart />
+          </Paper>
         </Grid>
-        <Box pt={4}>
-          <Copyright />
-        </Box>
-      </Container>
-    </Page>
+        {/* Recent Deposits */}
+        <Grid item xs={12} md={4} lg={3}>
+          <Paper className={fixedHeightPaper}>
+            <Deposits />
+          </Paper>
+        </Grid>
+        {/* Recent Orders */}
+        <Grid item xs={12}>
+          <Paper className={classes.paper}>
+            <Orders />
+          </Paper>
+        </Grid>
+      </Grid>
+      <Box pt={4}>
+        <Copyright />
+      </Box>
+    </Container>
   );
 }

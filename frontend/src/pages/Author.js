@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     transition: "0.5s",
     "&:hover": {
       boxShadow: "5px 5px 10px rgba(0,0,0,0.2)",
-    }
+    },
   },
   order: {
     margin: "auto",
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function History({ cookies, handleCookie }) {
+export default function History() {
   const classes = useStyles();
   //const podcasts = getPodcastNames();
   const podcasts = [
@@ -101,41 +101,39 @@ export default function History({ cookies, handleCookie }) {
   ];
 
   return (
-    <Page cookies={cookies} handleCookie={handleCookie}>
-      <Container maxWidth="lg">
-        <IconButton aria-label="delete" disabled color="primary"></IconButton>
-        {podcasts.map((podcast, index) => (
-          <Link to={`/podcast/${podcast.id}`}>
-            <Grid container className={classes.card} spacing={3}>
-              <Grid item lg={2}>
-                <img
-                  src={
-                    podcast.cover
-                      ? podcast.cover
-                      : "https://source.unsplash.com/random"
-                  }
-                  alt="podcast cover"
-                  className={classes.podcastCover}
-                ></img>
-              </Grid>
-              <Grid item lg={10} container direction="column">
-                <Grid item spacing={1}>
-                  <Typography gutterBottom variant="h4">
-                    <Grid container>
-                      <Grid item xs>
-                        {podcast.title}
-                      </Grid>
+    <Container maxWidth="lg">
+      <IconButton aria-label="delete" disabled color="primary"></IconButton>
+      {podcasts.map((podcast, index) => (
+        <Link to={`/podcast/${podcast.id}`}>
+          <Grid container className={classes.card} spacing={3}>
+            <Grid item lg={2}>
+              <img
+                src={
+                  podcast.cover
+                    ? podcast.cover
+                    : "https://source.unsplash.com/random"
+                }
+                alt="podcast cover"
+                className={classes.podcastCover}
+              ></img>
+            </Grid>
+            <Grid item lg={10} container direction="column">
+              <Grid item spacing={1}>
+                <Typography gutterBottom variant="h4">
+                  <Grid container>
+                    <Grid item xs>
+                      {podcast.title}
                     </Grid>
-                  </Typography>
-                  <Typography variant="body2" gutterBottom>
-                    {podcast.description}
-                  </Typography>
-                </Grid>
+                  </Grid>
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  {podcast.description}
+                </Typography>
               </Grid>
             </Grid>
-          </Link>
-        ))}
-      </Container>
-    </Page>
+          </Grid>
+        </Link>
+      ))}
+    </Container>
   );
 }

@@ -22,8 +22,8 @@ import SearchIcon from "@material-ui/icons/Search";
 import ExploreIcon from "@material-ui/icons/Explore";
 import PublishIcon from "@material-ui/icons/Publish";
 import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
-import HistoryIcon from '@material-ui/icons/History';
-import ShowChartIcon from '@material-ui/icons/ShowChart';
+import HistoryIcon from "@material-ui/icons/History";
+import ShowChartIcon from "@material-ui/icons/ShowChart";
 import { Link, useHistory } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -112,16 +112,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedInNavBar({ handleCookie, openState, children }) {
+export default function LoggedInNavBar({ handleCookie, state, children }) {
   const classes = useStyles();
-  const [open, setOpen] = openState;
+  const [sessionState, updateState] = state;
+  const open = sessionState.open;
 
   const handleDrawerOpen = () => {
-    setOpen(true);
+    updateState("open", true);
   };
 
   const handleDrawerClose = () => {
-    setOpen(false);
+    updateState("open", false);
   };
 
   return (
@@ -134,11 +135,11 @@ export default function LoggedInNavBar({ handleCookie, openState, children }) {
       >
         <Toolbar className={classes.toolbar}>
           <Logo classes={classes} />
-          <AccountOptions classes={classes} handleCookie={handleCookie}/>
+          <AccountOptions classes={classes} handleCookie={handleCookie} />
         </Toolbar>
       </AppBar>
       <Drawer
-        variant="permanent" 
+        variant="permanent"
         className={clsx(classes.drawer, {
           [classes.drawerOpen]: open,
           [classes.drawerClose]: !open,
@@ -249,7 +250,6 @@ const CreatorSideBar = ({ classes, open }) => {
     },
   ];
 
-  
   return (
     <List>
       {creatorItems.map((item) => (

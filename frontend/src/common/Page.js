@@ -22,17 +22,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Page({ children, handleCookie, cookies }) {
+export default function Page({ state, handleCookie, children }) {
   const classes = useStyles();
-
-  //TODO - move to top level component
-  const openState = useState(true);
+  const [sessionState, updateState] = state;
+  const cookies = sessionState.cookies;
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       {cookies.loggedin ? (
-        <LoggedInNavBar handleCookie={handleCookie} openState={openState}>
+        <LoggedInNavBar handleCookie={handleCookie} state={state}>
           {/* Really, this is the nav bar + sidebar */}
           {/* sorry Kev, couldn't format it any better and it's turned out kinda gross here :/ */}
           <div className={classes.root}>

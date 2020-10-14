@@ -21,15 +21,14 @@ const mainFeaturedPodcast = {
   imageText: "Image Text",
   page: "/podcast/1",
   url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  linkText: "Listen Now"
+  linkText: "Listen Now",
 };
 
 const featuredPodcasts = [
   {
     title: "73 Questions with Oliver",
     date: "Nov 12",
-    description:
-      "73 Questions Answered By Your Favorite Celebs...",
+    description: "73 Questions Answered By Your Favorite Celebs...",
     image: "https://source.unsplash.com/random",
     imageText: "Image Text",
     page: "/podcast/1",
@@ -38,8 +37,7 @@ const featuredPodcasts = [
   {
     title: "The Politics of Pandemic Relief",
     date: "Nov 12",
-    description:
-      "In March, Congress pushed through a relief package ...",
+    description: "In March, Congress pushed through a relief package ...",
     image: "https://source.unsplash.com/random",
     imageText: "Image Text",
     page: "/podcast/1",
@@ -112,11 +110,11 @@ const useStyles = makeStyles((theme) => ({
 
 const cards = [1, 2, 3, 4, 5, 6];
 
-export default function Dashboard({ cookies, handleCookie }) {
+export default function Dashboard() {
   const classes = useStyles();
 
   return (
-    <Page cookies={cookies} handleCookie={handleCookie}>
+    <>
       {/* Hero unit */}
       <Hero post={mainFeaturedPodcast} />
       <Container className={classes.cardGrid} maxWidth="lg">
@@ -139,9 +137,7 @@ export default function Dashboard({ cookies, handleCookie }) {
                   <Typography gutterBottom variant="h5" component="h2">
                     Podcast {index}
                   </Typography>
-                  <Typography>
-                    Exciting podcast content coming soon
-                  </Typography>
+                  <Typography>Exciting podcast content coming soon</Typography>
                 </CardContent>
                 <CardActions>
                   <Button size="small" color="primary">
@@ -153,6 +149,6 @@ export default function Dashboard({ cookies, handleCookie }) {
           ))}
         </Grid>
       </Container>
-    </Page>
+    </>
   );
 }
