@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import theme from "../theme";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
-import LoggedInNavBar from "../components/LoggedInNavBar";
+import UserLayout from "../components/UserLayout";
+import Player from "../components/Player";
 import NavBar from "../components/NavBar";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,15 +32,18 @@ export default function Page({ state, handleCookie, children }) {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       {cookies.loggedin ? (
-        <LoggedInNavBar handleCookie={handleCookie} state={state}>
-          {/* Really, this is the nav bar + sidebar */}
-          {/* sorry Kev, couldn't format it any better and it's turned out kinda gross here :/ */}
-          <div className={classes.root}>
-            <main className={`${classes.content} ${classes.contentLoggedIn}`}>
-              {children}
-            </main>
-          </div>
-        </LoggedInNavBar>
+        <>
+          <UserLayout handleCookie={handleCookie} state={state}>
+            {/* Really, this is the nav bar + sidebar */}
+            {/* sorry Kev, couldn't format it any better and it's turned out kinda gross here :/ */}
+            <div className={classes.root}>
+              <main className={`${classes.content} ${classes.contentLoggedIn}`}>
+                {children}
+              </main>
+            </div>
+          </UserLayout>
+          <Player state={state} />
+        </>
       ) : (
         <>
           <NavBar />

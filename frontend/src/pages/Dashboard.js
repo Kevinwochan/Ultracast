@@ -10,21 +10,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Hero from "../components/Hero";
 import FeaturedPost from "../components/FeaturedPodcasts";
-import Page from "../common/Page";
 
-const mainFeaturedPodcast = {
-  title: "Oliver's True Crime Series",
-  date: "Nov 12",
-  description:
-    "In this innovative podcast, retired cold case investigator Paul Holes and true crime journalist Billy Jensen team up to tackle unsolved crimes and missing person cases each week...",
-  image: "https://source.unsplash.com/random",
-  imageText: "Image Text",
-  page: "/podcast/1",
-  url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  linkText: "Listen Now",
-};
-
-const featuredPodcasts = [
+const recentlyPlayed = [
   {
     title: "73 Questions with Oliver",
     date: "Nov 12",
@@ -44,6 +31,8 @@ const featuredPodcasts = [
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
   },
 ];
+
+const forYou = [];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -114,41 +103,40 @@ export default function Dashboard() {
   const classes = useStyles();
 
   return (
-    <>
-      {/* Hero unit */}
-      <Hero post={mainFeaturedPodcast} />
-      <Container className={classes.cardGrid} maxWidth="lg">
-        {/* End hero unit */}
-        <Grid container spacing={4}>
-          {featuredPodcasts.map((post) => (
-            <FeaturedPost key={post.title} post={post} />
-          ))}
-        </Grid>
-        <Grid container spacing={4}>
-          {cards.map((card, index) => (
-            <Grid item key={card} xs={12} sm={6} md={4}>
-              <Card className={classes.card}>
-                <CardMedia
-                  className={classes.cardMedia}
-                  image="https://source.unsplash.com/random"
-                  title="Image title"
-                />
-                <CardContent className={classes.cardContent}>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    Podcast {index}
-                  </Typography>
-                  <Typography>Exciting podcast content coming soon</Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small" color="primary">
-                    View podcast
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
-    </>
+    <Container className={classes.cardGrid} maxWidth="lg">
+      <Typography gutterBottom variant="h5">
+        Recently Played
+      </Typography>
+      <Grid container spacing={4}>
+        {recentlyPlayed.map((post) => (
+          <FeaturedPost key={post.title} post={post} />
+        ))}
+      </Grid>
+
+      <Grid container spacing={4}>
+        {cards.map((card, index) => (
+          <Grid item key={card} xs={12} sm={6} md={4}>
+            <Card className={classes.card}>
+              <CardMedia
+                className={classes.cardMedia}
+                image="https://source.unsplash.com/random"
+                title="Image title"
+              />
+              <CardContent className={classes.cardContent}>
+                <Typography gutterBottom variant="h5" component="h2">
+                  Podcast {index}
+                </Typography>
+                <Typography>Exciting podcast content coming soon</Typography>
+              </CardContent>
+              <CardActions>
+                <Button size="small" color="primary">
+                  View podcast
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
   );
 }

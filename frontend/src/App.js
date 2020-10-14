@@ -7,9 +7,10 @@ import {
 } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import Page from "./common/Page";
-import Upload from "./pages/Upload";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import Landing from "./pages/Landing";
+import Upload from "./pages/Upload";
 import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
 import History from "./pages/History";
@@ -69,6 +70,11 @@ export default function App() {
     <Router>
       <Switch>
         {/* Public Routes */}
+        <Route path="/landing">
+          <Page handleCookie={handleCookie} state={state}>
+            <Landing />
+          </Page>
+        </Route>
         <Route path="/signin">
           <Page handleCookie={handleCookie} state={state}>
             <SignIn handleCookie={handleCookie} />

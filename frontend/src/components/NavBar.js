@@ -32,11 +32,7 @@ export default function NavBar() {
   const navBarItems = [
     {
       name: "Popular",
-      link: "/popular",
-    },
-    {
-      name: "Trending",
-      link: "/trending",
+      link: "/landing",
     },
     {
       name: "Sign Up",
@@ -65,7 +61,7 @@ export default function NavBar() {
 }
 
 const Logo = ({ classes }) => (
-  <Link className={classes.title} to="/">
+  <Link className={classes.title} to="/landing">
     <img src="/branding/10.svg" alt="ultracast" />
   </Link>
 );

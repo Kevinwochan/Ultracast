@@ -112,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedInNavBar({ handleCookie, state, children }) {
+export default function UserLayout({ handleCookie, state, children }) {
   const classes = useStyles();
   const [sessionState, updateState] = state;
   const open = sessionState.open;
