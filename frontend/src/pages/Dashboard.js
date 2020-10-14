@@ -110,11 +110,7 @@ export default function Dashboard({ state }) {
         title="Recently Listened"
         url="/history"
       />
-      <PodcastSlider
-        state={state}
-        podcasts={recommended.reverse()}
-        classes={classes}
-      />
+      <PodcastSlider state={state} podcasts={recommended} classes={classes} />
     </Container>
   );
 }

@@ -26,6 +26,7 @@ import HistoryIcon from "@material-ui/icons/History";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
 import { Link, useHistory } from "react-router-dom";
 import ucTheme from "../theme";
+import Logo from "./Logo";
 
 const drawerWidth = 240;
 
@@ -141,7 +142,7 @@ export default function UserLayout({ handleCookie, state, children }) {
         })}
       >
         <Toolbar className={classes.toolbar}>
-          <Logo classes={classes} />
+          <Logo />
           <AccountOptions classes={classes} handleCookie={handleCookie} />
         </Toolbar>
       </AppBar>
@@ -188,12 +189,6 @@ export default function UserLayout({ handleCookie, state, children }) {
     </div>
   );
 }
-
-const Logo = ({ classes }) => (
-  <Link className={classes.title} to="/">
-    <img src="/branding/9.svg" alt="ultracast" />
-  </Link>
-);
 
 const ListenerSideBar = ({ classes, open }) => {
   const listenerItems = [
