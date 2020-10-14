@@ -25,6 +25,7 @@ import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
 import HistoryIcon from "@material-ui/icons/History";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
 import { Link, useHistory } from "react-router-dom";
+import ucTheme from "../theme";
 
 const drawerWidth = 240;
 
@@ -50,9 +51,13 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    // TODO for some reason, theme here is the default theme :/
-    // backgroundColor: theme.palette.secondary.main,
-    backgroundColor: "#ffde59",
+    backgroundColor: ucTheme.palette.secondary.main,
+  },
+  icon: {
+    color: ucTheme.palette.secondary.contrastText,
+  },
+  actionIcon: {
+    color: ucTheme.palette.secondary.main,
   },
   menuButton: {
     "&:hover": {
@@ -156,7 +161,7 @@ export default function UserLayout({ handleCookie, state, children }) {
         <CreatorSideBar classes={classes} open={open} />
         <Divider />
         <IconButton
-          color="inherit"
+          color="primary"
           aria-label="open drawer"
           onClick={handleDrawerOpen}
           edge="start"
@@ -167,7 +172,7 @@ export default function UserLayout({ handleCookie, state, children }) {
           <ChevronRightIcon />
         </IconButton>
         <IconButton
-          color="inherit"
+          color="primary"
           aria-label="close drawer"
           onClick={handleDrawerClose}
           edge="start"
@@ -193,27 +198,27 @@ const ListenerSideBar = ({ classes, open }) => {
   const listenerItems = [
     {
       name: "Home",
-      icon: <HomeIcon />,
+      icon: <HomeIcon color="primary" />,
       link: "/",
     },
     {
       name: "Search",
-      icon: <SearchIcon />,
+      icon: <SearchIcon color="primary" />,
       link: "/search",
     },
     {
       name: "Explore",
-      icon: <ExploreIcon />,
+      icon: <ExploreIcon color="primary" />,
       link: "/explore",
     },
     {
       name: "Library",
-      icon: <LibraryMusicIcon />,
+      icon: <LibraryMusicIcon color="primary" />,
       link: "/author/1",
     },
     {
       name: "History",
-      icon: <HistoryIcon />,
+      icon: <HistoryIcon color="primary" />,
       link: "/History",
     },
 
@@ -240,12 +245,12 @@ const CreatorSideBar = ({ classes, open }) => {
   const creatorItems = [
     {
       name: "Upload",
-      icon: <PublishIcon />,
+      icon: <PublishIcon color="primary" />,
       link: "/upload",
     },
     {
       name: "Analytics",
-      icon: <ShowChartIcon />,
+      icon: <ShowChartIcon color="primary" />,
       link: "/analytics",
     },
   ];
@@ -294,7 +299,7 @@ const AccountOptions = ({ classes, handleCookie }) => {
         color="inherit"
       >
         <Avatar className={classes.avatar}>
-          <PersonIcon color="primary" />
+          <PersonIcon className={classes.icon} />
         </Avatar>
       </IconButton>
       <Menu

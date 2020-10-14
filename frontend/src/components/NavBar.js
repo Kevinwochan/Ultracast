@@ -62,6 +62,6 @@ export default function NavBar() {
 
 const Logo = ({ classes }) => (
   <Link className={classes.title} to="/landing">
-    <img src="/branding/10.svg" alt="ultracast" />
+    <img src="/branding/9.svg" alt="ultracast" />
   </Link>
 );

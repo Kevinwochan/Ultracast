@@ -26,38 +26,35 @@ const ultraCastTheme = createMuiTheme({
           "-moz-osx-font-smoothing": "grayscale",
         },
         a: {
-          color: "inherit", /* blue colors for links too */
-          textDecoration: "inherit", /* no underline */
+          color: "inherit" /* blue colors for links too */,
+          textDecoration: "inherit" /* no underline */,
           fontWeight: "bold",
         },
       },
     },
   },
 
-  // https://material.io/resources/color/#!/?view.left=0&view.right=1&primary.color=102b33&secondary.color=FFDE59&secondary.text.color=000000&primary.text.color=ffffff
+  // https://material.io/resources/color/#!/?view.left=0&view.right=1&primary.color=102b33&secondary.color=FAA275
   palette: {
     primary: {
-      light: "#3a545c",
-      main: "#102b33",
-      dark: "#00000c",
+      light: "#478da7",
+      main: "#026078",
+      dark: "#00364c",
       contrastText: "#ffffff",
     },
     secondary: {
-      light: "#ffff8b",
-      main: "#ffde59",
-      dark: "#c9ad24",
+      light: "#ffd4a4",
+      main: "#faa275",
+      dark: "#c47348",
       contrastText: "#000000",
     },
     background: {
-      default: "#f8f8f8",
+      default: "#eeeeee",
     },
   },
-  // TODO: figure out how to make custom variables
-  // navBar: {
-  //   height: 70,
-  // },
+  navBar: {
+    height: 70,
+  },
 });
-
-// third colour: FFDE59
 
 export default ultraCastTheme;

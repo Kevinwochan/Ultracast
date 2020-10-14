@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -15,7 +16,7 @@ import Copyright from "../components/Copyright";
 import axios from "axios";
 import configuration from "../api/configuration";
 import Page from "../common/Page";
-import { useHistory } from "react-router-dom";
+import ucTheme from "../theme";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -26,9 +27,10 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    // TODO for some reason, theme here is the default theme :/
-    // backgroundColor: theme.palette.secondary.main,
-    backgroundColor: "#ffde59",
+    backgroundColor: ucTheme.palette.secondary.main,
+  },
+  lock: {
+    color: ucTheme.palette.secondary.contrastText,
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -80,7 +82,7 @@ export default function SignIn({ handleCookie }) {
     <>
       <Container maxWidth="xs" component="main" className={classes.paper}>
         <Avatar className={classes.avatar}>
-          <LockOutlinedIcon color="primary" />
+          <LockOutlinedIcon className={classes.lock} />
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign in

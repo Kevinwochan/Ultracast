@@ -5,8 +5,9 @@ import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import UserLayout from "../components/UserLayout";
 import Player from "../components/Player";
 import NavBar from "../components/NavBar";
+import ucTheme from "../theme";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     display: "flex",
     width: "100%",
@@ -14,9 +15,8 @@ const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
     overflow: "auto",
-    background: "#eeeeee",
-    minHeight: `calc(100vh - 70px)`,
-    // minHeight: `calc(100vh - ${theme.navBar.height}px)`,
+    background: ucTheme.palette.background.default,
+    minHeight: `calc(100vh - ${ucTheme.navBar.height}px)`,
   },
   contentLoggedIn: {
     marginTop: 70,

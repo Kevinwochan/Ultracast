@@ -15,26 +15,25 @@ import axios from "axios";
 import configuration from "../api/configuration";
 import { useHistory } from "react-router-dom";
 import Page from "../common/Page";
+import ucTheme from "../theme";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: ucTheme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
   avatar: {
-    margin: theme.spacing(1),
-    // TODO for some reason, theme here is the default theme :/
-    // backgroundColor: theme.palette.secondary.main,
-    backgroundColor: "#ffde59",
+    margin: ucTheme.spacing(1),
+    backgroundColor: ucTheme.palette.secondary.main,
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(3),
+    marginTop: ucTheme.spacing(3),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: ucTheme.spacing(3, 0, 2),
   },
 }));
 
@@ -82,7 +81,7 @@ export default function SignUp({ handleCookie }) {
     <>
       <Container maxWidth="xs" component="main" className={classes.paper}>
         <Avatar className={classes.avatar}>
-          <LockOutlinedIcon color="primary" />
+          <LockOutlinedIcon className={classes.lock} />
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign up
