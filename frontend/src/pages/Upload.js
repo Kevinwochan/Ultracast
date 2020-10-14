@@ -13,9 +13,13 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
 import Fade from "@material-ui/core/Fade";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import CheckIcon from "@material-ui/icons/Check";
 import Page from "../common/Page";
 import theme from "../theme";
 import { extractFiles } from "extract-files";
+import axios from "axios";
+import configuration from "../api/configuration";
 
 export default function Upload({ cookies, handleCookie }) {
   const classes = useStyles();
@@ -31,59 +35,61 @@ export default function Upload({ cookies, handleCookie }) {
     title: "",
     description: "",
     isNewPodcast: false,
+    status: 0,
   };
 
   // ! State management should always be done in the top-level component :)
   const [state, setState] = useState(originalState);
 
   useEffect(() => {
-    getPodcastNames();
+    getPodcasts();
   }, []);
 
-  const getPodcastNames = () => {
-    const query = `query getPodcastNames {
-      allPodcastMetadata {
-        edges {
-          node{
-            id
-            name
-            description
-            author {
-              id
+  const getPodcasts = () => {
+    axios
+      .post(
+        configuration.BACKEND_ENDPOINT,
+        JSON.stringify({
+          query: `query($author: ID!) {allPodcastMetadata(author: $author) {
+            edges {
+              node {
+                id
+                name
+                author {
+                  id
+                }
+              }
             }
           }
+        }`,
+          variables: {
+            author: "VXNlcjo1Zjg1OWQ1YzlkNzZjNDcyYWZhZTNlYTI=",
+          },
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
         }
-      }
-    }`;
-
-    fetch("http://localhost:5000/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        query,
-      }),
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        const names = [];
-        for (const item of data.data.allPodcastMetadata.edges) {
-          names.push({
+      )
+      .then((response) => {
+        let podcasts = [];
+        response.data.data.allPodcastMetadata.edges.forEach((item) => {
+          podcasts.push({
             value: item.node.id,
             label: item.node.name,
-            description: item.node.description,
             author: item.node.author.id,
           });
-        }
-
-        names.filter((item) => item.value === "VXNlcjo1ZjgzMGJhZjEzYjIwNmM1NTBjZmM2YWI="); /* TODO: dynamic author*/
-
+        });
         setState((prevState) => ({
           ...prevState,
-          allPodcasts: names,
+          allPodcasts: prevState.allPodcasts.concat(podcasts),
         }));
+        console.log(podcasts);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -95,17 +101,16 @@ export default function Upload({ cookies, handleCookie }) {
     <Page cookies={cookies} handleCookie={handleCookie}>
       <Grid container className={classes.center}>
         <Grid item xs={12} sm={8} lg={6}>
-          {/* <Box my={2}>
-            <Typography variant="h5">
-              <b>Upload your next episode</b>
-            </Typography>
-          </Box> */}
           <Paper>
             <Box p={5} my={3}>
               <Fields state={state} setState={setState} />
             </Box>
           </Paper>
-          <Actions state={state} resetFields={resetFields} />
+          <Actions
+            state={state}
+            resetFields={resetFields}
+            setState={setState}
+          />
         </Grid>
         <Grid item xs={12} sm={4}>
           <Fade in={state.title} timeout={750}>
@@ -214,7 +219,7 @@ const Fields = ({ state, setState }) => {
   };
 
   const handlePodcast = (event) => {
-    const { value } = event.target;
+    const value = event.target.value;
     const podcastItem = allPodcasts.filter((item) => {
       return item.value === value ? true : false;
     });
@@ -283,9 +288,9 @@ const Fields = ({ state, setState }) => {
         onChange={handlePodcast}
         label="Podcast Series"
       >
-        {allPodcasts.map((option) => (
-          <MenuItem key={option.label} value={option.value}>
-            {option.label}
+        {allPodcasts.map((podcast) => (
+          <MenuItem key={podcast.label} value={`${podcast.value}`}>
+            {podcast.label}
           </MenuItem>
         ))}
       </TextField>
@@ -345,10 +350,10 @@ const Fields = ({ state, setState }) => {
 };
 
 // Cancel, submit and upload actions
-const Actions = ({ state, resetFields }) => {
+const Actions = ({ state, resetFields, setState }) => {
   const classes = useStyles();
 
-  const createPodcastMeta = () => {
+  const uploadPodcast = () => {
     const fetchOptions = graphqlFetchOptions({
       query: `
       mutation ($author: ID! $name: String! $description: String) {
@@ -366,75 +371,52 @@ const Actions = ({ state, resetFields }) => {
       `,
       variables: {
         name: state.podcastTitle,
-        author: "VXNlcjo1ZjdlZmU5ZDM4OTVlMmUzNjhlZjU5NjY=" /* TODO: dynamic authors */,
+        author:
+          "VXNlcjo1Zjg1OWQ1YzlkNzZjNDcyYWZhZTNlYTI=" /* TODO: dynamic authors */,
         description: state.podcastDescription,
         /* TODO: add categories and keywords */
       },
     });
-    fetch("http://localhost:5000/graphql", fetchOptions)
+    setState({
+      uploading: true,
+    });
+    fetch(configuration.BACKEND_ENDPOINT, fetchOptions)
       .then((r) => r.json())
       .then((data) => {
         if (data.errors) {
           throw data.errors;
         } else {
-          console.log(`Podcast created ${data.data}`);
+          console.log(`Podcast created`);
+          console.log(data.data);
         }
       });
   };
 
-  const createPodcast = () => {
+  const uploadEpisode = () => {
+    setState((prevState) => ({
+      ...prevState,
+      status: 1
+    }));
     if (state.isNewPodcast) {
-      createPodcastMeta();
+      uploadPodcast();
     }
     const fetchOptions = graphqlFetchOptions({
       query: `mutation ($podcast: ID!, $title: String, $description: String, $audioFile: Upload!) {
         createPodcastEpisode(input: {audio: $audioFile, description: $description, name: $title,  podcastMetadataId: $podcast}) {
-          podcastEpisode {
-            id
-          }
-        }
-      }`,
-      variables: {
-        // podcast: state.podcast.value,
-        podcast: "5f7d756d73f1b06154752d26",
-        title: state.title,
-        description: state.description,
-        audioFile: state.audioFile,
-      },
-    });
-    fetch("http://localhost:5000/graphql", fetchOptions)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.errors) {
-          throw data.errors;
-        } else {
-          console.log(
-            `Episode added to ${data.data.createPodcastEpisode.podcastMetadata.name}`
-          );
-        }
-      });
-  };
-
-  const deletePodcast = () => {
-    /* TODO: implement this
-    requires selecting an existing podcast that the author owns
-    const fetchOptions = graphqlFetchOptions({
-      query: `mutation createPodcast($podcast: ID! $title: String $description: String $audioFile: Upload!) {
-        createPodcastEpisode(podcastMetadataId: $podcast name: $title description: $description audio: $audioFile) {
           podcastMetadata {
+            id
             name
           }
         }
       }`,
       variables: {
         podcast: state.podcast.value,
-        // podcast: "5f7d756d73f1b06154752d26",
         title: state.title,
         description: state.description,
         audioFile: state.audioFile,
       },
     });
-    fetch("http://localhost:5000/graphql", fetchOptions)
+    fetch(configuration.BACKEND_ENDPOINT, fetchOptions)
       .then((r) => r.json())
       .then((data) => {
         if (data.errors) {
@@ -443,51 +425,72 @@ const Actions = ({ state, resetFields }) => {
           console.log(
             `Episode added to ${data.data.createPodcastEpisode.podcastMetadata.name}`
           );
+          console.log(data);
+          setState((prevState) => ({
+            ...prevState,
+            status: 2
+          }));
         }
-      });*/
+      });
   };
 
-  return (
-    <Grid container spacing={3}>
-      <Grid item lg className={classes.center}>
-        <Button
-          color="primary"
-          variant="contained"
-          startIcon={<DeleteIcon />}
-          onClick={deletePodcast}
-        >
-          <Typography variant="button">Delete</Typography>
+  const deletePodcast = () => {
+    /* TODO: implement this
+     */
+  };
+
+  switch (state.status) {
+    case 1:
+      return <CircularProgress />;
+    case 2:
+      return (
+        <Button color="secondary" variant="contained" endIcon={<CheckIcon />}>
+          SUCCESS
         </Button>
-      </Grid>
-      <Grid item lg className={classes.center}>
-        <Button
-          color="primary"
-          variant="contained"
-          startIcon={<CancelIcon />}
-          onClick={resetFields}
-        >
-          <Typography variant="button">Cancel</Typography>
-        </Button>
-      </Grid>
-      <Grid item lg className={classes.center}>
-        <Button
-          color="primary"
-          variant="contained"
-          startIcon={<CloudUploadIcon />}
-          onClick={createPodcast}
-        >
-          <Typography variant="button">Upload</Typography>
-        </Button>
-      </Grid>
-    </Grid>
-  );
+      );
+    default:
+      return (
+        <Grid container spacing={3}>
+          <Grid item lg className={classes.center}>
+            <Button
+              color="primary"
+              variant="contained"
+              startIcon={<DeleteIcon />}
+              onClick={deletePodcast}
+            >
+              <Typography variant="button">Delete</Typography>
+            </Button>
+          </Grid>
+          <Grid item lg className={classes.center}>
+            <Button
+              color="primary"
+              variant="contained"
+              startIcon={<CancelIcon />}
+              onClick={resetFields}
+            >
+              <Typography variant="button">Cancel</Typography>
+            </Button>
+          </Grid>
+          <Grid item lg className={classes.center}>
+            <Button
+              color="primary"
+              variant="contained"
+              startIcon={<CloudUploadIcon />}
+              onClick={uploadEpisode}
+            >
+              <Typography variant="button">Upload</Typography>
+            </Button>
+          </Grid>
+        </Grid>
+      );
+  }
 };
 
 // Taken from:
 // https://github.com/jaydenseric/graphql-react/blob/1b1234de5de46b7a0029903a1446dcc061f37d09/src/universal/graphqlFetchOptions.mjs
 function graphqlFetchOptions(operation) {
   const fetchOptions = {
-    url: "http://localhost:5000/graphql",
+    url: configuration.BACKEND_ENDPOINT,
     method: "POST",
     headers: { Accept: "application/json" },
   };
