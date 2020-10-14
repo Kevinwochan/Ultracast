@@ -69,13 +69,14 @@ const useStyles = makeStyles((theme) => ({
   },
   drawer: {
     marginTop: 70,
-    background: theme.palette.primary.main,
+    background: ucTheme.palette.background.dark,
     width: drawerWidth,
     flexShrink: 0,
     whiteSpace: "nowrap",
   },
   drawerOpen: {
     marginTop: 70,
+    background: ucTheme.palette.background.dark,
     width: drawerWidth,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
@@ -84,6 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerClose: {
     marginTop: 70,
+    background: ucTheme.palette.background.dark,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -161,7 +163,6 @@ export default function UserLayout({ handleCookie, state, children }) {
         <CreatorSideBar classes={classes} open={open} />
         <Divider />
         <IconButton
-          color="primary"
           aria-label="open drawer"
           onClick={handleDrawerOpen}
           edge="start"
@@ -198,27 +199,27 @@ const ListenerSideBar = ({ classes, open }) => {
   const listenerItems = [
     {
       name: "Home",
-      icon: <HomeIcon color="primary" />,
+      icon: <HomeIcon />,
       link: "/",
     },
     {
       name: "Search",
-      icon: <SearchIcon color="primary" />,
+      icon: <SearchIcon />,
       link: "/search",
     },
     {
       name: "Explore",
-      icon: <ExploreIcon color="primary" />,
+      icon: <ExploreIcon />,
       link: "/explore",
     },
     {
       name: "Library",
-      icon: <LibraryMusicIcon color="primary" />,
+      icon: <LibraryMusicIcon />,
       link: "/author/1",
     },
     {
       name: "History",
-      icon: <HistoryIcon color="primary" />,
+      icon: <HistoryIcon />,
       link: "/History",
     },
 
@@ -245,12 +246,12 @@ const CreatorSideBar = ({ classes, open }) => {
   const creatorItems = [
     {
       name: "Upload",
-      icon: <PublishIcon color="primary" />,
+      icon: <PublishIcon />,
       link: "/upload",
     },
     {
       name: "Analytics",
-      icon: <ShowChartIcon color="primary" />,
+      icon: <ShowChartIcon />,
       link: "/analytics",
     },
   ];

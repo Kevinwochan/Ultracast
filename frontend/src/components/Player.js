@@ -3,16 +3,19 @@ import ReactJkMusicPlayer from "react-jinke-music-player";
 import "react-jinke-music-player/assets/index.css";
 import "./player.css"; // "Override" the default jinke-music-player styles
 
-export default function Player() {
+export default function Player({ state }) {
+  const [sessionState, updateState] = state;
+  const mode = sessionState.audioList ? "full" : "";
+
   const options = {
     theme: "light",
     defaultPosition: { bottom: 0, left: 0 },
-    mode: "full",
+    mode: mode,
     glassBg: false,
     drag: false,
     seeked: true,
     toggleMode: false,
-    autoPlay: false,
+    autoPlay: true,
     clearPriorAudioLists: false,
     autoplayInitLoadPlayList: false,
     showMiniProcessBar: false,
@@ -29,9 +32,10 @@ export default function Player() {
     remove: true,
     remember: false,
     spaceBar: true,
-    responsive: true,
+    responsive: false,
     autoHiddenCover: false,
     quietUpdate: false,
+    audioLists: sessionState.audioList,
   };
 
   return <ReactJkMusicPlayer {...options} />;

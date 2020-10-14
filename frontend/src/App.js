@@ -42,7 +42,7 @@ export default function App() {
   const [cookies, setCookie, removeCookie] = useCookies();
   const [sessionState, setState] = useState({
     open: false,
-    isPlaying: false,
+    audioList: [],
     cookies: cookies,
   });
 
@@ -126,7 +126,7 @@ export default function App() {
         <Route path="/">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
-              <Dashboard />
+              <Dashboard state={state} />
             </Page>
           </PrivateRoute>
         </Route>

@@ -30,6 +30,7 @@ export default function Page({ state, handleCookie, player, children }) {
   const cookies = sessionState.cookies;
 
   // Show the player if we're playing something, or if the player prop has been passed.
+  // TODO need to have a longer think about this functionality
   const showPlayer = sessionState.isPlaying || player;
 
   return (

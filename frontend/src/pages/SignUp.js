@@ -26,7 +26,10 @@ const useStyles = makeStyles(() => ({
   },
   avatar: {
     margin: ucTheme.spacing(1),
-    backgroundColor: ucTheme.palette.secondary.main,
+    backgroundColor: ucTheme.palette.primary.main,
+  },
+  lock: {
+    color: ucTheme.palette.primary.contrastText,
   },
   form: {
     width: "100%", // Fix IE 11 issue.

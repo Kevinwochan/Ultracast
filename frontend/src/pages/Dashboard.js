@@ -1,145 +1,173 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
+import Box from "@material-ui/core/Box";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import Hero from "../components/Hero";
-import FeaturedPost from "../components/FeaturedPodcasts";
+import { addAudio } from "../helpers/audioControls";
+import { Link } from "react-router-dom";
 
-const recentlyPlayed = [
+// ! Faked data
+const recommended = [
   {
     title: "73 Questions with Oliver",
-    date: "Nov 12",
-    description: "73 Questions Answered By Your Favorite Celebs...",
+    author: "Oli Oligopoly",
     image: "https://source.unsplash.com/random",
     imageText: "Image Text",
-    page: "/podcast/1",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
   },
   {
-    title: "The Politics of Pandemic Relief",
-    date: "Nov 12",
-    description: "In March, Congress pushed through a relief package ...",
+    title: "120 Questions with Dan",
+    author: "Dan",
     image: "https://source.unsplash.com/random",
     imageText: "Image Text",
-    page: "/podcast/1",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+  },
+  {
+    title: "68.5 Questions with Connor",
+    author: "Connor O'Shea",
+    image: "https://source.unsplash.com/random",
+    imageText: "Image Text",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+  },
+  {
+    title: "12 Questions with Peter",
+    author: "Peter",
+    image: "https://source.unsplash.com/random",
+    imageText: "Image Text",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+  },
+  {
+    title: "3 Questions with Kevin",
+    author: "Kevin",
+    image: "https://source.unsplash.com/random",
+    imageText: "Image Text",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+  },
+  {
+    title: "50 Questions with Tatjana",
+    author: "Tatjana",
+    image: "https://source.unsplash.com/random",
+    imageText: "Image Text",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
   },
   {
     title: "The Politics of Pandemic Relief",
-    date: "Nov 12",
-    description: "In March, Congress pushed through a relief package ...",
+    author: "Kevin Chan",
     image: "https://source.unsplash.com/random",
     imageText: "Image Text",
-    page: "/podcast/1",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  },
-  {
-    title: "The Politics of Pandemic Relief",
-    date: "Nov 12",
-    description: "In March, Congress pushed through a relief package ...",
-    image: "https://source.unsplash.com/random",
-    imageText: "Image Text",
-    page: "/podcast/1",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  },
-  {
-    title: "The Politics of Pandemic Relief",
-    date: "Nov 12",
-    description: "In March, Congress pushed through a relief package ...",
-    image: "https://source.unsplash.com/random",
-    imageText: "Image Text",
-    page: "/podcast/1",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
   },
 ];
 
-const forYou = [];
-
 const useStyles = makeStyles((theme) => ({
-  root: {
+  titleBar: {
     display: "flex",
-  },
-  toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
-  },
-  toolbarIcon: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: "0 8px",
-    ...theme.mixins.toolbar,
-  },
-  menuButton: {
-    marginRight: 36,
-  },
-  menuButtonHidden: {
-    display: "none",
-  },
-  title: {
-    flexGrow: 1,
-  },
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    overflow: "auto",
-  },
-  container: {},
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-  },
-  fixedHeight: {
-    height: 240,
+    justifyContent: "space-between",
+    alignItems: "flex-end",
   },
   cardGrid: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
   },
-  card: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
+  podcastContainer: {
+    flexWrap: "nowrap",
+    overflow: "scroll",
   },
-  cardMedia: {
-    paddingTop: "56.25%", // 16:9
+  podcast: {
+    cursor: "pointer",
   },
-  cardContent: {
-    flexGrow: 1,
+  podcastCover: {
+    paddingTop: "100%",
+  },
+  podcastDetailsContainer: {
+    padding: "10px 0px",
+  },
+  podcastDetails: {
+    display: "block",
+    whiteSpace: "nowrap",
+    width: "12em",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
 }));
 
-export default function Dashboard() {
+export default function Dashboard({ state }) {
   const classes = useStyles();
 
   return (
     <Container className={classes.cardGrid} maxWidth="lg">
-      <Typography gutterBottom variant="h5">
-        Recently Played
-      </Typography>
-      <Grid container spacing={4}>
-        {recentlyPlayed.map((card) => (
-          <Grid item key={card} xs={12} sm={6} md={2}>
-            <Card className={classes.card}>
-              <CardMedia
-                className={classes.cardMedia}
-                image={card.image}
-                title={card.imageText}
-              />
-              <CardContent className={classes.cardContent}>
-                <Typography variant="body1">{card.title}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      <PodcastSliderTitle
+        classes={classes}
+        title="Recommended Podcasts"
+        url="/"
+      />
+      <PodcastSlider state={state} podcasts={recommended} classes={classes} />
+      <PodcastSliderTitle
+        classes={classes}
+        title="Recently Listened"
+        url="/history"
+      />
+      <PodcastSlider
+        state={state}
+        podcasts={recommended.reverse()}
+        classes={classes}
+      />
     </Container>
   );
 }
+
+const PodcastSliderTitle = ({ classes, title, url }) => (
+  <Box className={classes.titleBar} m={2}>
+    <Typography gutterBottom variant="h5">
+      <b>{title}</b>
+    </Typography>
+    <Typography gutterBottom variant="subtitle1">
+      <Link to={url}>See all</Link>
+    </Typography>
+  </Box>
+);
+
+const PodcastSlider = ({ state, podcasts, classes }) => (
+  <Grid container spacing={4} className={classes.podcastContainer}>
+    {podcasts.map((podcast) => (
+      <Grid item key={podcast.title} lg={2} className={classes.podcast}>
+        <LargePodcast state={state} podcast={podcast} classes={classes} />
+      </Grid>
+    ))}
+  </Grid>
+);
+
+const LargePodcast = ({ state, podcast, classes }) => {
+  //! ensures we get (more or less) different images
+  const getRandomNumber = () => {
+    return Math.floor(Math.random() * 1000);
+  };
+
+  return (
+    <>
+      <CardMedia
+        className={classes.podcastCover}
+        image={podcast.image + `?sig=${getRandomNumber()}`}
+        title={podcast.imageText}
+        onClick={() => {
+          addAudio(state, {
+            name: podcast.title,
+            musicSrc: podcast.url,
+            cover: podcast.image,
+          });
+        }}
+      />
+      <CardContent className={classes.podcastDetailsContainer}>
+        <Typography variant="subtitle2" className={classes.podcastDetails}>
+          <b>{podcast.title}</b>
+        </Typography>
+        <Typography variant="caption" className={classes.podcastDetails}>
+          {podcast.author}
+        </Typography>
+      </CardContent>
+    </>
+  );
+};

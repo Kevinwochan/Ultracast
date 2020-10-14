@@ -34,7 +34,7 @@ const ultraCastTheme = createMuiTheme({
     },
   },
 
-  // https://material.io/resources/color/#!/?view.left=0&view.right=1&primary.color=102b33&secondary.color=FAA275
+  // https://material.io/resources/color/#!/?view.left=1&view.right=1&primary.color=026078&secondary.color=f2f2f2
   palette: {
     primary: {
       light: "#478da7",
@@ -43,13 +43,14 @@ const ultraCastTheme = createMuiTheme({
       contrastText: "#ffffff",
     },
     secondary: {
-      light: "#ffd4a4",
-      main: "#faa275",
-      dark: "#c47348",
+      light: "#ffffff",
+      main: "#f2f2f2",
+      dark: "#bfbfbf",
       contrastText: "#000000",
     },
     background: {
-      default: "#eeeeee",
+      default: "#ffffff",
+      dark: "#f2f2f2",
     },
   },
   navBar: {
