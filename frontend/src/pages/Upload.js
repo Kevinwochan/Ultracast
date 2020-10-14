@@ -86,6 +86,7 @@ export default function Upload({ cookies, handleCookie }) {
           ...prevState,
           allPodcasts: prevState.allPodcasts.concat(podcasts),
         }));
+        console.log("fetched podcasts");
         console.log(podcasts);
       })
       .catch((err) => {
@@ -365,6 +366,7 @@ const Actions = ({ state, resetFields, setState }) => {
           success
           podcastMetadata {
             id
+            name
           }
         }
       }
@@ -377,9 +379,6 @@ const Actions = ({ state, resetFields, setState }) => {
         /* TODO: add categories and keywords */
       },
     });
-    setState({
-      uploading: true,
-    });
     fetch(configuration.BACKEND_ENDPOINT, fetchOptions)
       .then((r) => r.json())
       .then((data) => {
@@ -387,7 +386,39 @@ const Actions = ({ state, resetFields, setState }) => {
           throw data.errors;
         } else {
           console.log(`Podcast created`);
-          console.log(data.data);
+
+          const fetchOptions = graphqlFetchOptions({
+            query: `mutation ($podcast: ID!, $title: String, $description: String, $audioFile: Upload!) {
+              createPodcastEpisode(input: {audio: $audioFile, description: $description, name: $title,  podcastMetadataId: $podcast}) {
+                podcastMetadata {
+                  id
+                  name
+                }
+              }
+            }`,
+            variables: {
+              podcast: data.data.createPodcastMetadata.podcastMetadata.id,
+              title: state.title,
+              description: state.description,
+              audioFile: state.audioFile,
+            },
+          });
+          fetch(configuration.BACKEND_ENDPOINT, fetchOptions)
+            .then((r) => r.json())
+            .then((data) => {
+              if (data.errors) {
+                throw data.errors;
+              } else {
+                console.log(
+                  `Episode added to ${data.data.createPodcastEpisode.podcastMetadata.name}`
+                );
+                console.log(data);
+                setState((prevState) => ({
+                  ...prevState,
+                  status: 2,
+                }));
+              }
+            });
         }
       });
   };
@@ -395,43 +426,44 @@ const Actions = ({ state, resetFields, setState }) => {
   const uploadEpisode = () => {
     setState((prevState) => ({
       ...prevState,
-      status: 1
+      status: 1,
     }));
     if (state.isNewPodcast) {
       uploadPodcast();
-    }
-    const fetchOptions = graphqlFetchOptions({
-      query: `mutation ($podcast: ID!, $title: String, $description: String, $audioFile: Upload!) {
-        createPodcastEpisode(input: {audio: $audioFile, description: $description, name: $title,  podcastMetadataId: $podcast}) {
-          podcastMetadata {
-            id
-            name
+    } else {
+      const fetchOptions = graphqlFetchOptions({
+        query: `mutation ($podcast: ID!, $title: String, $description: String, $audioFile: Upload!) {
+          createPodcastEpisode(input: {audio: $audioFile, description: $description, name: $title,  podcastMetadataId: $podcast}) {
+            podcastMetadata {
+              id
+              name
+            }
           }
-        }
-      }`,
-      variables: {
-        podcast: state.podcast.value,
-        title: state.title,
-        description: state.description,
-        audioFile: state.audioFile,
-      },
-    });
-    fetch(configuration.BACKEND_ENDPOINT, fetchOptions)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.errors) {
-          throw data.errors;
-        } else {
-          console.log(
-            `Episode added to ${data.data.createPodcastEpisode.podcastMetadata.name}`
-          );
-          console.log(data);
-          setState((prevState) => ({
-            ...prevState,
-            status: 2
-          }));
-        }
+        }`,
+        variables: {
+          podcast: state.podcast.value,
+          title: state.title,
+          description: state.description,
+          audioFile: state.audioFile,
+        },
       });
+      fetch(configuration.BACKEND_ENDPOINT, fetchOptions)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.errors) {
+            throw data.errors;
+          } else {
+            console.log(
+              `Episode added to ${data.data.createPodcastEpisode.podcastMetadata.name}`
+            );
+            console.log(data);
+            setState((prevState) => ({
+              ...prevState,
+              status: 2,
+            }));
+          }
+        });
+    }
   };
 
   const deletePodcast = () => {
