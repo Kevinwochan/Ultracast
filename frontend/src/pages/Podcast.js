@@ -29,16 +29,16 @@ const episodes = [
     podcast: { id: 1, title: "Oli's True Crime Series" },
   },
   {
-    title: "Episode 2",
+    title: "Episode 2: Dead Man's Chest",
     description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
+      "Captain Jack Sparrow seeks the heart of Davy Jones, a mythical pirate, in order to avoid being enslaved to him. However, others, including his friends Will and Elizabeth, want it for their own gain.",
     image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
+    author: { name: "Oliver Productions", id: 1},
+    podcast: { id: 1, title: "Oli's True Crime Series"},
   },
   {
-    title: "Episode 3",
+    title: "Episode 3: A Locked Door",
     description:
       "This is a wider card with supporting text below as a natural lead-in to additional content.",
     image: "https://source.unsplash.com/random",

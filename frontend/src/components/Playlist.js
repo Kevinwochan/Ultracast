@@ -29,44 +29,29 @@ const PlayerStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
   },
   loopIcon: {
-    color: "#3f51b5",
-    "&.selected": {
-      color: "#0921a9",
-    },
+    color: theme.palette.primary.light,
     "&:hover": {
-      color: "#7986cb",
+      color: theme.palette.primary.dark,
     },
     [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },
-  playIcon: {
-    color: "#f50057",
-    "&:hover": {
-      color: "#ff4081",
-    },
-  },
   volumeIcon: {
-    color: "rgba(0, 0, 0, 0.54)",
-  },
-  volumeSlider: {
-    color: "black",
-  },
-  progressTime: {
-    color: "rgba(0, 0, 0, 0.54)",
-  },
-  mainSlider: {
-    color: "#3f51b5",
-    "& .MuiSlider-rail": {
-      color: "#7986cb",
-    },
-    "& .MuiSlider-track": {
-      color: "#3f51b5",
-    },
-    "& .MuiSlider-thumb": {
-      color: "#303f9f",
+    color: theme.palette.primary.light,
+    "&:hover": {
+      color: theme.palette.primary.dark,
     },
   },
+  playIcon: {
+    color: theme.palette.primary.light,
+    "&:hover": {
+      color: theme.palette.primary.dark,
+    },
+  },
+  mainSlider:{
+    color: theme.palette.primary.light,
+  }
 }));
 
 export default function Playlist({ episodes }) {
