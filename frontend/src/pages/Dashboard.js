@@ -30,6 +30,33 @@ const recentlyPlayed = [
     page: "/podcast/1",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
   },
+  {
+    title: "The Politics of Pandemic Relief",
+    date: "Nov 12",
+    description: "In March, Congress pushed through a relief package ...",
+    image: "https://source.unsplash.com/random",
+    imageText: "Image Text",
+    page: "/podcast/1",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+  },
+  {
+    title: "The Politics of Pandemic Relief",
+    date: "Nov 12",
+    description: "In March, Congress pushed through a relief package ...",
+    image: "https://source.unsplash.com/random",
+    imageText: "Image Text",
+    page: "/podcast/1",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+  },
+  {
+    title: "The Politics of Pandemic Relief",
+    date: "Nov 12",
+    description: "In March, Congress pushed through a relief package ...",
+    image: "https://source.unsplash.com/random",
+    imageText: "Image Text",
+    page: "/podcast/1",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+  },
 ];
 
 const forYou = [];
@@ -72,17 +99,9 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
-
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
-  },
-  heroButtons: {
-    marginTop: theme.spacing(4),
-  },
   cardGrid: {
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
   },
   card: {
     height: "100%",
@@ -97,8 +116,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const cards = [1, 2, 3, 4, 5, 6];
-
 export default function Dashboard() {
   const classes = useStyles();
 
@@ -108,31 +125,17 @@ export default function Dashboard() {
         Recently Played
       </Typography>
       <Grid container spacing={4}>
-        {recentlyPlayed.map((post) => (
-          <FeaturedPost key={post.title} post={post} />
-        ))}
-      </Grid>
-
-      <Grid container spacing={4}>
-        {cards.map((card, index) => (
-          <Grid item key={card} xs={12} sm={6} md={4}>
+        {recentlyPlayed.map((card) => (
+          <Grid item key={card} xs={12} sm={6} md={2}>
             <Card className={classes.card}>
               <CardMedia
                 className={classes.cardMedia}
-                image="https://source.unsplash.com/random"
-                title="Image title"
+                image={card.image}
+                title={card.imageText}
               />
               <CardContent className={classes.cardContent}>
-                <Typography gutterBottom variant="h5" component="h2">
-                  Podcast {index}
-                </Typography>
-                <Typography>Exciting podcast content coming soon</Typography>
+                <Typography variant="body1">{card.title}</Typography>
               </CardContent>
-              <CardActions>
-                <Button size="small" color="primary">
-                  View podcast
-                </Button>
-              </CardActions>
             </Card>
           </Grid>
         ))}

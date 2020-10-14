@@ -17,16 +17,20 @@ const useStyles = makeStyles(() => ({
     overflow: "auto",
     background: ucTheme.palette.background.default,
     minHeight: `calc(100vh - ${ucTheme.navBar.height}px)`,
+    marginBottom: ucTheme.player.height,
   },
   contentLoggedIn: {
     marginTop: 70,
   },
 }));
 
-export default function Page({ state, handleCookie, children }) {
+export default function Page({ state, handleCookie, player, children }) {
   const classes = useStyles();
   const [sessionState, updateState] = state;
   const cookies = sessionState.cookies;
+
+  // Show the player if we're playing something, or if the player prop has been passed.
+  const showPlayer = sessionState.isPlaying || player;
 
   return (
     <ThemeProvider theme={theme}>
@@ -42,7 +46,7 @@ export default function Page({ state, handleCookie, children }) {
               </main>
             </div>
           </UserLayout>
-          <Player state={state} />
+          {showPlayer ? <Player state={state} /> : null}
         </>
       ) : (
         <>

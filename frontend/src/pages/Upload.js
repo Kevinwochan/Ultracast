@@ -94,7 +94,7 @@ export default function Upload() {
   };
 
   return (
-    <Grid container className={classes.center}>
+    <Grid container className={`${classes.center} ${classes.container}`}>
       <Grid item xs={12} sm={8} lg={6}>
         <Paper>
           <Box p={5} my={3}>
@@ -121,6 +121,10 @@ export default function Upload() {
 }
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+  },
   fields: {
     display: "flex",
     flexDirection: "column",

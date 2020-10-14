@@ -42,6 +42,7 @@ export default function App() {
   const [cookies, setCookie, removeCookie] = useCookies();
   const [sessionState, setState] = useState({
     open: false,
+    isPlaying: false,
     cookies: cookies,
   });
 
@@ -96,21 +97,21 @@ export default function App() {
         </Route>
         <Route path="/podcast">
           <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state}>
+            <Page handleCookie={handleCookie} state={state} player>
               <Podcast />
             </Page>
           </PrivateRoute>
         </Route>
         <Route path="/history">
           <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state}>
+            <Page handleCookie={handleCookie} state={state} player>
               <History />
             </Page>
           </PrivateRoute>
         </Route>
         <Route path="/author">
           <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state}>
+            <Page handleCookie={handleCookie} state={state} player>
               <Author />
             </Page>
           </PrivateRoute>
@@ -124,7 +125,7 @@ export default function App() {
         </Route>
         <Route path="/">
           <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state}>
+            <Page handleCookie={handleCookie} state={state} player>
               <Dashboard />
             </Page>
           </PrivateRoute>

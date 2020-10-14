@@ -55,6 +55,9 @@ const ultraCastTheme = createMuiTheme({
   navBar: {
     height: 70,
   },
+  player: {
+    height: 80,
+  },
 });
 
 export default ultraCastTheme;
