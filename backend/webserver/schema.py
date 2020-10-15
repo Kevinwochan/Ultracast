@@ -1,32 +1,22 @@
+'''
+Schema for making GraphQL queries and mutations
+'''
+from . import models
+from . import mutations
+from . import query
+
 import graphene
+import graphql
 from graphene.relay import Node
 from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
-import models
+import graphene_file_upload
+import graphene_file_upload.scalars
 
-'''
-Don't put embedded documents as classes here. It seems to break graphene somehow
-'''
+schema = graphene.Schema(query=query.Query, mutation=mutations.Mutations, 
+        types=query.types)
 
-class PodcastEpisode(MongoengineObjectType):
-    class Meta:
-        model = models.PodcastEpisode
-        interfaces = (Node,)
+def saveSchema(path: str):
+    with open(path, "w") as fp:
+        schema_str = graphql.utils.schema_printer.print_schema(schema)
+        fp.write(schema_str)
 
-class PodcastMetadata(MongoengineObjectType):
-    class Meta:
-        model = models.PodcastMetadata
-        interfaces = (Node,)
-
-class User(MongoengineObjectType):
-    class Meta:
-        model = models.User
-        interfaces = (Node,)
-
-class Query(graphene.ObjectType):
-    node = Node.Field()
-    all_podcast_episode = MongoengineConnectionField(PodcastEpisode)
-    all_podcast_metadata = MongoengineConnectionField(PodcastMetadata)
-    all_user = MongoengineConnectionField(User)
-
-#schema = graphene.Schema(query=Query, types=[PodcastEpisode, PodcastMetadata, PodcastEpisodeMetadata, User])
-schema = graphene.Schema(query=Query, types=[PodcastEpisode, PodcastMetadata, User])
