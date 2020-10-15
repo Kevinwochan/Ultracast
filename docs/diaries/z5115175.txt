@@ -20,4 +20,12 @@ Over the weekend, Connor made user stories, and during the meeting on Tuesday, w
 
 Week 3
 
-This week, our team finished off the proposal assignment. On Thursday, we assigned roles for our first sprint. The sprint focused on setting up the system architecture (i.e. the Flask application, MonogDB database and React frontend). Furthermore, we wanted to create CRUD operations for podcasts. I wanted to learn GraphQL so I was tasked with setting up the API for it on the frontend side. By next week, I hope to have the GraphQL API finished. 
+This week, our team finished off the proposal assignment. On Thursday, we assigned roles for our first sprint. The sprint focused on setting up the system architecture (i.e. the Flask application, MonogDB database and React frontend). Furthermore, we wanted to create CRUD operations for podcasts. I wanted to learn GraphQL so I was tasked with setting up the API for it on the frontend side. By next week, I hope to have the GraphQL API finished.
+
+Week 4
+
+This week, we setup our application architecture and GraphQL API. We managed to get podcast uploading working, although it toook longer than expected due to everyone in the group being new to GraphQL. I also worked on a couple of the Frontend pages, including the upload functionality and preview. By next week, I hope to have completed the dashboard and audio player.
+
+Week 5
+
+This sprint, I completed the dashboard and audio player functionality. I also managed to get Canva Pro (via GitHub Student) so that I could download our branding as SVGs. I updated the website with the new branding (and softer colours) and it looks a lot better! Next week, I hope to have completed more operations for the podcast, as well as improve the 'recent podcast' page.
