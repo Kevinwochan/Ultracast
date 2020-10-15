@@ -20,8 +20,6 @@ class CheckLinkValidThread(threading.Thread):
         # print(f"Checking link: {url}")
         try:
             res = requests.head(url, timeout=10)
-            if res.ok:
-                return True
+            return res.status_code == 200
         except:
             return False
-        return False
