@@ -17,4 +17,3 @@ ssh root@139.59.227.230 << EOF
 EOF
 source env/bin/activate
 python -m remote_db.generate_mongo_data
- 
