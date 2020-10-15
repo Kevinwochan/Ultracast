@@ -36,8 +36,8 @@ class PodcastMetadata(mongoengine.Document):
     keywords = mongofields.ListField(mongofields.StringField())
 
 class ListenHistoryEntry(mongoengine.EmbeddedDocument):
-    episode_metadata = mongofields.ReferenceField(
-            'PodcastEpisodeMetadata', required=True)
+    episode = mongofields.ReferenceField(
+            'PodcastEpisode', required=True)
     listen_time = mongofields.DateTimeField(default=datetime.datetime.now)
 
 class User(mongoengine.Document):

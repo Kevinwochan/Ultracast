@@ -244,6 +244,29 @@ class CreateUser(ClientIDMutation):
         success = True
         return CreateUser(success=success, user=new_user)
 
+class MarkedPodcastListened(ClientIDMutation):
+    '''
+    Mark a podcast as listened to by the user
+    Not sure if we want to grab the user from the JWT
+    Or pass it in as an input @Dan @Kevin
+    '''
+    success = graphene.Boolean()
+    user = graphene.Field(query.User)
+
+    class Input:
+        user_id = graphene.ID(required=True)
+        podcast_episode_id = graphene.ID(required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, user_id, podcast_episode_id):
+        user = get_node_from_global_id(info, user_id, only_type=query.User)
+        episode = get_node_from_global_id(info, podcast_episode_id, only_type=query.PodcastEpisode)
+        listen_entry = models.ListenHistoryEntry(episode=episode)
+        user.listen_history.append(listen_entry)
+        user.save()
+        return MarkedPodcastListened(success=True, user=user)
+
+
 class Mutations(graphene.ObjectType):
     '''
     Podcast mutations
@@ -258,5 +281,9 @@ class Mutations(graphene.ObjectType):
     User mutations
     '''
     create_user = CreateUser.Field()
+    '''
+    Business Logic mutations
+    '''
+    mark_podcast_listened = MarkedPodcastListened.Field()
 
 middleware = []
