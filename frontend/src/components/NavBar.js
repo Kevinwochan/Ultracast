@@ -5,6 +5,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import Logo from "./Logo";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,11 +33,7 @@ export default function NavBar() {
   const navBarItems = [
     {
       name: "Popular",
-      link: "/popular",
-    },
-    {
-      name: "Trending",
-      link: "/trending",
+      link: "/landing",
     },
     {
       name: "Sign Up",
@@ -51,7 +48,7 @@ export default function NavBar() {
   return (
     <AppBar position="static">
       <Toolbar className={classes.toolbar}>
-        <Logo classes={classes} />
+        <Logo />
         {navBarItems.map((item) => (
           <Link to={item.link} className={classes.link} key={item.link}>
             <ListItem button key={item.name}>
@@ -63,9 +60,3 @@ export default function NavBar() {
     </AppBar>
   );
 }
-
-const Logo = ({ classes }) => (
-  <Link className={classes.title} to="/">
-    <img src="/branding/10.svg" alt="ultracast" />
-  </Link>
-);

@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import AudioPlayer from "material-ui-audio-player";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
@@ -11,7 +12,8 @@ const useStyles = makeStyles((theme) => ({
   },
   card:{
     background: "white",
-    padding: theme.spacing(3),
+    padding: theme.spacing(2),
+    margin: theme.spacing(3),
   },
   order:{
     margin: "auto",
@@ -24,49 +26,33 @@ const PlayerStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       width: "100%",
     },
+    marginTop: theme.spacing(4),
   },
   loopIcon: {
-    color: "#3f51b5",
-    "&.selected": {
-      color: "#0921a9",
-    },
+    color: theme.palette.primary.light,
     "&:hover": {
-      color: "#7986cb",
+      color: theme.palette.primary.dark,
     },
     [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },
-  playIcon: {
-    color: "#f50057",
-    "&:hover": {
-      color: "#ff4081",
-    },
-  },
   volumeIcon: {
-    color: "rgba(0, 0, 0, 0.54)",
-  },
-  volumeSlider: {
-    color: "black",
-  },
-  progressTime: {
-    color: "rgba(0, 0, 0, 0.54)",
-  },
-  mainSlider: {
-    color: "#3f51b5",
-    "& .MuiSlider-rail": {
-      color: "#7986cb",
-    },
-    "& .MuiSlider-track": {
-      color: "#3f51b5",
-    },
-    "& .MuiSlider-thumb": {
-      color: "#303f9f",
+    color: theme.palette.primary.light,
+    "&:hover": {
+      color: theme.palette.primary.dark,
     },
   },
+  playIcon: {
+    color: theme.palette.primary.light,
+    "&:hover": {
+      color: theme.palette.primary.dark,
+    },
+  },
+  mainSlider:{
+    color: theme.palette.primary.light,
+  }
 }));
-
-const cards = [1, 2, 3, 4, 5, 6];
 
 export default function Playlist({ episodes }) {
   const classes = useStyles();
@@ -93,15 +79,18 @@ export default function Playlist({ episodes }) {
                     className={classes.podcastCover}
                   ></img>
                 </Grid>
-                <Grid item lg={8} container direction="column">
+                <Grid item lg={10} container direction="column">
                   <Grid item spacing={1}>
                     <Typography gutterBottom variant="subtitle1">
                       <Grid container>
-                        <Grid item xs>
-                          {episode.podcast}: {episode.title}
+                        <Grid item md>
+                        <Link to={`/podcast/${episode.podcast.id}`}>{episode.podcast.title}</Link>
                         </Grid>
-                        <Grid item xs>
-                          {episode.author}
+                        <Grid item md>
+                          {episode.title}
+                        </Grid>
+                        <Grid item md>
+                          <Link to={`/author/${episode.author.id}`}>{episode.author.name}</Link>
                         </Grid>
                       </Grid>
                     </Typography>

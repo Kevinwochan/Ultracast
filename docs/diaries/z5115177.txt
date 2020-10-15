@@ -21,6 +21,13 @@ Week 2
 The user stories draft were reviewed at the Tuesday meeting and the tech
 stack / system architecture finalised at the Thursday meeting. User stories
 were created in JIRA with points and labels assigned. Next week I aim to
-complete the user story part of the report.
+complete the user story part of the report. Stories UL-31, UL-32 and UL-33
+planned for next sprint.
 
 Week 3
+
+Finished the user story section for the project proposal. Also set up
+a basic flask app (UL-31), setup mongodb on a remote server (UL-32) and
+setup a basic working example of graph-ql to connect the remote mongodb
+instance to the backend webserver (UL-33). JIRAs for next sprint are UL-45,
+UL-54.

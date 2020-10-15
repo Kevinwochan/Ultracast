@@ -22,8 +22,11 @@ import SearchIcon from "@material-ui/icons/Search";
 import ExploreIcon from "@material-ui/icons/Explore";
 import PublishIcon from "@material-ui/icons/Publish";
 import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
-import HistoryIcon from '@material-ui/icons/History';
+import HistoryIcon from "@material-ui/icons/History";
+import ShowChartIcon from "@material-ui/icons/ShowChart";
 import { Link, useHistory } from "react-router-dom";
+import ucTheme from "../theme";
+import Logo from "./Logo";
 
 const drawerWidth = 240;
 
@@ -49,9 +52,13 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    // TODO for some reason, theme here is the default theme :/
-    // backgroundColor: theme.palette.secondary.main,
-    backgroundColor: "#ffde59",
+    backgroundColor: ucTheme.palette.secondary.main,
+  },
+  icon: {
+    color: ucTheme.palette.secondary.contrastText,
+  },
+  actionIcon: {
+    color: ucTheme.palette.secondary.main,
   },
   menuButton: {
     "&:hover": {
@@ -63,13 +70,14 @@ const useStyles = makeStyles((theme) => ({
   },
   drawer: {
     marginTop: 70,
-    background: theme.palette.primary.main,
+    background: ucTheme.palette.background.dark,
     width: drawerWidth,
     flexShrink: 0,
     whiteSpace: "nowrap",
   },
   drawerOpen: {
     marginTop: 70,
+    background: ucTheme.palette.background.dark,
     width: drawerWidth,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
@@ -78,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerClose: {
     marginTop: 70,
+    background: ucTheme.palette.background.dark,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -111,16 +120,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedInNavBar({ handleCookie, openState, children }) {
+export default function UserLayout({ handleCookie, state, children }) {
   const classes = useStyles();
-  const [open, setOpen] = openState;
+  const [sessionState, updateState] = state;
+  const open = sessionState.open;
 
   const handleDrawerOpen = () => {
-    setOpen(true);
+    updateState("open", true);
   };
 
   const handleDrawerClose = () => {
-    setOpen(false);
+    updateState("open", false);
   };
 
   return (
@@ -132,12 +142,12 @@ export default function LoggedInNavBar({ handleCookie, openState, children }) {
         })}
       >
         <Toolbar className={classes.toolbar}>
-          <Logo classes={classes} />
-          <AccountOptions classes={classes} handleCookie={handleCookie}/>
+          <Logo />
+          <AccountOptions classes={classes} handleCookie={handleCookie} />
         </Toolbar>
       </AppBar>
       <Drawer
-        variant="permanent" 
+        variant="permanent"
         className={clsx(classes.drawer, {
           [classes.drawerOpen]: open,
           [classes.drawerClose]: !open,
@@ -154,7 +164,6 @@ export default function LoggedInNavBar({ handleCookie, openState, children }) {
         <CreatorSideBar classes={classes} open={open} />
         <Divider />
         <IconButton
-          color="inherit"
           aria-label="open drawer"
           onClick={handleDrawerOpen}
           edge="start"
@@ -165,7 +174,7 @@ export default function LoggedInNavBar({ handleCookie, openState, children }) {
           <ChevronRightIcon />
         </IconButton>
         <IconButton
-          color="inherit"
+          color="primary"
           aria-label="close drawer"
           onClick={handleDrawerClose}
           edge="start"
@@ -180,12 +189,6 @@ export default function LoggedInNavBar({ handleCookie, openState, children }) {
     </div>
   );
 }
-
-const Logo = ({ classes }) => (
-  <Link className={classes.title} to="/">
-    <img src="/branding/9.svg" alt="ultracast" />
-  </Link>
-);
 
 const ListenerSideBar = ({ classes, open }) => {
   const listenerItems = [
@@ -207,7 +210,7 @@ const ListenerSideBar = ({ classes, open }) => {
     {
       name: "Library",
       icon: <LibraryMusicIcon />,
-      link: "/library",
+      link: "/author/1",
     },
     {
       name: "History",
@@ -241,9 +244,13 @@ const CreatorSideBar = ({ classes, open }) => {
       icon: <PublishIcon />,
       link: "/upload",
     },
+    {
+      name: "Analytics",
+      icon: <ShowChartIcon />,
+      link: "/analytics",
+    },
   ];
 
-  
   return (
     <List>
       {creatorItems.map((item) => (
@@ -288,7 +295,7 @@ const AccountOptions = ({ classes, handleCookie }) => {
         color="inherit"
       >
         <Avatar className={classes.avatar}>
-          <PersonIcon color="primary" />
+          <PersonIcon className={classes.icon} />
         </Avatar>
       </IconButton>
       <Menu
