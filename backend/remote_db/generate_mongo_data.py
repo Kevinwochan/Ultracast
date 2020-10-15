@@ -1,8 +1,10 @@
 import pandas as pd
 import os.path
 import sys
+import re
 import requests
 import queue
+from bson.objectid import ObjectId
 
 from webserver import db
 from webserver import models
@@ -15,12 +17,24 @@ from remote_db.check_link_valid_thread import CheckLinkValidThread
 
 OKGREEN = '\033[92m'
 OKYELLOW = '\033[33m'
+OKRED = '\033[31m'
 ENDCOL = '\033[0m'
 
 SCRIPT_DIR = os.path.dirname(__file__)
 RAW_EPISODES_CSV = f'{SCRIPT_DIR}/episodes.csv'
 RAW_PODCASTS_CSV = f'{SCRIPT_DIR}/shows.csv'
 FILTERED_CSV_NAME = f"{SCRIPT_DIR}/filtered_episodes.csv"
+AUDIO_MAPPING_FILENAME = f"{SCRIPT_DIR}/audio_file_mapping.csv"
+
+### FILTER VARIABLES ###
+MIN_EPISODES_PER_PODCAST = 5
+MAX_EPISODES_PER_PODCAST = 10
+MAX_TITLE_LEN = 200
+MAX_DESCRIPTION_LEN = 300
+MAX_AUTHOR_NAME_LEN = 100
+MIN_FILE_SIZE_MB = 0.0001
+MAX_FILE_SIZE_MB = 1000
+VALID_AUDIO_FORMATS = ['audio/mpeg', 'audio/mp3', 'mp3', 'MP3', 'Audio/MP3', 'audio/mpeg3', 'audio/x-mp3']
 
 def main():
     df, podcasts_df = get_data()
@@ -32,8 +46,11 @@ def main():
 def get_audio_filename(name):
     return f"{SCRIPT_DIR}/audio_files/{name}.mp3"
 
+def transform_text_field(text):
+    return re.sub(r"\s+", " ", text).strip()
+
 def get_data():
-    podcast_df = get_podcasts_df()
+    podcasts_df = get_podcasts_df()
 
     use_raw_csv = True
     if os.path.isfile(FILTERED_CSV_NAME):
@@ -42,12 +59,14 @@ def get_data():
             use_raw_csv = False
 
     if use_raw_csv:
-        df = process_raw_csv(podcast_df)
+        df = process_raw_csv(podcasts_df)
     else:
         print(f"{OKGREEN}Opening csv...{ENDCOL}")
         df = pd.read_csv(FILTERED_CSV_NAME, sep=',')
 
-    return (df, podcast_df)
+    # podcasts_df and df have same podcast_ids
+    podcasts_df = podcasts_df[podcasts_df['id'].isin(df['show_id'].tolist())]
+    return (df, podcasts_df)
 
 def get_podcasts_df():
     print(f"{OKGREEN}Opening raw podcasts csv...{ENDCOL}")
@@ -56,7 +75,7 @@ def get_podcasts_df():
 
     # Drop unwanted columns
     print(f"{OKGREEN}Dropping unwanted columns...{ENDCOL}")
-    drop_cols = ['feed_url', 'description', 'created_at', 'last_build_date', 'link', 'email']
+    drop_cols = ['feed_url', 'description', 'created_at', 'last_build_date', 'link']
     for unwanted_col in drop_cols:
         podcasts_df.drop(unwanted_col, axis=1, inplace=True)
 
@@ -91,22 +110,22 @@ def process_raw_csv(podcasts_df):
     print(f"{OKGREEN}Filtering...{ENDCOL}")
 
     # Audio formats
-    valid_audio_formats = ['audio/mpeg', 'audio/mp3', 'mp3', 'MP3', 'Audio/MP3', 'audio/mpeg3', 'audio/x-mp3']
-    df.drop(df.loc[~df['audio_mime_type'].isin(valid_audio_formats)].index, inplace=True)
+    df.drop(df.loc[~df['audio_mime_type'].isin(VALID_AUDIO_FORMATS)].index, inplace=True)
 
     # Audio file size
     df['audio_file_size'] = df['audio_file_size'].astype(int)
-    df.drop(df[df['audio_file_size'] < 50].index, inplace=True)
-    df.drop(df[df['audio_file_size'] > 99999999].index, inplace=True)
+    df.drop(df[df['audio_file_size'] < MIN_FILE_SIZE_MB * 10**6].index, inplace=True)
+    df.drop(df[df['audio_file_size'] > MAX_FILE_SIZE_MB * 10**6].index, inplace=True)
 
     # Episode field lengths
-    df = df[df['title'].map(len) < 100]
-    df = df[df['subtitle'].map(len) < 200]
-    df = df[df['summary'].map(len) < 200]
-    df = df[df['author'].map(len) < 40]
+    df = df[df['title'].map(len) <= MAX_TITLE_LEN]
+    df = df[df['subtitle'].map(len) <= MAX_TITLE_LEN]
+    df = df[df['summary'].map(len) <= MAX_TITLE_LEN]
+    df = df[df['author'].map(len) <= MAX_AUTHOR_NAME_LEN]
 
     # Podcast - number of episodes
-    df = df.groupby('show_id').filter(lambda nepisodes : len(nepisodes) >= 5 and len(nepisodes) <= 30)
+    df = df.groupby('show_id').filter(
+        lambda nepisodes : len(nepisodes) >= MIN_EPISODES_PER_PODCAST and len(nepisodes) <= MAX_EPISODES_PER_PODCAST)
 
     # Confirm episode audio files are downloadable
     df = valid_audio_download_link(df)
@@ -116,8 +135,8 @@ def process_raw_csv(podcasts_df):
     podcasts_with_all_episodes = has_all_episodes.index[has_all_episodes]
     df = df[df['show_id'].isin(podcasts_with_all_episodes)]
 
-    df.to_csv(FILTERED_CSV_NAME)
-    return df
+    df.to_csv(FILTERED_CSV_NAME, index=False)
+    return df, podcasts_df
 
 def valid_audio_download_link(df):
     print(f"{OKGREEN}Checking audio download links...{ENDCOL}")
@@ -173,56 +192,91 @@ def download_audio_files(df):
 def write_to_db(df, podcasts_df):
     print(f"{OKGREEN}Writing to db...{ENDCOL}")
 
+    podcast_id_to_user = write_users_to_db(podcasts_df)
+    podcast_id_to_episodes = write_podcast_episodes_to_db(df)
+    podcast_id_to_podcasts = write_podcasts_to_db(df, podcasts_df, podcast_id_to_episodes)
+
+    # Link users to podcasts
+    print(f"{OKGREEN}Linking author users to podcasts...{ENDCOL}")
+    for podcast_id, user in podcast_id_to_user.items():
+        user.update(published_podcasts=podcast_id_to_podcasts.get(podcast_id, []))
+
+def write_users_to_db(podcasts_df):
     print(f"{OKGREEN}Creating users...{ENDCOL}")
-    podcast_to_author = {}
-    authors = list(set(df['author'].tolist()))
-    for author in authors:
+    podcast_id_to_user = {}
+    emails = list(set(podcasts_df['email'].tolist()))
+    for email in emails:
+        author = podcasts_df[podcasts_df['email'] == email].iloc[0]['author']
         user = models.User(
             name=author, 
-            email="test@gmail.com", 
+            email=email, 
             password="test",
             published_podcasts=[])
         user.save()
-    
+    return podcast_id_to_user
+
+def write_podcast_episodes_to_db(df):
     print(f"{OKGREEN}Creating podcast episodes...{ENDCOL}")
-    podcast_to_episodes = {}
+    podcast_id_to_episodes = {}
+    
+    # Try to use existing objects in mongo
+    if os.path.isfile(AUDIO_MAPPING_FILENAME):
+        podcast_audio_df = pd.read_csv(AUDIO_MAPPING_FILENAME)
+    else:
+        podcast_audio_df = pd.DataFrame(columns=["csv_id", "mongo_id"])
+
     for index, row in df.iterrows():
-        audio_filename = get_audio_filename(row['id'])
-        if not os.path.isfile(audio_filename):
-            continue
-
-        with open(audio_filename, 'rb') as audio_file:
-            podcast_episode = models.PodcastEpisode(audio=audio_file)
-            podcast_episode.save()
-
+        podcast_episode_id = write_podcast_audio(podcast_audio_df, row)
+        keywords = row['keywords'].split(",")
         podcast_episode_meta = models.PodcastEpisodeMetadata(
             name=row['title'], 
-            description=row['summary'], 
-            episode=podcast_episode,
-            keywords=row['keywords'])
-        
-        podcast_to_episodes.setdefault(row['show_id'], []).append(podcast_episode_meta)
+            description=row['summary'],
+            episode=podcast_episode_id,
+            keywords=keywords)
+        podcast_id_to_episodes.setdefault(row['show_id'], []).append(podcast_episode_meta)
+    podcast_audio_df.to_csv(AUDIO_MAPPING_FILENAME, index=False)
 
+    return podcast_id_to_episodes
+
+def write_podcasts_to_db(df, podcasts_df, podcast_id_to_episodes):
     print(f"{OKGREEN}Creating podcasts...{ENDCOL}")
-    author_to_podcasts = {}
+    podcast_id_to_podcasts = {}
     podcast_ids = df['show_id'].unique()
     for podcast_id in podcast_ids:
-        podcast_data = podcasts_df[podcasts_df['id'] == podcast_id]
+        podcast_data = podcasts_df[podcasts_df['id'] == podcast_id].iloc[0]
         author = podcast_data['author']
         podcast_metadata = models.PodcastMetadata(
             name=podcast_data['title'], 
             author=author,
             description=podcast_data['summary'],
-            episodes=podcast_to_episodes.get(podcast_id, []),
+            episodes=podcast_id_to_episodes.get(podcast_id, []),
             category=podcast_data['category'],
             sub_category=podcast_data['subcategory'])
 
-        author_to_podcasts.setdefault(author, []).append(podcast_metadata)
+        podcast_id_to_podcasts.setdefault(author, []).append(podcast_metadata)
         podcast_metadata.save()
+    
+    return podcast_id_to_podcasts
 
-    print(f"{OKGREEN}Linking author users to podcasts...{ENDCOL}")
-    for author in authors:
-        user.published_podcasts.put(author_to_podcasts.get(author, [])).save()
+def write_podcast_audio(podcast_audio_df, podcast_row):
+    # Attempt to use existing object in db
+    id = podcast_row['id']
+    if id in podcast_audio_df['csv_id'].values:
+        return ObjectId(podcast_audio_df[podcast_audio_df['csv_id'] == id].iloc[0]['mongo_id'])
+    
+    # Upload audio file as new object
+    audio_filename = get_audio_filename(id)
+    if not os.path.isfile(audio_filename):
+        print(f"{OKRED}Missing audio file: {audio_filename}...{ENDCOL}")
+        return None
+
+    with open(audio_filename, 'rb') as audio_file:
+        podcast_episode = models.PodcastEpisode(audio=audio_file)
+        podcast_episode.save()
+
+    mongo_id = podcast_episode.id
+    podcast_audio_df.loc[len(podcast_audio_df)] = [id, mongo_id]
+    return mongo_id
 
 if __name__ == '__main__':
     main()
