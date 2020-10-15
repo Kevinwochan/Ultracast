@@ -1,5 +1,11 @@
 #!/bin/bash
-database_to_drop="ultracast_data_gen_test"
+
+if [ -z "$1" ]; then
+  echo "Usage: $0 <DATABASE_NAME>"
+  exit 1
+fi
+
+database_to_drop="$1"
 
 rm ./remote_db/audio_file_mapping.csv 2> /dev/null
 ssh root@139.59.227.230 << EOF
