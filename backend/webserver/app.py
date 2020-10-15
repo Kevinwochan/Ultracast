@@ -1,5 +1,5 @@
 from . import db
-from .schema import schema
+from .schema import (schema, middleware)
 
 from flask import Flask
 from flask_graphql import GraphQLView
@@ -17,7 +17,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # Graphql rules
 app.add_url_rule(
     '/graphql',
-    view_func=FileUploadGraphQLView.as_view('graphql', schema=schema, graphiql=True)
+    view_func=FileUploadGraphQLView.as_view('graphql', schema=schema, graphiql=True, middleware=middleware)
     #view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
 )
 

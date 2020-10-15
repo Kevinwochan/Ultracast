@@ -12,8 +12,15 @@ from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 import graphene_file_upload
 import graphene_file_upload.scalars
 
+class AuthorizationMiddleware(object):
+    def resolve(self, next, root, info, **kwargs):
+        print(info)
+        return next(root, info, **kwargs)
+
 schema = graphene.Schema(query=query.Query, mutation=mutations.Mutations, 
         types=query.types)
+
+middleware = [*query.middleware, *mutations.middleware]
 
 def get_relay_id(query_class, mongodb_id):
     '''

@@ -7,6 +7,37 @@ from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 import graphene_file_upload
 import graphene_file_upload.scalars
 
+class AuthenticatedMongoengineConnectionField(MongoengineConnectionField):
+    '''
+    How this works:
+    Inject an extra layer before the MongoengineConnectionField default resolver
+    In there we can return a value if we want to indicate an error e.g. you dont have permission to access this record
+
+    Example usage:
+    class User(MongoengineObjectType):
+        class Meta
+            # Normal meta stuff
+        class AuthenticationResolver:
+            # New for this
+            @classmethod
+            def resolve(cls, root, info, **args):
+                if (Has permission):
+                    return None
+                else:
+                    return some error thingo (idk what)
+
+    AuthenticatedMongoengineConnectionField(User)
+    '''
+    def __init__(self, type, **kwargs):
+        super().__init__(type, **kwargs)
+
+    def default_resolver(self, _root, info, **args):
+        auth_resolver = self._type.AuthenticationResolver.resolve
+        resolved = auth_resolver(_root, info, **args)
+        if resolved is not None:
+            return resolved
+        return super().default_resolver(_root, info, **args)
+
 class PodcastEpisode(MongoengineObjectType):
     class Meta:
         model = models.PodcastEpisode
@@ -40,10 +71,22 @@ class User(MongoengineObjectType):
         model = models.User
         interfaces = (Node,)
 
+    class AuthenticationResolver:
+        @staticmethod
+        def resolve(root, info, **args):
+            # Cant do this yet but basic logic is:
+            # If we have permission return None
+            # Else raise an Exception
+            # raise ValueError("Youre not allowed to access this")
+            return None
+        
+
+
 class Query(graphene.ObjectType):
     node = Node.Field()
     all_podcast_episode = MongoengineConnectionField(PodcastEpisode)
     all_podcast_metadata = MongoengineConnectionField(PodcastMetadata)
-    all_user = MongoengineConnectionField(User)
+    all_user = AuthenticatedMongoengineConnectionField(User)
 
 types = [PodcastEpisode, PodcastMetadata, User]
+middleware = []
