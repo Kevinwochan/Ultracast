@@ -2,3 +2,4 @@
 schema.graphql
 __pycache__
 env
+.vscode

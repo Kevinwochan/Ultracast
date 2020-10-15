@@ -259,3 +259,4 @@ class Mutations(graphene.ObjectType):
     '''
     create_user = CreateUser.Field()
 
+middleware = []

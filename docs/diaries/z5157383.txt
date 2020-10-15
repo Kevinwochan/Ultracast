@@ -15,4 +15,13 @@ This week, to prepare the proposal, I will be creating flow diagrams of backend 
 
 Week 3:
 
+This week, I focused on finishing up the project proposal. I created some tables comparing our proposed solution to existing solutions. I also formatted the document in Latex and proofread it.
+Besides this, I designed a basic implementation of our mongodb database schema this week.
+
+Week 4:
+
+This week, I refined the mongodb database schema designed in week 3 and created graphql queries and mutations for the database.
+This took much more time than expected because of the number of libraries involved and the lack of documentation for some libraries 
+(looking at you graphene_mongo!)
+I also setup the graphql multi-part upload spec to allow clients to upload podcasts to the database.
 

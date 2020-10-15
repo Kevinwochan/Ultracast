@@ -7,38 +7,33 @@ import Typography from "@material-ui/core/Typography";
 
 const episodes = [
   {
-    title: "Episode 1",
+    title: "Episode 1: Giving Lawyer X a Voice",
     description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
+      "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
     image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: "Joe rogan",
-    podcast: "Joe Rogan Show",
+    author: { name: "Oliver Productions", id: 1 },
+    podcast: { id: 1, title: "Oli's True Crime Series" },
   },
   {
-    title: "Episode 2",
+    title: "Episode 2: Dead man's chest",
     description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
+      "Captain Jack Sparrow seeks the heart of Davy Jones, a mythical pirate, in order to avoid being enslaved to him. However, others, including his friends Will and Elizabeth, want it for their own gain.",
     image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: "Joe Rogan",
-    podcast: "Joe Rogan Show",
+    author: { name: "Oliver Productions", id: 1 },
+    podcast: { id: 1, title: "Oli's True Crime Series" },
   },
 ];
 
 const useStyles = makeStyles((theme) => ({}));
 
-export default function History({cookies, handleCookie}) {
+export default function History() {
   const classes = useStyles();
 
   return (
-    <Page cookies={cookies} handleCookie={handleCookie} >
-      <Container maxWidth="lg">
-        <Typography variant="h5" gutterBottom>
-          History
-        </Typography>
-        <Playlist episodes={episodes} />
-      </Container>
-    </Page>
+    <Container maxWidth="lg">
+      <Playlist episodes={episodes} />
+    </Container>
   );
 }
