@@ -2,12 +2,16 @@ from . import models
 from . import mutations
 from . import query
 
+import flask_jwt_extended
+
 import graphene
 import graphql
 from graphene.relay import Node, ClientIDMutation
 from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 import graphene_file_upload
 import graphene_file_upload.scalars
+import flask_jwt_extended
+import werkzeug
 
 '''
 Trying things out relay style...
@@ -35,11 +39,20 @@ class DeletePodcastEpisode(ClientIDMutation):
         podcast_episode_id = graphene.ID(required=True)
 
     @classmethod
+    @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, podcast_episode_id):
+        
         # Lookup the mongodb object from the relay Node ID
         podcast_episode = get_node_from_global_id(info=info, global_id=podcast_episode_id, only_type=query.PodcastEpisode)
 
+        print(podcast_episode.id)
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=podcast_episode).get()
+
+        # Check we have permissions
+        if flask_jwt_extended.current_user.id != podcast_metadata.author.id:
+            raise werkzeug.exceptions.Forbidden("User {} cannot delete user {} podcast".format(
+                flask_jwt_extended.current_user.email, podcast_metadata.author.email))
+
         podcast_metadata.episodes.filter(episode=podcast_episode).delete()
         podcast_metadata.save()
 
@@ -103,7 +116,7 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
         episode = models.PodcastEpisode(audio=audio)
         episode.save()
-        episode_metadata = models.PodcastEpisodeMetadata(**kwargs)
+        episode_metadata = models.PodcastEpisodeMetadata(episode=episode, **kwargs)
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         podcast_metadata.episodes.append(episode_metadata)
         podcast_metadata.save()
@@ -266,6 +279,27 @@ class MarkedPodcastListened(ClientIDMutation):
         user.save()
         return MarkedPodcastListened(success=True, user=user)
 
+class Login(ClientIDMutation):
+    success = graphene.Boolean()
+    token = graphene.String()
+    message = graphene.String()
+
+    class Input:
+        email = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, email, password):
+        user_query = models.User.objects(email=email)
+        if (len(user_query) < 1):
+            return Login(success=False, message="Invalid username")
+        user = user_query.first()
+        if user.password != password:
+            return Login(success=False, message="Invalid password")
+
+        token = flask_jwt_extended.create_access_token(identity=user)
+        return Login(success=True, token=token)
+        
 
 class Mutations(graphene.ObjectType):
     '''
@@ -281,6 +315,7 @@ class Mutations(graphene.ObjectType):
     User mutations
     '''
     create_user = CreateUser.Field()
+    login = Login.Field()
     '''
     Business Logic mutations
     '''

@@ -1,5 +1,7 @@
 from . import models
 
+import flask_jwt_extended
+
 import graphene
 import graphql
 from graphene.relay import Node
@@ -70,17 +72,23 @@ class User(MongoengineObjectType):
     class Meta:
         model = models.User
         interfaces = (Node,)
+        exclude_fields = ["password"]
+        #filter_fields = {"id": graphene.ID}
 
     class AuthenticationResolver:
         @staticmethod
+        @flask_jwt_extended.jwt_required
         def resolve(root, info, **args):
             # Cant do this yet but basic logic is:
             # If we have permission return None
             # Else raise an Exception
             # raise ValueError("Youre not allowed to access this")
+            '''
+            current_user = flask_jwt_extended.current_user
+            if current_user.id != args["id"]:
+                raise ValueError("No permission to access this user")
+            '''
             return None
-        
-
 
 class Query(graphene.ObjectType):
     node = Node.Field()
