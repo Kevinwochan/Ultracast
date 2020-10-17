@@ -35,7 +35,7 @@ def getFileUrl(filename):
     return re.sub(r"^https://", f"https://{BUCKET}.", STATIC_FILE_BASE_URL) + f"/{filename}"
 
 def checkStatus(resp, ok_statuses):
-    return {'server_response': resp, 'ok': resp['ResponseMetadata']['HTTPStatusCode'] not in ok_statuses}
+    return {'ok': resp['ResponseMetadata']['HTTPStatusCode'] not in ok_statuses, 'server_response': resp}
 
 def addFile(filename, file):
     resp = client.put_object(Body=file, Bucket=BUCKET, Key=filename, ACL=FILE_ACCESS)
@@ -44,8 +44,3 @@ def addFile(filename, file):
 def removeFile(filename):
     resp = client.delete_object(Bucket=BUCKET, Key=filename)
     return {'status': checkStatus(resp, [200, 204])}
-
-
-if __name__ == '__main__':
-    #init_db()
-    print(getFileUrl("5b9b7ee1-5115-3ba0-aca9-4da565eda9e8.mp3"))
