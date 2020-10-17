@@ -40,9 +40,3 @@ def addFile(filename, file):
 def removeFile(filename):
     resp = client.delete_object(Bucket=BUCKET, Key=filename)
     return checkStatus(resp, [200, 204])
-
-if __name__ == '__main__':
-    in_file = open("./webserver/resources/ff-16b-2c-44100hz.mp4", "rb")
-    data = in_file.read()
-    addAudioFile("test-file", data)
-    # removeAudioFile("test-file")
