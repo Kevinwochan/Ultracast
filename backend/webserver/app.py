@@ -1,6 +1,7 @@
 from . import db
 from .schema import (schema, middleware)
 from . import models
+from . import podcast_engine
 
 from flask import Flask
 from flask_graphql import GraphQLView
@@ -36,7 +37,7 @@ def user_to_json(user):
 @jwt.user_loader_callback_loader
 def load_user_from_db(identity):
     user_id = json.loads(identity)["_id"]["$oid"]
-    return models.User.objects(id=user_id).get()
+    return podcast_engine.User.from_mongo_id(user_id)
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 

@@ -1,6 +1,7 @@
 from . import models
 from . import mutations
 from . import query
+from . import podcast_engine
 
 import flask_jwt_extended
 
@@ -35,20 +36,9 @@ def assert_podcast_edit_permission(podcast_metadata):
     Raises a Forbidden error if not
     '''
     # Check we have permissions
-    if flask_jwt_extended.current_user.id != podcast_metadata.author.id:
-        raise werkzeug.exceptions.Forbidden("User {} cannot delete user {} podcast".format(
-            flask_jwt_extended.current_user.email, podcast_metadata.author.email))
-
-@flask_jwt_extended.jwt_required
-def assert_user_edit_permission(user):
-    '''
-    Checks the current user has edit permission for user (i.e. is the same user)
-    Raises a Forbidden error if not
-    '''
-    # Check we have permissions
-    if flask_jwt_extended.current_user.id != user.id:
-        raise werkzeug.exceptions.Forbidden("User {} cannot update user {}".format(
-            flask_jwt_extended.current_user.email, user.email))
+    if not flask_jwt_extended.current_user.can_edit_podcast_metadata(podcast_metadata):
+        raise werkzeug.exceptions.Forbidden("User {} cannot delete this podcast".format(
+            flask_jwt_extended.current_user.get_email()))
 
 ###########################################################################################################
 #                                           PodcastEpisode                                                #
@@ -169,9 +159,6 @@ class CreatePodcastMetadata(ClientIDMutation):
         # TODO: User authentication - remove author as an input and user flask_jwt_extended.current_user
         author = get_node_from_global_id(info, input["author"], only_type=query.User)
         
-        # TODO: Remove me when done properly!
-        assert_user_edit_permission(author)
-
         podcast_metadata_args = input
         podcast_metadata_args["author"] = author.id
         
@@ -265,17 +252,15 @@ class CreateUser(ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, root, info, email, password, **input):
         # Check the email is unique
-        if models.User.objects(email=email).count() != 0:
-            return CreateUser(success=False, fail_why="A user with this email already exists")
-        
-        if not not password: # empty password
-            return CreateUser(success=False, fail_why="Password is invalid")
+        new_user = None
+        try:
+            new_user = podcast_engine.User.create(email, password, **input)
+        except ValueError as e:
+            return CreateUser(success=False, fail_why=str(e))
 
-        new_user = models.User(**input)
-        new_user.save()
         success = True
         token = flask_jwt_extended.create_access_token(identity=new_user)
-        return CreateUser(success=success, user=new_user, token=token)
+        return CreateUser(success=success, user=new_user.model(), token=token)
 
 class MarkedPodcastListened(ClientIDMutation):
     '''
@@ -302,6 +287,7 @@ class Login(ClientIDMutation):
     success = graphene.Boolean()
     token = graphene.String()
     message = graphene.String()
+    user = graphene.Field(query.User)
 
     class Input:
         email = graphene.String(required=True)
@@ -309,15 +295,15 @@ class Login(ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, email, password):
-        user_query = models.User.objects(email=email)
-        if (user_query.count() < 1):
+        user = podcast_engine.User.from_email(email)
+        if user is None:
             return Login(success=False, message="Invalid username")
-        user = user_query.first()
-        if user.password != password:
+
+        if not user.check_password(password):
             return Login(success=False, message="Invalid password")
 
         token = flask_jwt_extended.create_access_token(identity=user)
-        return Login(success=True, token=token)
+        return Login(success=True, token=token, user=user.model())
         
 
 class Mutations(graphene.ObjectType):
