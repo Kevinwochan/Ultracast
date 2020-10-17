@@ -28,6 +28,28 @@ def get_node_from_global_id(info, global_id, only_type):
         raise ValueError("Invalid id for type {}: {}".format(only_type.__name__, global_id))
     return node
 
+@flask_jwt_extended.jwt_required
+def assert_podcast_edit_permission(podcast_metadata):
+    '''
+    Checks the current user has edit permission for the podcast_metadata
+    Raises a Forbidden error if not
+    '''
+    # Check we have permissions
+    if flask_jwt_extended.current_user.id != podcast_metadata.author.id:
+        raise werkzeug.exceptions.Forbidden("User {} cannot delete user {} podcast".format(
+            flask_jwt_extended.current_user.email, podcast_metadata.author.email))
+
+@flask_jwt_extended.jwt_required
+def assert_user_edit_permission(user):
+    '''
+    Checks the current user has edit permission for user (i.e. is the same user)
+    Raises a Forbidden error if not
+    '''
+    # Check we have permissions
+    if flask_jwt_extended.current_user.id != user.id:
+        raise werkzeug.exceptions.Forbidden("User {} cannot update user {}".format(
+            flask_jwt_extended.current_user.email, user.email))
+
 ###########################################################################################################
 #                                           PodcastEpisode                                                #
 ###########################################################################################################
@@ -44,14 +66,9 @@ class DeletePodcastEpisode(ClientIDMutation):
         
         # Lookup the mongodb object from the relay Node ID
         podcast_episode = get_node_from_global_id(info=info, global_id=podcast_episode_id, only_type=query.PodcastEpisode)
-
-        print(podcast_episode.id)
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=podcast_episode).get()
-
-        # Check we have permissions
-        if flask_jwt_extended.current_user.id != podcast_metadata.author.id:
-            raise werkzeug.exceptions.Forbidden("User {} cannot delete user {} podcast".format(
-                flask_jwt_extended.current_user.email, podcast_metadata.author.email))
+        
+        assert_podcast_edit_permission(podcast_metadata)
 
         podcast_metadata.episodes.filter(episode=podcast_episode).delete()
         podcast_metadata.save()
@@ -74,11 +91,14 @@ class UpdatePodcastEpisode(ClientIDMutation):
         keywords = graphene.List(graphene.String)
 
     @classmethod
+    @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, podcast_id, name=None, description=None, audio=None, keywords=None):
         # Retrieve the episode
         episode = get_node_from_global_id(info, podcast_id, only_type=query.PodcastEpisode)
         podcast_metadata = models.PodcastMetadata.objects(episodes__episode=episode).get()
         podcast_episode_metadata = podcast_metadata.episodes.filter(episode=episode).get()
+
+        assert_podcast_edit_permission(podcast_metadata)
         
         # Update the modified fields (only)
         if name is not None:
@@ -113,11 +133,15 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
 
 
     @classmethod
+    @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
         episode = models.PodcastEpisode(audio=audio)
         episode.save()
         episode_metadata = models.PodcastEpisodeMetadata(episode=episode, **kwargs)
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
+
+        assert_podcast_edit_permission(podcast_metadata)
+
         podcast_metadata.episodes.append(episode_metadata)
         podcast_metadata.save()
 
@@ -142,7 +166,12 @@ class CreatePodcastMetadata(ClientIDMutation):
     
     @classmethod
     def mutate_and_get_payload(cls, root, info, **input):
+        # TODO: User authentication - remove author as an input and user flask_jwt_extended.current_user
         author = get_node_from_global_id(info, input["author"], only_type=query.User)
+        
+        # TODO: Remove me when done properly!
+        assert_user_edit_permission(author)
+
         podcast_metadata_args = input
         podcast_metadata_args["author"] = author.id
         
@@ -166,6 +195,8 @@ class DeletePodcastMetadata(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id):
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, 
                 only_type=query.PodcastMetadata)
+
+        assert_podcast_edit_permission(podcast_metadata)
         
         # Track through deleting all episodes
         num_deleted = 0
@@ -203,6 +234,8 @@ class UpdatePodcastMetadata(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id, **kwargs):
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, query.PodcastMetadata)
 
+        assert_podcast_edit_permission(podcast_metadata)
+
         # Remove None's from kwargs
         filtered_args = {k: v for k, v in kwargs.items() if v is not None}
         podcast_metadata.modify(**filtered_args)
@@ -220,30 +253,9 @@ class CreateUser(ClientIDMutation):
     }
     '''
     success = graphene.Boolean()
-
-    class Input:
-        password = graphene.String(required=True)
-        email = graphene.String(required=True)
-
-    @classmethod
-    def mutate_and_get_payload(cls, root, info, **input):
-        new_user = models.User(password=input["password"], email=input["email"])
-        new_user.save()
-        success = True
-        return CreateUser(success=success)
-
-class CreateUser(ClientIDMutation):
-    '''
-    Inserts a user into MongoDB
-    Sample payload
-    mutation {
-        createUser(input: {email: "test@test.com", password: "pass"} ) {
-        success
-        }
-    }
-    '''
-    success = graphene.Boolean()
     user = graphene.Field(query.User)
+    fail_why = graphene.String()
+    token = graphene.String()
 
     class Input:
         password = graphene.String(required=True)
@@ -251,11 +263,19 @@ class CreateUser(ClientIDMutation):
         name = graphene.String()
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, **input):
+    def mutate_and_get_payload(cls, root, info, email, password, **input):
+        # Check the email is unique
+        if models.User.objects(email=email).count() != 0:
+            return CreateUser(success=False, fail_why="A user with this email already exists")
+        
+        if not not password: # empty password
+            return CreateUser(success=False, fail_why="Password is invalid")
+
         new_user = models.User(**input)
         new_user.save()
         success = True
-        return CreateUser(success=success, user=new_user)
+        token = flask_jwt_extended.create_access_token(identity=new_user)
+        return CreateUser(success=success, user=new_user, token=token)
 
 class MarkedPodcastListened(ClientIDMutation):
     '''
@@ -267,12 +287,11 @@ class MarkedPodcastListened(ClientIDMutation):
     user = graphene.Field(query.User)
 
     class Input:
-        user_id = graphene.ID(required=True)
         podcast_episode_id = graphene.ID(required=True)
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, user_id, podcast_episode_id):
-        user = get_node_from_global_id(info, user_id, only_type=query.User)
+        user = flask_jwt_extended.current_user
         episode = get_node_from_global_id(info, podcast_episode_id, only_type=query.PodcastEpisode)
         listen_entry = models.ListenHistoryEntry(episode=episode)
         user.listen_history.append(listen_entry)
@@ -291,7 +310,7 @@ class Login(ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, root, info, email, password):
         user_query = models.User.objects(email=email)
-        if (len(user_query) < 1):
+        if (user_query.count() < 1):
             return Login(success=False, message="Invalid username")
         user = user_query.first()
         if user.password != password:
