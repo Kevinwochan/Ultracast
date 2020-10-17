@@ -1,6 +1,7 @@
 from . import models
 from . import schema
 
+import re
 import boto3
 from botocore.client import Config
 from mongoengine import connect
@@ -17,26 +18,34 @@ MONGO_URI = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_DB}?
 connect(host=MONGO_URI)
 
 # Digital Ocean Space (Static-Files)
+
+REGION = 'sf02'
+STATIC_FILE_BASE_URL = f'https://{REGION}.digitaloceanspaces.com'
 session = boto3.session.Session()
 client = session.client('s3',
-                        region_name='sfo2',
-                        endpoint_url='https://sfo2.digitaloceanspaces.com',
+                        region_name=REGION,
+                        endpoint_url=STATIC_FILE_BASE_URL,
                         aws_access_key_id='CUT4SK6OYILHJJV3B5LD',
                         aws_secret_access_key='yyIXed9h9kn6n9V4c/b64+ZRHtP8baR89lp3dqvOY34')
 
 BUCKET = 'ultracast-files'
 FILE_ACCESS = 'public-read'
 
+def getFileUrl(filename):
+    return re.sub(r"^https://", f"https://{BUCKET}.", STATIC_FILE_BASE_URL) + f"/{filename}"
+
 def checkStatus(resp, ok_statuses):
-    if resp['ResponseMetadata']['HTTPStatusCode'] not in ok_statuses:
-        print(resp)
-        return False
-    return True
+    return {'server_response': resp, 'ok': resp['ResponseMetadata']['HTTPStatusCode'] not in ok_statuses}
 
 def addFile(filename, file):
     resp = client.put_object(Body=file, Bucket=BUCKET, Key=filename, ACL=FILE_ACCESS)
-    return checkStatus(resp, [200])
+    return {'status': checkStatus(resp, [200]), 'url': getFileUrl(filename)} 
 
 def removeFile(filename):
     resp = client.delete_object(Bucket=BUCKET, Key=filename)
-    return checkStatus(resp, [200, 204])
+    return {'status': checkStatus(resp, [200, 204])}
+
+
+if __name__ == '__main__':
+    #init_db()
+    print(getFileUrl("5b9b7ee1-5115-3ba0-aca9-4da565eda9e8.mp3"))
