@@ -50,3 +50,9 @@ def addFile(key, data):
 def removeFile(url):
     resp = client.delete_object(Bucket=BUCKET, Key=getKeyFromUrl(url))
     return {'status': checkStatus(resp, [200, 204])}
+
+def updateFile(old_url, new_key, data):
+    remove_resp = removeFile(old_url)
+    if not remove_resp['status']['ok']:
+        return remove_resp
+    return addFile(new_key, data)
