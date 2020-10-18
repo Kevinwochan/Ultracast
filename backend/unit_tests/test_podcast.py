@@ -1,37 +1,66 @@
 import webserver
 from webserver.schema import schema
 import webserver.db
+from webserver.app import app
 
 import graphene
 import graphene.test
 import unittest
 import snapshottest
+import json
 
 class CreatePodcastTest(snapshottest.TestCase):
     user_id = None
+    jwt_token = None
 
     def setUp(self):
         self.client = graphene.test.Client(schema)
         # Create a user
-        result = self.client.execute(''' 
+        result = self.execute_with_jwt(''' 
             mutation create_user {
-                createUser(input: {email: "test@test.com" password: "password"}) {
+                createUser(input: {email: "ta111112112131112esty_testy123@test.com" password: "password"}) {
                     success
                     user {
                         id
                     }
+                    token
+                    failWhy
                 }
             }
                 ''')
         self.user_id = result["data"]["createUser"]["user"]["id"]
+        self.jwt_token = result["data"]["createUser"]["token"]
+
+    def tearDown(self):
+        query = '''
+        mutation delete_user {
+            deleteUser (input: {}){
+                success
+            }
+        }'''
+        result = self.execute_with_jwt(query)
+
+    def execute_with_jwt(self, query, context={}, variables={}, **kwargs):
+        json_request = {
+                "query": query,
+                "variables": variables
+                }
+
+        with app.test_client() as c:
+            context["Authorization"] = "Bearer " + str(self.jwt_token)
+            rv = c.post("/graphql", json=json_request, headers=context)
+            result = rv.get_json()
+            if (result.get("errors")):
+                raise ValueError(result.get("errors"))
+            return result
+            #return self.client.execute(query, context=context, **kwargs)
 
     def test_create_podcast(self):
         # Create a podcast
         create_podcast_query =  \
             '''
-              mutation  c($id: ID!, $keywords: [String]!) {
+              mutation  c($keywords: [String]!) {
                 createPodcastMetadata (input: {
-                  author: $id
                   name: "testy_podcast"
                   description: "a description"
                   category: "a test category"
@@ -57,7 +86,7 @@ class CreatePodcastTest(snapshottest.TestCase):
                 }
               }
               '''
-        result = self.client.execute(create_podcast_query, 
+        result = self.execute_with_jwt(create_podcast_query, 
                 variables={'id': self.user_id, 'keywords': ['keyword1', 'key2']})
         self.assertMatchSnapshot(result)
 
@@ -68,9 +97,8 @@ class CreatePodcastTest(snapshottest.TestCase):
         '''
         create_podcast_query =  \
             '''
-              mutation  c($id: ID!) {
+              mutation  c {
                 createPodcastMetadata (input: {
-                  author: $id
                   name: "testy_podcast"
                   description: "a description"
 
@@ -91,7 +119,7 @@ class CreatePodcastTest(snapshottest.TestCase):
                 }
               }
               '''
-        result = self.client.execute(create_podcast_query, variables={'id': self.user_id})
+        result = self.execute_with_jwt(create_podcast_query, variables={'id': self.user_id})
         podcast_metadata_id = result["data"]["createPodcastMetadata"]["podcastMetadata"]["id"]
         return podcast_metadata_id
 
@@ -115,7 +143,7 @@ class CreatePodcastTest(snapshottest.TestCase):
                 "keywords": ["key1", "k2", "k3"]
                 }
         
-        result = self.client.execute(query, variables=variables)
+        result = self.execute_with_jwt(query, variables=variables)
         self.assertMatchSnapshot(result)
 
 
@@ -135,7 +163,7 @@ class CreatePodcastTest(snapshottest.TestCase):
                 "description": "a smart descr",
                 }
         
-        result = self.client.execute(query, variables=variables)
+        result = self.execute_with_jwt(query, variables=variables)
         print(result)
         
 
@@ -152,7 +180,7 @@ class CreatePodcastTest(snapshottest.TestCase):
           }
         }
         '''
-        self.assertMatchSnapshot(self.client.execute(delete_query, variables={'id': podcast_metadata_id}))
+        self.assertMatchSnapshot(self.execute_with_jwt(delete_query, variables={'id': podcast_metadata_id}))
 
     def test_delete_podcast_1_episode(self):
         podcast_metadata_id = self.createPodcast()
@@ -168,7 +196,7 @@ class CreatePodcastTest(snapshottest.TestCase):
           }
         }
         '''
-        self.assertMatchSnapshot(self.client.execute(delete_query, variables={'id': podcast_metadata_id}))
+        self.assertMatchSnapshot(self.execute_with_jwt(delete_query, variables={'id': podcast_metadata_id}))
 
         # Check that the creator has the podcast removed
         check_user_query = '''
@@ -190,7 +218,7 @@ class CreatePodcastTest(snapshottest.TestCase):
             }
             '''
 
-        self.assertMatchSnapshot(self.client.execute(check_user_query, variables={"user_id": self.user_id}))
+        self.assertMatchSnapshot(self.execute_with_jwt(check_user_query, variables={"user_id": self.user_id}))
 
     def test_update_podcast(self):
         podcast_metadata_id = self.createPodcast()
@@ -214,4 +242,4 @@ class CreatePodcastTest(snapshottest.TestCase):
             }
             '''
         variables = {"podcast_id": podcast_metadata_id}
-        self.assertMatchSnapshot(self.client.execute(update_query, variables=variables))
+        self.assertMatchSnapshot(self.execute_with_jwt(update_query, variables=variables))

@@ -170,14 +170,14 @@ class CreatePodcastMetadata(ClientIDMutation):
         author = get_node_from_global_id(info, input["author"], only_type=query.User)
         
         podcast_metadata_args = input
-        podcast_metadata_args["author"] = author.id
+        podcast_metadata_args["author"] = author.get_mongo_id()
         
         # De dictionary the kwargs (by design match up with the model)
         podcast_metadata = models.PodcastMetadata(**podcast_metadata_args)
         podcast_metadata.save()
 
-        author.published_podcasts.append(podcast_metadata)
-        author.save()
+        author.model().published_podcasts.append(podcast_metadata)
+        author.model().save()
 
         return CreatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
@@ -276,7 +276,21 @@ class CreateUser(ClientIDMutation):
         token = flask_jwt_extended.create_access_token(identity=new_user)
         return CreateUser(success=success, user=new_user.model(), token=token)
 
-class MarkedPodcastListened(ClientIDMutation):
+class DeleteUser(ClientIDMutation):
+    success = graphene.Boolean()
+
+    class Input:
+        pass
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info):
+        user = flask_jwt_extended.current_user
+        user.delete()
+
+        return DeleteUser(success=True)
+
+class MarkPodcastListened(ClientIDMutation):
     '''
     Mark a podcast as listened to by the user
     Not sure if we want to grab the user from the JWT
@@ -334,6 +348,7 @@ class Mutations(graphene.ObjectType):
     User mutations
     '''
     create_user = CreateUser.Field()
+    delete_user = DeleteUser.Field()
     login = Login.Field()
     '''
     Business Logic mutations
