@@ -19,7 +19,7 @@ connect(host=MONGO_URI)
 
 # Digital Ocean Space (Static-Files)
 
-REGION = 'sf02'
+REGION = 'sfo2'
 STATIC_FILE_BASE_URL = f'https://{REGION}.digitaloceanspaces.com'
 session = boto3.session.Session()
 client = session.client('s3',
@@ -31,16 +31,22 @@ client = session.client('s3',
 BUCKET = 'ultracast-files'
 FILE_ACCESS = 'public-read'
 
+def getBucketUrl():
+    return re.sub(r"^https://", f"https://{BUCKET}.", STATIC_FILE_BASE_URL)
+
 def getFileUrl(filename):
-    return re.sub(r"^https://", f"https://{BUCKET}.", STATIC_FILE_BASE_URL) + f"/{filename}"
+    return getBucketUrl() + f"/{filename}"
+
+def getKeyFromUrl(url):
+    return re.sub(getBucketUrl() + "/", "", url)
 
 def checkStatus(resp, ok_statuses):
     return {'ok': resp['ResponseMetadata']['HTTPStatusCode'] not in ok_statuses, 'server_response': resp}
 
-def addFile(filename, file):
-    resp = client.put_object(Body=file, Bucket=BUCKET, Key=filename, ACL=FILE_ACCESS)
-    return {'status': checkStatus(resp, [200]), 'url': getFileUrl(filename)} 
+def addFile(key, data):
+    resp = client.put_object(Body=data, Bucket=BUCKET, Key=key, ACL=FILE_ACCESS)
+    return {'status': checkStatus(resp, [200]), 'url': getFileUrl(key)} 
 
-def removeFile(filename):
-    resp = client.delete_object(Bucket=BUCKET, Key=filename)
+def removeFile(url):
+    resp = client.delete_object(Bucket=BUCKET, Key=getKeyFromUrl(url))
     return {'status': checkStatus(resp, [200, 204])}
