@@ -7,17 +7,10 @@ import mongoengine.fields as mongofields
 import datetime
 
 
-class PodcastEpisode(mongoengine.Document):
-    # Storing in a seperate collection to avoid having to collect the audio file to see metadata
-    meta = {'collection': 'podcast_episode'}
-    # Consider the PodcastEpisodeMetadata to own the PodcastEpisode (for deletion purposes)
-    #audio = mongofields.FileField(required=True) 
-    audio = mongofields.FileField(required=False) 
-
 class PodcastEpisodeMetadata(mongoengine.EmbeddedDocument):
     name = mongofields.StringField()
     publish_date = mongofields.DateTimeField(default=datetime.datetime.now)
-    episode = mongofields.ReferenceField(PodcastEpisode)
+    audio_url = mongofields.StringField()
     description = mongofields.StringField()
     keywords = mongofields.ListField(mongofields.StringField())
 
@@ -37,7 +30,7 @@ class PodcastMetadata(mongoengine.Document):
 
 class ListenHistoryEntry(mongoengine.EmbeddedDocument):
     episode = mongofields.ReferenceField(
-            'PodcastEpisode', required=True)
+            'PodcastEpisodeMetadata', required=True)
     listen_time = mongofields.DateTimeField(default=datetime.datetime.now)
 
 class User(mongoengine.Document):
