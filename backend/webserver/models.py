@@ -6,27 +6,34 @@ import mongoengine
 import mongoengine.fields as mongofields
 import datetime
 
+class PodcastMetadata(mongoengine.Document):
+    meta = {'collection': 'podcast_metadata'}
+    name = mongofields.StringField(required=True)
+    # Bi-directional relationship with User
+    # Consider the User to own the PodcastMetadata (CASCADE reverse_delete_rule is set later)
+    author = mongofields.ReferenceField('User', required=True)
+    publish_date = mongofields.DateTimeField(default=datetime.datetime.now)
+    description = mongofields.StringField()
 
-class PodcastEpisodeMetadata(mongoengine.EmbeddedDocument):
+    # PodcastMetadata owns the PodcastEpisodeMetadata (CASCADE reverse_delete_rule is set later)
+    episodes = mongofields.ListField(mongofields.ReferenceField("PodcastEpisodeMetadata"))
+
+    cover = mongofields.FileField()
+    category = mongofields.StringField()
+    sub_category = mongofields.StringField()
+    keywords = mongofields.ListField(mongofields.StringField())
+
+class PodcastEpisodeMetadata(mongoengine.Document):
+    meta = {'collection': 'podcast_episode_metadata'}
+
     name = mongofields.StringField()
     publish_date = mongofields.DateTimeField(default=datetime.datetime.now)
     audio_url = mongofields.StringField()
     description = mongofields.StringField()
     keywords = mongofields.ListField(mongofields.StringField())
-
-class PodcastMetadata(mongoengine.Document):
-    meta = {'collection': 'podcast_metadata'}
-    name = mongofields.StringField(required=True)
-    # Bi-directional relationship with User
-    # Consider the User to own the PodcastMetadata
-    author = mongofields.ReferenceField('User', required=True)
-    publish_date = mongofields.DateTimeField(default=datetime.datetime.now)
-    description = mongofields.StringField()
-    episodes = mongofields.EmbeddedDocumentListField(PodcastEpisodeMetadata)
-    cover = mongofields.FileField()
-    category = mongofields.StringField()
-    sub_category = mongofields.StringField()
-    keywords = mongofields.ListField(mongofields.StringField())
+    # Bidirectional relationship with PodcastMetadata. PodcastEpisodeMetadata is owned by PodcastMetadata
+    podcast_metadata = mongofields.ReferenceField("PodcastMetadata", 
+            reverse_delete_rule=mongoengine.CASCADE, required=True)
 
 class ListenHistoryEntry(mongoengine.EmbeddedDocument):
     episode = mongofields.ReferenceField(
@@ -48,8 +55,6 @@ class User(mongoengine.Document):
     User usage data
     '''
     subscribed_podcasts = mongofields.ListField(mongofields.ReferenceField(PodcastMetadata), default=list)
-    # I'm having an issue with graphene + lists of embedded documents (not sure why...)
-    # Comment out for now
     listen_history = mongofields.EmbeddedDocumentListField(ListenHistoryEntry)
 
     # Bi-directional relationship with PodcastMetadata
@@ -57,3 +62,7 @@ class User(mongoengine.Document):
     published_podcasts = mongofields.ListField(
             mongofields.ReferenceField(PodcastMetadata, reverse_delete_rule=mongoengine.DENY), default=list)
 
+
+# Register reverse delete rules
+PodcastMetadata.register_delete_rule(User, "author", mongoengine.CASCADE)
+PodcastMetadata.register_delete_rule(PodcastEpisodeMetadata, "episodes", mongoengine.CASCADE)
