@@ -147,7 +147,6 @@ class CreatePodcastMetadata(ClientIDMutation):
     podcast_metadata = graphene.Field(query.PodcastMetadata)
     class Input:
         name = graphene.String(required=True)
-        author = graphene.ID(required=True)
         description = graphene.String()
         cover = graphene_file_upload.scalars.Upload()
         category = graphene.String()
@@ -155,9 +154,9 @@ class CreatePodcastMetadata(ClientIDMutation):
         keywords = graphene.List(graphene.String)
     
     @classmethod
+    @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, **input):
-        # TODO: User authentication - remove author as an input and user flask_jwt_extended.current_user
-        author = get_node_from_global_id(info, input["author"], only_type=query.User)
+        author = flask_jwt_extended.current_user
         
         podcast_metadata_args = input
         podcast_metadata_args["author"] = author.id
@@ -262,7 +261,7 @@ class CreateUser(ClientIDMutation):
         token = flask_jwt_extended.create_access_token(identity=new_user)
         return CreateUser(success=success, user=new_user.model(), token=token)
 
-class MarkedPodcastListened(ClientIDMutation):
+class MarkPodcastListened(ClientIDMutation):
     '''
     Mark a podcast as listened to by the user
     Not sure if we want to grab the user from the JWT
@@ -275,13 +274,14 @@ class MarkedPodcastListened(ClientIDMutation):
         podcast_episode_id = graphene.ID(required=True)
 
     @classmethod
+    @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, user_id, podcast_episode_id):
         user = flask_jwt_extended.current_user
         episode = get_node_from_global_id(info, podcast_episode_id, only_type=query.PodcastEpisode)
         listen_entry = models.ListenHistoryEntry(episode=episode)
         user.listen_history.append(listen_entry)
         user.save()
-        return MarkedPodcastListened(success=True, user=user)
+        return MarkPodcastListened(success=True, user=user)
 
 class Login(ClientIDMutation):
     success = graphene.Boolean()
@@ -324,6 +324,6 @@ class Mutations(graphene.ObjectType):
     '''
     Business Logic mutations
     '''
-    mark_podcast_listened = MarkedPodcastListened.Field()
+    mark_podcast_listened = MarkPodcastListened.Field()
 
 middleware = []
