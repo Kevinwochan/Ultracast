@@ -18,7 +18,7 @@ class CreatePodcastTest(snapshottest.TestCase):
         # Create a user
         result = self.execute_with_jwt(''' 
             mutation create_user {
-                createUser(input: {email: "ta111112112131112esty_testy123@test.com" password: "password"}) {
+                createUser(input: {email: "ta1h13hfj311112112131112esty_testy123@test.com" password: "password" name: "oli the tester"}) {
                     success
                     user {
                         id
@@ -28,6 +28,8 @@ class CreatePodcastTest(snapshottest.TestCase):
                 }
             }
                 ''')
+        if result is None:
+            raise RuntimeError("Failed to create user!")
         self.user_id = result["data"]["createUser"]["user"]["id"]
         self.jwt_token = result["data"]["createUser"]["token"]
 
@@ -114,6 +116,9 @@ class CreatePodcastTest(snapshottest.TestCase):
                           name
                         }
                       }
+                    }
+                    author {
+                        name
                     }
                   }
                 }

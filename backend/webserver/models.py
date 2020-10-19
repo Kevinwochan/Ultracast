@@ -64,5 +64,5 @@ class User(mongoengine.Document):
 
 
 # Register reverse delete rules
-PodcastMetadata.register_delete_rule(User, "author", mongoengine.CASCADE)
-PodcastMetadata.register_delete_rule(PodcastEpisodeMetadata, "episodes", mongoengine.CASCADE)
+User.register_delete_rule(PodcastMetadata, "author", mongoengine.CASCADE)
+PodcastEpisodeMetadata.register_delete_rule(PodcastMetadata, "episodes__S", mongoengine.CASCADE)

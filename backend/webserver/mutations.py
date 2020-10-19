@@ -64,16 +64,20 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
     @classmethod
     @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
-        
-        resp = db.addFile(generate_data_key(audio), audio)
-        if not resp['status']['ok']:
-            raise Exception(f"Error trying to add audio file. Response: {resp}")
+        audio_url = None
+        if audio is not None:
+            resp = db.addFile(generate_data_key(audio), audio)
+            if not resp['status']['ok']:
+                raise Exception(f"Error trying to add audio file. Response: {resp}")
 
-        audio_url = db.getFileUrl(resp['url'])
-        episode_metadata = models.PodcastEpisodeMetadata(audio_url=audio_url, **kwargs)
+            audio_url = db.getFileUrl(resp['url'])
         
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         assert_podcast_edit_permission(podcast_metadata)
+
+        episode_metadata = models.PodcastEpisodeMetadata(audio_url=audio_url, podcast_metadata=podcast_metadata,
+                **kwargs)
+        episode_metadata.save()
 
         podcast_metadata.episodes.append(episode_metadata)
         podcast_metadata.save()
@@ -99,10 +103,11 @@ class DeletePodcastEpisode(ClientIDMutation):
 
         podcast_metadata.episodes.filter(episode=podcast_episode).delete()
         podcast_metadata.save()
-
-        resp = db.removeFile(podcast_metadata.audio_url)
-        if not resp['status']['ok']:
-            raise Exception(f"Error trying to remove: {podcast_metadata.audio_url}. Response: {resp}")
+        
+        if podcast_episode.audio_url is not None:
+            resp = db.removeFile(podcast_episode.audio_url)
+            if not resp['status']['ok']:
+                raise Exception(f"Error trying to remove: {podcast_episode.audio_url}. Response: {resp}")
         
         podcast_episode.delete()
         return DeletePodcastEpisode(success=True)
@@ -134,7 +139,10 @@ class UpdatePodcastEpisode(ClientIDMutation):
         if description is not None:
             podcast_episode_metadata.description = description
         if audio is not None:
-            resp = db.updateFile(podcast_episode_metadata.audio_url, generate_data_key(audio), audio)
+            if podcast_episode_metadata.audio_url is None:
+                resp = db.addFile(generate_data_key(audio), audio)
+            else: 
+                resp = db.updateFile(podcast_episode_metadata.audio_url, generate_data_key(audio), audio)
             if not resp['status']['ok']:
                 raise Exception(f"Error trying to update: {podcast_metadata.audio_url}. Response: {resp}")
             podcast_episode_metadata.audio_url = resp['url']
@@ -157,7 +165,6 @@ class CreatePodcastMetadata(ClientIDMutation):
     podcast_metadata = graphene.Field(query.PodcastMetadata)
     class Input:
         name = graphene.String(required=True)
-        author = graphene.ID(required=True)
         description = graphene.String()
         cover = graphene_file_upload.scalars.Upload()
         category = graphene.String()
@@ -165,9 +172,9 @@ class CreatePodcastMetadata(ClientIDMutation):
         keywords = graphene.List(graphene.String)
     
     @classmethod
+    @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, **input):
-        # TODO: User authentication - remove author as an input and user flask_jwt_extended.current_user
-        author = get_node_from_global_id(info, input["author"], only_type=query.User)
+        author = flask_jwt_extended.current_user
         
         podcast_metadata_args = input
         podcast_metadata_args["author"] = author.get_mongo_id()
@@ -353,6 +360,6 @@ class Mutations(graphene.ObjectType):
     '''
     Business Logic mutations
     '''
-    mark_podcast_listened = MarkedPodcastListened.Field()
+    mark_podcast_listened = MarkPodcastListened.Field()
 
 middleware = []

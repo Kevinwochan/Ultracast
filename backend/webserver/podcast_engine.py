@@ -107,6 +107,13 @@ class User(BusinessLayerObject):
 
     def delete(self):
         # TODO: Delete all the podcasts!
+        for podcast in self.model().published_podcasts:
+            self.model().modify(pull__published_podcasts=podcast)
+            for episode in podcast.episodes:
+                podcast.modify(pull__episodes=episode)
+                # TODO: Delete from s3 store
+                episode.delete()
+            podcast.delete()
         super().delete()
 
     def check_password(self, password):
