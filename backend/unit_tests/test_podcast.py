@@ -18,7 +18,7 @@ class CreatePodcastTest(snapshottest.TestCase):
         # Create a user
         result = self.execute_with_jwt(''' 
             mutation create_user {
-                createUser(input: {email: "ta1h13hfj311112112131112esty_testy123@test.com" password: "password" name: "oli the tester"}) {
+                createUser(input: {email: "taa1h13hfj311112112131112esty_testy123@test.com" password: "password" name: "oli the tester"}) {
                     success
                     user {
                         id

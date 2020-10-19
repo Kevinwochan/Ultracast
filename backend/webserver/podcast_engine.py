@@ -1,5 +1,6 @@
 from . import models
 from . import query
+from . import db
 
 from abc import ABC
 import graphene
@@ -110,6 +111,8 @@ class User(BusinessLayerObject):
         for podcast in self.model().published_podcasts:
             self.model().modify(pull__published_podcasts=podcast)
             for episode in podcast.episodes:
+                if episode.audio_url is not None:
+                    db.removeFile(episode.audio_url)
                 podcast.modify(pull__episodes=episode)
                 # TODO: Delete from s3 store
                 episode.delete()
