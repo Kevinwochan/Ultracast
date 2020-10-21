@@ -14,6 +14,7 @@ import Upload from "./pages/Upload";
 import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
 import History from "./pages/History";
+import Explore from "./pages/Recommended";
 import Author from "./pages/Author";
 import Analytics from "./pages/Analytics";
 
@@ -106,6 +107,13 @@ export default function App() {
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
               <History state={state} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/explore">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state} player>
+              <Explore state={state} />
             </Page>
           </PrivateRoute>
         </Route>

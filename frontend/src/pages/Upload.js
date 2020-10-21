@@ -15,11 +15,52 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Fade from "@material-ui/core/Fade";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import CheckIcon from "@material-ui/icons/Check";
-import Page from "../common/Page";
 import theme from "../theme";
 import { extractFiles } from "extract-files";
 import axios from "axios";
 import configuration from "../api/configuration";
+
+const useStyles = makeStyles((theme) => ({
+  container: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+  },
+  fields: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-around",
+  },
+  mediaContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "start",
+    marginBottom: theme.spacing(2),
+  },
+  media: {
+    height: 150,
+    width: 150,
+  },
+  mediaText: {
+    maxWidth: 300,
+  },
+  center: {
+    display: "flex",
+    justifyContent: "center",
+  },
+  preview: {
+    // minHeight: "calc(100vh - 70px)",
+    minHeight: "100vh",
+    // overflow: "hidden",
+    // minHeight: "calc(100vh - ${theme.navBar.height})",
+    background:
+      "linear-gradient(0deg, rgba(226,180,0,1) 0%, rgba(253,187,45,1) 25%)",
+  },
+  previewHeader: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+}));
 
 export default function Upload() {
   const classes = useStyles();
@@ -81,11 +122,6 @@ export default function Upload() {
             label: item.node.name,
             author: item.node.author.id,
           });
-          // ! This came from the merge conflict, not sure if we need this or not
-          // }
-          // names.filter(
-          //   (item) => item.value === "VXNlcjo1ZjgzMGJhZjEzYjIwNmM1NTBjZmM2YWI="
-          // ); /* TODO: dynamic author*/
         });
         setState((prevState) => ({
           ...prevState,
@@ -114,8 +150,8 @@ export default function Upload() {
         <Actions state={state} resetFields={resetFields} setState={setState} />
       </Grid>
       <Grid item xs={12} sm={4}>
-        <Fade in={state.title} timeout={750}>
-          <Box ml={2}>
+        <Fade in={state.title ? true : false} timeout={750}>
+          <Box ml={2} mt={-2}>
             <Preview
               image={state.image}
               title={state.title}
@@ -129,46 +165,6 @@ export default function Upload() {
     </Grid>
   );
 }
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-  },
-  fields: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-around",
-  },
-  mediaContainer: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "start",
-    marginBottom: theme.spacing(2),
-  },
-  media: {
-    height: 150,
-    width: 150,
-  },
-  mediaText: {
-    maxWidth: 300,
-  },
-  center: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  preview: {
-    minHeight: "calc(100vh - 70px)",
-    // minHeight: "calc(100vh - ${theme.navBar.height})",
-    background:
-      "linear-gradient(0deg, rgba(226,180,0,1) 0%, rgba(253,187,45,1) 25%)",
-  },
-  previewHeader: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-}));
 
 const Preview = ({ image, title, description, podcast, duration }) => {
   const classes = useStyles();
