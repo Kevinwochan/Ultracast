@@ -56,7 +56,7 @@ def file_exists(key):
     except:
         return False
 
-def add_file(data, key=None, override=True, content_type=None, ext=""):
+def add_file(data, key=None, override=False, content_type=None, ext=""):
     if key is None:
         key = get_key_from_binary_data(data, ext)
     
@@ -71,6 +71,9 @@ def add_file(data, key=None, override=True, content_type=None, ext=""):
         ContentType=content_type)
     check_status(resp, [200])
     return get_file_url(key)
+
+def add_audio_file(data, key=None, override=False):
+    return add_file(data, key, override, "audio/mpeg", ".mp3")
 
 def remove_file(url):
     resp = client.delete_object(Bucket=BUCKET, Key=get_key_from_url(url))

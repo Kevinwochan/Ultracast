@@ -30,6 +30,6 @@ class DownloadUploadThread(threading.Thread):
         response = requests.get(url, timeout=10)
         data = response.content
         print(f"Uploading {url} content")
-        upload_url = db.add_file(data=data, override=False, content_type=content_type, ext=ext)
+        upload_url = db.add_file(data=data, content_type=content_type, ext=ext)
         self.episode_id_to_uploaded_url[episode_id] = upload_url
         print(f"Upload done for content from {url}")
