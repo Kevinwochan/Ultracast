@@ -94,7 +94,8 @@ class Query(graphene.ObjectType):
     node = Node.Field()
     all_podcast_episode = MongoengineConnectionField(PodcastEpisode)
     all_podcast_metadata = MongoengineConnectionField(PodcastMetadata)
-    all_user = AuthenticatedMongoengineConnectionField(User)
+    #all_user = AuthenticatedMongoengineConnectionField(User)
+    all_user = MongoengineConnectionField(User)
 
 types = [PodcastEpisode, PodcastMetadata, User]
 middleware = []
