@@ -22,7 +22,7 @@ function PrivateRoute({ cookies, children, ...rest }) {
     <Route
       {...rest}
       render={({ location }) =>
-        cookies.loggedin ? (
+        cookies.token ? (
           children
         ) : (
           <Redirect

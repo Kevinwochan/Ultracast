@@ -36,7 +36,7 @@ export default function Page({ state, handleCookie, player, children }) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {cookies.loggedin ? (
+      {cookies.token ? (
         <>
           <UserLayout handleCookie={handleCookie} state={state}>
             {/* Really, this is the nav bar + sidebar */}

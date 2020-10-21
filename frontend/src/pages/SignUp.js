@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
@@ -14,8 +13,8 @@ import Copyright from "../components/Copyright";
 import axios from "axios";
 import configuration from "../api/configuration";
 import { useHistory } from "react-router-dom";
-import Page from "../common/Page";
 import ucTheme from "../theme";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -46,15 +45,16 @@ export default function SignUp({ handleCookie }) {
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
   const history = useHistory();
+  const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
-    e.preventDefault(); /*
+    e.preventDefault();
     axios
       .post(
         configuration.BACKEND_ENDPOINT,
         JSON.stringify({
           query:
-            "mutation($email: String!, $password: String!) {createUser(input: {email: $email, password: $password}) {success}}",
+            "mutation($email: String!, $password: String!) {createUser(input: {email: $email, password: $password}) {success token failWhy}}",
           variables: {
             email: `${emailRef.current.value}`,
             password: `${passwordRef.current.value}`,
@@ -70,14 +70,16 @@ export default function SignUp({ handleCookie }) {
       .then((response) => {
         console.log(response);
         console.log(response.data.data.createUser.success);
-        if (response.data.data.createUser.success){
-          handleCookie("loggedin", true);
+        if (response.data.data.createUser.success) {
+          handleCookie("token", response.data.data.createUser.token);
           history.push("/");
+        }else{
+          setMessage(response.data.data.createUser.failWhy);
         }
       })
-      .catch((err) => {console.log(err)});*/
-    handleCookie("loggedin", true);
-    history.push("/in");
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -91,6 +93,9 @@ export default function SignUp({ handleCookie }) {
         </Typography>
         <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <Grid container spacing={2}>
+            <Grid item xs={12}>
+              {message.length > 0 && <Alert severity="error">{message}</Alert>}
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
