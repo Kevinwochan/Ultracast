@@ -22,7 +22,7 @@
     "react-dom": "^16.13.1",
     "react-jinke-music-player": "^4.19.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.3",
+    "react-scripts": "^3.4.4",
     "react-uid": "^2.3.0",
     "recharts": "^1.8.5",
     "styled-components": "^5.2.0",

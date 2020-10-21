@@ -19,6 +19,7 @@ import theme from "../theme";
 import { extractFiles } from "extract-files";
 import axios from "axios";
 import configuration from "../api/configuration";
+import getDominantColour from "../common/dominantColor";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -39,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
   media: {
     height: 150,
     width: 150,
+    border: "medium solid black",
   },
   mediaText: {
     maxWidth: 300,
@@ -52,8 +54,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "100vh",
     // overflow: "hidden",
     // minHeight: "calc(100vh - ${theme.navBar.height})",
-    background:
-      "linear-gradient(0deg, rgba(226,180,0,1) 0%, rgba(253,187,45,1) 25%)",
+    background: "#e0e0e0",
   },
   previewHeader: {
     display: "flex",
@@ -65,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Upload() {
   const classes = useStyles();
   const originalState = {
-    image: "http://placehold.jp/150x150.png",
+    image: "/branding/square.svg",
     allPodcasts: [{ label: "Create new podcast", value: "new-podcast" }],
     podcast: {
       label: "",
@@ -173,10 +174,17 @@ const Preview = ({ image, title, description, podcast, duration }) => {
     <Card variant="outlined" className={classes.preview}>
       <Box mt={7}>
         <div className={classes.previewHeader}>
-          <CardMedia
+          <img
             className={classes.media}
-            image={image}
-            title="Preview podcast image"
+            src={image}
+            alt="Preview podcast image"
+            onLoad={(e) => {
+              const img = e.target;
+              const colour = getDominantColour(img);
+
+              // It's gross i know :(
+              img.parentElement.parentElement.parentElement.style.background = `#${colour}`;
+            }}
           />
           <CardContent className={classes.mediaText}>
             <Typography variant="h6" align="center">
