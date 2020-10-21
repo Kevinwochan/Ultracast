@@ -163,27 +163,31 @@ export default function UserLayout({ handleCookie, state, children }) {
         <Divider />
         <CreatorSideBar classes={classes} open={open} />
         <Divider />
-        <IconButton
-          aria-label="open drawer"
-          onClick={handleDrawerOpen}
-          edge="start"
-          className={clsx(classes.menuButton, {
-            [classes.hide]: open,
-          })}
-        >
-          <ChevronRightIcon />
-        </IconButton>
-        <IconButton
-          color="primary"
-          aria-label="close drawer"
-          onClick={handleDrawerClose}
-          edge="start"
-          className={clsx(classes.menuButton, {
-            [classes.hide]: !open,
-          })}
-        >
-          <ChevronLeftIcon />
-        </IconButton>
+
+        <List>
+          <Tooltip title={open ? "" : "Open sidebar"} placement="right">
+            <ListItem
+              button
+              onClick={handleDrawerOpen}
+              className={open ? classes.hide : ""}
+            >
+              <ListItemIcon>
+                <ChevronRightIcon />
+              </ListItemIcon>
+            </ListItem>
+          </Tooltip>
+
+          <ListItem
+            button
+            onClick={handleDrawerClose}
+            className={!open ? classes.hide : ""}
+          >
+            <ListItemIcon>
+              <ChevronLeftIcon />
+            </ListItemIcon>
+            <ListItemText primary="Collapse sidebar" />
+          </ListItem>
+        </List>
       </Drawer>
       {children}
     </div>

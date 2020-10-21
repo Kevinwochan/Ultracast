@@ -41,7 +41,7 @@ export default function App() {
   //Top level state (variables that are stored between pages)
   const [cookies, setCookie, removeCookie] = useCookies();
   const [sessionState, setState] = useState({
-    open: false,
+    open: true,
     audioList: [],
     cookies: cookies,
   });
