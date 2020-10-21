@@ -105,7 +105,7 @@ export default function App() {
         <Route path="/history">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
-              <History />
+              <History state={state} />
             </Page>
           </PrivateRoute>
         </Route>

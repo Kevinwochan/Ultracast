@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Playlist from "../components/Playlist";
+import { Playlist } from "../components/Podcast";
 import Page from "../common/Page";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";

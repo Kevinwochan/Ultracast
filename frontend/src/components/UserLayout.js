@@ -217,9 +217,9 @@ const ListenerSideBar = ({ classes, open }) => {
       link: "/author/1",
     },
     {
-      name: "History",
+      name: "Recently Listened",
       icon: <HistoryIcon />,
-      link: "/History",
+      link: "/history",
     },
 
     // TODO add recommended, history, friends and subscribed
