@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import EpisodePlaylist from "../components/EpisodePlaylist";
-import Page from "../common/Page";
+import { Playlist } from "../components/Podcast";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
@@ -21,6 +21,7 @@ const podcast = {
 const episodes = [
   {
     title: "Episode 1: Giving Lawyer X a Voice",
+    length: "20",
     description:
       "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
     image: "https://source.unsplash.com/random",
@@ -30,15 +31,17 @@ const episodes = [
   },
   {
     title: "Episode 2: Dead Man's Chest",
+    length: "20",
     description:
       "Captain Jack Sparrow seeks the heart of Davy Jones, a mythical pirate, in order to avoid being enslaved to him. However, others, including his friends Will and Elizabeth, want it for their own gain.",
     image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oliver Productions", id: 1},
-    podcast: { id: 1, title: "Oli's True Crime Series"},
+    author: { name: "Oliver Productions", id: 1 },
+    podcast: { id: 1, title: "Oli's True Crime Series" },
   },
   {
     title: "Episode 3: A Locked Door",
+    length: "20",
     description:
       "This is a wider card with supporting text below as a natural lead-in to additional content.",
     image: "https://source.unsplash.com/random",
@@ -48,6 +51,7 @@ const episodes = [
   },
   {
     title: "Episode 4",
+    length: "20",
     description:
       "This is a wider card with supporting text below as a natural lead-in to additional content.",
     image: "https://source.unsplash.com/random",
@@ -57,6 +61,7 @@ const episodes = [
   },
   {
     title: "Episode 5",
+    length: "20",
     description:
       "This is a wider card with supporting text below as a natural lead-in to additional content.",
     image: "https://source.unsplash.com/random",
@@ -75,12 +80,12 @@ const useStyles = makeStyles((theme) => ({
     minHeight: 300,
   },
   podcastCover: {
-    width: 300,
-    height: 300,
+    width: 150,
+    height: 150,
   },
 }));
 
-export default function Podcast() {
+export default function Podcast({ state }) {
   const classes = useStyles();
   const [subscribed, setSubscription] = useState(false);
 
@@ -135,9 +140,7 @@ export default function Podcast() {
           ></img>
         </Grid>
       </Grid>
-      <Container maxWidth="lg">
-        <EpisodePlaylist episodes={episodes} />
-      </Container>
+      <Playlist episodes={episodes} state={state} />
     </>
   );
 }

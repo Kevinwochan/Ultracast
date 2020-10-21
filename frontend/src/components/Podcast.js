@@ -17,6 +17,22 @@ const playlistStyles = makeStyles((theme) => ({
 export function Playlist({ episodes, state, variant = "episode" }) {
   const classes = playlistStyles();
 
+  const EpisodeTitle = ({ episode }) => (
+    <Grid item lg={6}>
+      {variant == "podcast" ? (
+        <Link to={`/podcast/${episode.podcast.id}`}>
+          <Typography gutterBottom variant="subtitle1">
+            <b>{episode.title}</b>
+          </Typography>
+        </Link>
+      ) : (
+        <Typography gutterBottom variant="h6">
+          <b>{episode.title}</b>
+        </Typography>
+      )}
+    </Grid>
+  );
+
   // Show the podcast title if the variant is "podcast"
   const PodcastTitle = ({ episode }) => (
     <Grid item lg={4}>
@@ -41,11 +57,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
                 <Grid item lg={10} container direction="column">
                   <Grid item spacing={1}>
                     <Grid container>
-                      <Grid item lg={6}>
-                        <Typography gutterBottom variant="h6">
-                          {episode.title}
-                        </Typography>
-                      </Grid>
+                      <EpisodeTitle episode={episode} />
                     </Grid>
                     <Grid container>
                       {variant == "podcast" ? null : (
@@ -61,7 +73,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
                       <Grid item lg={4}>
                         <Typography gutterBottom variant="subtitle1">
                           {variant == "podcast"
-                            ? `${episode.episodes} episodes`
+                            ? `${episode.length} episodes`
                             : `${episode.length} minutes`}
                         </Typography>
                       </Grid>

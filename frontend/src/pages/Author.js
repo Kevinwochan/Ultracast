@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Playlist } from "../components/Podcast";
-import Page from "../common/Page";
+import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -56,84 +56,46 @@ const getPodcastNames = () => {
 */
 
 const useStyles = makeStyles((theme) => ({
-  podcastCover: {
-    width: 150,
-    height: 150,
-  },
-  card: {
-    background: "white",
-    padding: theme.spacing(2),
-    margin: theme.spacing(3),
-    textDecoration: "none",
-    transition: "0.5s",
-    "&:hover": {
-      boxShadow: "5px 5px 10px rgba(0,0,0,0.2)",
-    },
-  },
-  order: {
-    margin: "auto",
-    textAlign: "center",
+  cardGrid: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
   },
 }));
 
-export default function History() {
+export default function Author({ state, name = "Oliver Productions" }) {
   const classes = useStyles();
   //const podcasts = getPodcastNames();
   const podcasts = [
     {
-      id: 1,
-      title: "Oliver's True Crime Series",
+      title: "Oli's True Crime Series",
+      length: "100",
       description:
-        "In this innovative podcast, retired cold case investigator Paul Holes and true crime journalist Billy Jensen team up to tackle unsolved crimes and missing person cases each week. They invite listeners to contribute their own research and theories, so you can put on your own Sherlock hat.",
+        'Do "disgraced" lawyer Nicola Gobbo and "disgraced" former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?',
       image: "https://source.unsplash.com/random",
-      author: { name: "Joe Rogan", id: 1 },
-      podcast: "Joe Rogan Show",
+      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      author: { name: "Oliver Productions", id: 1 },
+      podcast: { id: 1, title: "Oli's True Crime Series" },
     },
     {
-      id: 1,
-      title: "73 Questions with Oliver",
+      title: "Oli's True Crime Series 2: Electric Boogaloo",
+      length: "20",
       description:
-        "73 Questions Answered By Your Favorite Celebs - Filmed in a single shot, some of our favorite personalities are challenged to answer 73 rapid-fire questions.",
+        "Captain Jack Sparrow seeks the heart of Davy Jones, a mythical pirate, in order to avoid being enslaved to him. However, others, including his friends Will and Elizabeth, want it for their own gain.",
       image: "https://source.unsplash.com/random",
-      author: { name: "Joe Rogan", id: 2 },
-      podcast: "Joe Rogan Show",
+      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      author: { name: "Oliver Productions", id: 1 },
+      podcast: { id: 1, title: "Oli's True Crime Series" },
     },
   ];
 
   return (
-    <Container maxWidth="lg">
-      <IconButton aria-label="delete" disabled color="primary"></IconButton>
-      {podcasts.map((podcast, index) => (
-        <Link to={`/podcast/${podcast.id}`}>
-          <Grid container className={classes.card} spacing={3}>
-            <Grid item lg={2}>
-              <img
-                src={
-                  podcast.cover
-                    ? podcast.cover
-                    : "https://source.unsplash.com/random"
-                }
-                alt="podcast cover"
-                className={classes.podcastCover}
-              ></img>
-            </Grid>
-            <Grid item lg={10} container direction="column">
-              <Grid item spacing={1}>
-                <Typography gutterBottom variant="h4">
-                  <Grid container>
-                    <Grid item xs>
-                      {podcast.title}
-                    </Grid>
-                  </Grid>
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  {podcast.description}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Link>
-      ))}
+    <Container className={classes.cardGrid} maxWidth="lg">
+      <Box m={2}>
+        <Typography gutterBottom variant="h5">
+          <b>{name}</b>
+        </Typography>
+      </Box>
+      <Playlist episodes={podcasts} state={state} variant="podcast" />
     </Container>
   );
 }
