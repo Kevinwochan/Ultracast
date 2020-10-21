@@ -105,6 +105,10 @@ class User(BusinessLayerObject):
     def update(self, password):
         self._model.modify(password=werkzeug.security.generate_password_hash(password))
 
+    def delete(self):
+        # TODO: Delete all the podcasts!
+        super().delete()
+
     def check_password(self, password):
         return werkzeug.security.check_password_hash(
                 self._model.password, password)
@@ -114,6 +118,9 @@ class User(BusinessLayerObject):
 
     def can_edit_podcast_metadata(self, podcast_metadata):
         return podcast_metadata.author.id == self._model.id
+
+    def get_mongo_id(self):
+        return self._model.id
 
     @classmethod
     def from_email(cls, email):

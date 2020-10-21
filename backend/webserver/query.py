@@ -40,6 +40,10 @@ class AuthenticatedMongoengineConnectionField(MongoengineConnectionField):
             return resolved
         return super().default_resolver(_root, info, **args)
 
+class PodcastEpisode(MongoengineObjectType):
+    class Meta:
+        model = models.PodcastEpisode
+        interfaces = (Node,)
 
 class PodcastEpisodeMetadata(MongoengineObjectType):
     class Meta:
@@ -88,9 +92,10 @@ class User(MongoengineObjectType):
 
 class Query(graphene.ObjectType):
     node = Node.Field()
-    all_podcast_episode_metadata = MongoengineConnectionField(PodcastEpisodeMetadata)
+    all_podcast_episode = MongoengineConnectionField(PodcastEpisode)
     all_podcast_metadata = MongoengineConnectionField(PodcastMetadata)
-    all_user = AuthenticatedMongoengineConnectionField(User)
+    #all_user = AuthenticatedMongoengineConnectionField(User)
+    all_user = MongoengineConnectionField(User)
 
-types = [PodcastEpisodeMetadata, PodcastMetadata, User]
+types = [PodcastEpisode, PodcastMetadata, User]
 middleware = []
