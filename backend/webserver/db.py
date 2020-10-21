@@ -45,9 +45,9 @@ def get_key_from_url(url):
 def get_key_from_binary_data(data, ext=""):
     return urlsafe_b64encode(hashlib.sha256(data).digest()).decode('UTF-8') + ext
 
-def check_status(resp, ok_statuses):
+def check_status(resp, ok_statuses, op):
     if resp['ResponseMetadata']['HTTPStatusCode'] not in ok_statuses:
-        raise Exception(f"Error - server response: {resp}")
+        raise Exception(f"Error for operation [{op}] - Response: {resp}")
 
 def file_exists(key):
     try:
@@ -69,7 +69,7 @@ def add_file(data, key=None, override=False, content_type=None, ext=""):
         Key=key, 
         ACL=FILE_ACCESS, 
         ContentType=content_type)
-    check_status(resp, [200])
+    check_status(resp, [200], 'Add File')
     return get_file_url(key)
 
 def add_audio_file(data, key=None, override=False):
@@ -77,7 +77,7 @@ def add_audio_file(data, key=None, override=False):
 
 def remove_file(url):
     resp = client.delete_object(Bucket=BUCKET, Key=get_key_from_url(url))
-    check_status(resp, [200, 204])
+    check_status(resp, [200, 204], 'Remove File')
 
 def update_file(old_url, data, new_key=None, content_type=None):
     remove_file(old_url)
