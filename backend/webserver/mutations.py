@@ -43,9 +43,6 @@ def assert_podcast_edit_permission(podcast_metadata):
         raise werkzeug.exceptions.Forbidden("User {} cannot delete this podcast".format(
             flask_jwt_extended.current_user.get_email()))
 
-def generate_data_key(binary_data):
-    return hashlib.md5(binary_data)
-
 ###########################################################################################################
 #                                           PodcastEpisodeMetadata                                        #
 ###########################################################################################################
@@ -66,11 +63,7 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
         audio_url = None
         if audio is not None:
-            resp = db.addFile(generate_data_key(audio), audio)
-            if not resp['status']['ok']:
-                raise Exception(f"Error trying to add audio file. Response: {resp}")
-
-            audio_url = db.getFileUrl(resp['url'])
+            audio_url = db.add_audio_file(data=audio)
         
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         assert_podcast_edit_permission(podcast_metadata)
@@ -105,9 +98,7 @@ class DeletePodcastEpisode(ClientIDMutation):
         podcast_metadata.save()
         
         if podcast_episode.audio_url is not None:
-            resp = db.removeFile(podcast_episode.audio_url)
-            if not resp['status']['ok']:
-                raise Exception(f"Error trying to remove: {podcast_episode.audio_url}. Response: {resp}")
+            db.remove_file(podcast_episode.audio_url)
         
         podcast_episode.delete()
         return DeletePodcastEpisode(success=True)
@@ -139,13 +130,7 @@ class UpdatePodcastEpisode(ClientIDMutation):
         if description is not None:
             podcast_episode_metadata.description = description
         if audio is not None:
-            if podcast_episode_metadata.audio_url is None:
-                resp = db.addFile(generate_data_key(audio), audio)
-            else: 
-                resp = db.updateFile(podcast_episode_metadata.audio_url, generate_data_key(audio), audio)
-            if not resp['status']['ok']:
-                raise Exception(f"Error trying to update: {podcast_metadata.audio_url}. Response: {resp}")
-            podcast_episode_metadata.audio_url = resp['url']
+            podcast_episode_metadata.audio_url = db.update_audio_file(podcast_episode_metadata.audio_url, audio)
         if keywords is not None:
             podcast_episode_metadata.keywords = keywords
 
@@ -205,7 +190,9 @@ class DeletePodcastMetadata(ClientIDMutation):
         # Track through deleting all episodes
         num_deleted = 0
         for episode_metadata in podcast_metadata.episodes:
-            # TODO: @connor Delete podcast from s3 store
+            audio_url = episode_metadata.audio_url
+            if audio_url is not None:
+                db.remove_file(audio_url)
             episode_metadata.delete()
             num_deleted += 1
 
