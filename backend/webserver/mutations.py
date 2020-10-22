@@ -2,6 +2,7 @@ from . import models
 from . import mutations
 from . import query
 from . import podcast_engine
+from . import db
 
 import flask_jwt_extended
 
