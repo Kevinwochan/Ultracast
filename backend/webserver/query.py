@@ -96,13 +96,17 @@ class Query(graphene.ObjectType):
     all_podcast_metadata = MongoengineConnectionField(PodcastMetadata)
     #all_user = AuthenticatedMongoengineConnectionField(User)
     all_user = MongoengineConnectionField(User)
+    # https://docs.graphene-python.org/en/latest/api/ 
+    recommendations = Field(getRecommendations) # May need to add something else here
 
-# I am very lost
+# https://docs.graphene-python.org/en/latest/execution/execute/
+# https://docs.graphene-python.org/en/latest/relay/nodes/
 class getRecommendations(graphene.ObjectType):
-    recommendations = graphene.List()  # List of what?
+    recommendations = graphene.List(PodcastMetadata)
 
     def resolve_recommendations(root, info):
-        return None
+        # Set up the 'recommendations' list here, then return it
+        return recommendations
 
 types = [PodcastEpisode, PodcastMetadata, User]
 middleware = []
