@@ -38,9 +38,8 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(db.get_key(data=data, ext='.mp3'), expected)
 
     def test_add_file_data_file_then_remove(self):
-        url = db.add_file(data=b'data', ext='.txt')
+        url = db.add_file(data=b'data')
         self.assertTrue(db.url_exists(url))
-        self.assertRegex(url, r"\.txt$")
         db.remove_file(url)
         self.assertFalse(db.url_exists(url))
 

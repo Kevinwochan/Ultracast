@@ -2,6 +2,8 @@ from . import models
 from . import schema
 
 import re
+import magic
+import mimetypes
 import boto3
 from botocore.client import Config
 from mongoengine import connect
@@ -32,9 +34,6 @@ client = session.client('s3',
 
 BUCKET = 'ultracast-files'
 FILE_ACCESS = 'public-read'
-
-AUDIO_FORMAT_TYPE = "audio/mpeg"
-AUDIO_EXTENSION = ".mp3"
 
 def get_bucket_url():
     return re.sub(r"^https://", f"https://{BUCKET}.", STATIC_FILE_BASE_URL)
@@ -68,35 +67,28 @@ def get_key(data, key=None, ext=""):
     else:
         return key
 
-def add_file(data, key=None, override=False, content_type=None, ext=""):
-    key = get_key(data, key, ext)
+def add_file(data, key=None, override=False):
+    mime_type = magic.from_buffer(data, mime=True)
+    extension = mimetypes.guess_extension(mime_type)
+    key = get_key(data, key, extension)
     
     if not override and file_exists(key):
         return get_file_url(key)
-    
-    if content_type is None:
-        content_type = 'plain/text'
 
     resp = client.put_object(
         Body=data, 
         Bucket=BUCKET, 
         Key=key, 
         ACL=FILE_ACCESS, 
-        ContentType=content_type)
+        ContentType=mime_type)
     check_status(resp, [200], 'Add File')
     return get_file_url(key)
-
-def add_audio_file(data, key=None, override=False):
-    return add_file(data, key, override, AUDIO_FORMAT_TYPE, AUDIO_EXTENSION)
 
 def remove_file(url):
     resp = client.delete_object(Bucket=BUCKET, Key=get_key_from_url(url))
     check_status(resp, [200, 204], 'Remove File')
 
-def update_file(old_url, data, new_key=None, content_type=None, ext=""):
+def update_file(old_url, data, new_key=None):
     if url_exists(old_url):
         remove_file(old_url)
-    return add_file(data, new_key, content_type=content_type, ext=ext)
-
-def update_audio_file(old_url, data, new_key=None):
-    return update_file(old_url, data, new_key, AUDIO_FORMAT_TYPE, AUDIO_EXTENSION)
+    return add_file(data, new_key)
