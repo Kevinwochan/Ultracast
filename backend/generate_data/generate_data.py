@@ -30,6 +30,7 @@ FILTERED_CSV_NAME = f"{SCRIPT_DIR}/filtered_episodes.csv"
 AUDIO_MAPPING_FILENAME = f"{SCRIPT_DIR}/audio_file_mapping.csv"
 VALID_AUDIO_URLS_FILE = f"{SCRIPT_DIR}/valid_audio_urls.pickle"
 UPLOADED_AUDIO_FILE = f"{SCRIPT_DIR}/uploaded_audio.pickle"
+UPLOADED_IMAGE_FILE = f"{SCRIPT_DIR}/uploaded_images.pickle"
 
 ### FILTER VARIABLES ###
 MIN_EPISODES_PER_PODCAST = 2
@@ -39,6 +40,7 @@ MAX_DESCRIPTION_LEN = 300
 MIN_FILE_SIZE_MB = 0.0001
 MAX_FILE_SIZE_MB = 1500
 VALID_AUDIO_FORMATS = ['audio/mpeg', 'audio/mp3', 'mp3', 'MP3', 'Audio/MP3', 'audio/mpeg3', 'audio/x-mp3']
+VALID_IMAGE_FORMATS = ['image/jpeg', 'image/png']
 EPISODE_DROP_COLS = ['link', 'guid', 'description', 'summary', 'pub_date', 'author', 'explicit']
 EPISODE_ALLOW_NA_COLS = ['category', 'subtitle']
 # TODO - consider adding explicit and language info
@@ -49,9 +51,11 @@ def main():
     df, podcasts_df = get_data()
     confirm_data_ok_prompt(df)
     # Upload static data
-    episode_id_to_uploaded_url = download_upload_audio_files(df, UPLOADED_AUDIO_FILE)
+    episode_id_to_uploaded_audio_url = download_upload_files(df, UPLOADED_AUDIO_FILE, ['id', 'audio_url'], VALID_AUDIO_FORMATS)
+    podcast_id_to_uploaded_cover_url = download_upload_files(podcasts_df, UPLOADED_IMAGE_FILE, ['id', 'image'], VALID_IMAGE_FORMATS)
     # Write documents to mongodb
-    write_to_db(df, podcasts_df, episode_id_to_uploaded_url)
+    # TODO enable
+    # write_to_db(df, podcasts_df, episode_id_to_uploaded_audio_url)
     print(f"{OKGREEN}Finished Successfully{ENDCOL}")
 
 def get_data():
@@ -185,28 +189,29 @@ def valid_download_link(df, url_column_name, cache_file):
 #                                      Download & Upload Static data                                      #
 ###########################################################################################################
 
-def download_upload_audio_files(df, cache_file):
+# 
+def download_upload_files(df, cache_file, id_url_cols, valid_mime_formats):
 
-    episode_id_to_uploaded_url = {}
+    entity_id_to_uploaded_url = {}
     if os.path.isfile(cache_file):
-        episode_id_to_uploaded_url = pickle.load(open(cache_file, "rb"))
+        entity_id_to_uploaded_url = pickle.load(open(cache_file, "rb"))
 
     file_queue = queue.Queue()
-    for entry in [tuple(x) for x in df[['id', 'audio_url']].to_numpy()]:
-        episode_id = entry[0]
+    for entry in [tuple(x) for x in df[id_url_cols].to_numpy()]:
+        entity_id = entry[0]
         download_url = entry[1]
 
-        if episode_id not in episode_id_to_uploaded_url.keys():
-            file_queue.put((episode_id, download_url, "audio/mpeg", ".mp3"))
+        if entity_id not in entity_id_to_uploaded_url.keys():
+            file_queue.put((entity_id, download_url, valid_mime_formats))
 
     num_threads = 16
     for i in range(num_threads):
-        t = DownloadUploadThread(file_queue, episode_id_to_uploaded_url)
+        t = DownloadUploadThread(file_queue, entity_id_to_uploaded_url)
         t.start()
     file_queue.join()
 
-    pickle.dump(episode_id_to_uploaded_url, open(cache_file, "wb"))
-    return episode_id_to_uploaded_url
+    pickle.dump(entity_id_to_uploaded_url, open(cache_file, "wb"))
+    return entity_id_to_uploaded_url
 
 ###########################################################################################################
 #                                      Write Data                                                         #
