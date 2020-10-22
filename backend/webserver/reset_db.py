@@ -5,10 +5,9 @@ import mongoengine
 import mongoengine.connection
 
 def drop_collections():
-    models.PodcastEpisode.drop_collection()
+    models.PodcastEpisodeMetadata.drop_collection()
     models.PodcastMetadata.drop_collection()
     models.User.drop_collection()
-    models.PodcastEpisode.drop_collection()
 
 
 if __name__ == "__main__":
