@@ -97,5 +97,12 @@ class Query(graphene.ObjectType):
     #all_user = AuthenticatedMongoengineConnectionField(User)
     all_user = MongoengineConnectionField(User)
 
+# I am very lost
+class getRecommendations(graphene.ObjectType):
+    recommendations = graphene.List()  # List of what?
+
+    def resolve_recommendations(root, info):
+        return None
+
 types = [PodcastEpisode, PodcastMetadata, User]
 middleware = []
