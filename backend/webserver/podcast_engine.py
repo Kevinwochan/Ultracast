@@ -41,6 +41,7 @@ class BusinessLayerObject(ABC):
     def from_mongo_id(cls, mongo_id):
         model = cls._model_type.objects(id=mongo_id).get()
         return cls(model)
+
 '''
 class PodcastMetadata(BusinessLayerObject):
     MODEL_TYPE = models.PodcastMetadata
@@ -118,6 +119,16 @@ class User(BusinessLayerObject):
                 episode.delete()
             podcast.delete()
         super().delete()
+
+    def subscribe_podcast(self, podcast_metadata_model):
+        print("model in User: " + self._model.to_json())
+        self._model.modify(add_to_set__subscribed_podcasts=podcast_metadata_model)
+        #podcast_metadata_model.modify(add_to_set__subscribers=self._model.id)
+        podcast_metadata_model.modify(push__subscribers=self._model.id)
+
+    def remove_subscribed_podcast(self, podcast_metadata_model):
+        self._model.modify(pull__subscribed_podcasts=podcast_metadata_model)
+        podcast_metadata_model.modify(pull__subscribers=self._model)
 
     def check_password(self, password):
         return werkzeug.security.check_password_hash(

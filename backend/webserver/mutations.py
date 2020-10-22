@@ -2,7 +2,6 @@ from . import models
 from . import mutations
 from . import query
 from . import podcast_engine
-from . import db
 
 import flask_jwt_extended
 
@@ -14,8 +13,6 @@ import graphene_file_upload
 import graphene_file_upload.scalars
 import flask_jwt_extended
 import werkzeug
-import hashlib 
-
 
 '''
 Trying things out relay style...
@@ -44,7 +41,7 @@ def assert_podcast_edit_permission(podcast_metadata):
             flask_jwt_extended.current_user.get_email()))
 
 ###########################################################################################################
-#                                           PodcastEpisodeMetadata                                        #
+#                                           PodcastEpisode                                                #
 ###########################################################################################################
 
 class CreatePodcastEpisodeMutation(ClientIDMutation):
@@ -99,8 +96,7 @@ class DeletePodcastEpisode(ClientIDMutation):
         
         if podcast_episode.audio_url is not None:
             db.remove_file(podcast_episode.audio_url)
-        
-        podcast_episode.delete()
+
         return DeletePodcastEpisode(success=True)
 
 class UpdatePodcastEpisode(ClientIDMutation):
@@ -134,12 +130,15 @@ class UpdatePodcastEpisode(ClientIDMutation):
         if keywords is not None:
             podcast_episode_metadata.keywords = keywords
 
+        # Save out our changes
+        podcast_episode_metadata.save()
         podcast_metadata.save()
 
-        return UpdatePodcastEpisode( 
+        success = True
+        return UpdatePodcastEpisode(
             podcast_metadata=podcast_metadata, 
             podcast_episode_metadata=podcast_episode_metadata,
-            success=True)
+            success=success)
 
 ###########################################################################################################
 #                                           PodcastMetadata                                               #
@@ -233,10 +232,6 @@ class UpdatePodcastMetadata(ClientIDMutation):
 
         return UpdatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
-###########################################################################################################
-#                                           Other                                                         #
-###########################################################################################################
-
 class CreateUser(ClientIDMutation):
     '''
     Inserts a user into MongoDB
@@ -297,13 +292,14 @@ class MarkPodcastListened(ClientIDMutation):
         podcast_episode_metadata_id = graphene.ID(required=True)
 
     @classmethod
+    @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, user_id, podcast_episode_metadata_id):
         user = flask_jwt_extended.current_user
         episode = get_node_from_global_id(info, podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
         listen_entry = models.ListenHistoryEntry(episode=episode)
         user.listen_history.append(listen_entry)
         user.save()
-        return MarkedPodcastListened(success=True, user=user)
+        return MarkPodcastListened(success=True, user=user)
 
 class Login(ClientIDMutation):
     success = graphene.Boolean()
@@ -326,7 +322,38 @@ class Login(ClientIDMutation):
 
         token = flask_jwt_extended.create_access_token(identity=user)
         return Login(success=True, token=token, user=user.model())
-        
+
+class SubscribePodcast(ClientIDMutation):
+    success = graphene.Boolean()
+
+    class Input:
+        podcast_metadata_id = graphene.ID(required=True)
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, podcast_metadata_id):
+        user = flask_jwt_extended.current_user
+        print(user.to_json())
+        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
+        print(podcast_metadata.to_json())
+        user.subscribe_podcast(podcast_metadata)
+
+        return SubscribePodcast(success=True)
+
+class UnsubscribePodcast(ClientIDMutation):
+    success = graphene.Boolean()
+
+    class Input:
+        podcast_metadata_id = graphene.ID(required=True)
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, podcast_metadata_id):
+        user = flask_jwt_extended.current_user
+        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
+        user.remove_subscribed_podcast(podcast_metadata)
+
+        return UnsubscribePodcast(success=True)
 
 class Mutations(graphene.ObjectType):
     '''
@@ -348,5 +375,7 @@ class Mutations(graphene.ObjectType):
     Business Logic mutations
     '''
     mark_podcast_listened = MarkPodcastListened.Field()
+    subscribe_podcast = SubscribePodcast.Field()
+    unsubscribe_podcast = UnsubscribePodcast.Field()
 
 middleware = []

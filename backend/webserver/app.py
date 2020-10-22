@@ -9,6 +9,8 @@ from flask_cors import CORS
 import flask_jwt_extended
 
 import json
+import datetime
+
 from graphene_file_upload.flask import FileUploadGraphQLView
 
 # App config
@@ -17,8 +19,8 @@ app = Flask(__name__)
 app.debug = True
 
 app.config["JWT_SECRET_KEY"] = "something"
-app.config["REFRESH_EXP_LENGTH"] = 30
-app.config["ACCESS_EXP_LENGTH"] = 10
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=60)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(minutes=75)
 
 jwt = flask_jwt_extended.JWTManager(app)
 
