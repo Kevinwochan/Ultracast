@@ -9,6 +9,18 @@ from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 import graphene_file_upload
 import graphene_file_upload.scalars
 
+class EdgeCountedConnection(graphene.Connection):
+    '''
+    Connection which allows you to query the number of edges
+    '''
+    class Meta:
+        abstract = True
+    
+    total_count = graphene.Int()
+
+    def resolve_total_count(self, info):
+        return len(self.edges)
+
 class AuthenticatedMongoengineConnectionField(MongoengineConnectionField):
     '''
     How this works:
@@ -44,6 +56,7 @@ class PodcastEpisodeMetadata(MongoengineObjectType):
     class Meta:
         model = models.PodcastEpisodeMetadata
         interfaces = (Node, )
+        connection_class = EdgeCountedConnection
 
 class PodcastMetadata(MongoengineObjectType):
     class Meta:
@@ -57,11 +70,13 @@ class PodcastMetadata(MongoengineObjectType):
         I'm not happy with this...
         '''
         filter_args = {"hackedy hack hack": graphene.String}
+        connection_class = EdgeCountedConnection
 
 class ListenHistoryEntry(MongoengineObjectType):
     class Meta:
         model = models.ListenHistoryEntry
         interfaces = (Node,)
+        connection_class = EdgeCountedConnection
 
 class User(MongoengineObjectType):
     class Meta:
@@ -69,6 +84,7 @@ class User(MongoengineObjectType):
         interfaces = (Node,)
         exclude_fields = ["password"]
         #filter_fields = {"id": graphene.ID}
+        connection_class = EdgeCountedConnection
 
     class AuthenticationResolver:
         @staticmethod
