@@ -129,6 +129,56 @@ snapshots['CreatePodcastTest::test_subscribe 3'] = {
     }
 }
 
+snapshots['CreatePodcastTest::test_unsubscribe 1'] = {
+    'data': {
+        'subscribePodcast': {
+            'success': True
+        }
+    }
+}
+
+snapshots['CreatePodcastTest::test_unsubscribe 2'] = {
+    'data': {
+        'allUser': {
+            'edges': [
+                {
+                    'node': {
+                        'subscribedPodcasts': {
+                            'edges': [
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
+
+snapshots['CreatePodcastTest::test_unsubscribe 3'] = {
+    'data': {
+        'allPodcastMetadata': {
+            'edges': [
+                {
+                    'node': {
+                        'subscribers': {
+                            'edges': [
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
+
+snapshots['CreatePodcastTest::test_unsubscribe failed to unsubscribe'] = {
+    'data': {
+        'unsubscribePodcast': {
+            'success': True
+        }
+    }
+}
+
 snapshots['CreatePodcastTest::test_update_podcast 1'] = {
     'data': {
         'updatePodcastMetadata': {

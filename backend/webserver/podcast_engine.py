@@ -117,8 +117,8 @@ class User(BusinessLayerObject):
         podcast_metadata_model.modify(push__subscribers=self._model.id)
 
     def remove_subscribed_podcast(self, podcast_metadata_model):
-        self._model.modify(pull__all__subscribed_podcasts=podcast_metadata_model)
-        podcast_metadata_model.modify(pull__all__subscribers=self._model)
+        self._model.modify(pull__subscribed_podcasts=podcast_metadata_model)
+        podcast_metadata_model.modify(pull__subscribers=self._model)
 
     def check_password(self, password):
         return werkzeug.security.check_password_hash(
