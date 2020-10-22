@@ -320,7 +320,8 @@ class Login(ClientIDMutation):
 
         if not user.check_password(password):
             return Login(success=False, message="Invalid password")
-
+        
+        user.login()
         token = flask_jwt_extended.create_access_token(identity=user)
         return Login(success=True, token=token, user=user.model())
 

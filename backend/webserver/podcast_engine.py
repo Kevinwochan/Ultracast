@@ -7,6 +7,8 @@ import graphene
 import graphene.relay
 import werkzeug.security
 
+import datetime
+
 '''
 Business Logic Layer
 Sits between graphql and mongodb
@@ -142,6 +144,9 @@ class User(BusinessLayerObject):
 
     def get_mongo_id(self):
         return self._model.id
+
+    def login(self):
+        self._model.modify(last_login=datetime.datetime.now())
 
     @classmethod
     def from_email(cls, email):
