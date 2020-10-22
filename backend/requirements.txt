@@ -32,3 +32,4 @@ six==1.15.0
 urllib3==1.25.10
 Werkzeug==1.0.1
 flask-jwt-extended==1.1.1
+boto3

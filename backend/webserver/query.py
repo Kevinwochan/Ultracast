@@ -40,11 +40,6 @@ class AuthenticatedMongoengineConnectionField(MongoengineConnectionField):
             return resolved
         return super().default_resolver(_root, info, **args)
 
-class PodcastEpisode(MongoengineObjectType):
-    class Meta:
-        model = models.PodcastEpisode
-        interfaces = (Node,)
-
 class PodcastEpisodeMetadata(MongoengineObjectType):
     class Meta:
         model = models.PodcastEpisodeMetadata
@@ -92,7 +87,7 @@ class User(MongoengineObjectType):
 
 class Query(graphene.ObjectType):
     node = Node.Field()
-    all_podcast_episode = MongoengineConnectionField(PodcastEpisode)
+    all_podcast_episode_metadata = MongoengineConnectionField(PodcastEpisodeMetadata)
     all_podcast_metadata = MongoengineConnectionField(PodcastMetadata)
     #all_user = AuthenticatedMongoengineConnectionField(User)
     all_user = MongoengineConnectionField(User)
@@ -108,5 +103,5 @@ class getRecommendations(graphene.ObjectType):
         # Set up the 'recommendations' list here, then return it
         return recommendations
 
-types = [PodcastEpisode, PodcastMetadata, User]
+types = [PodcastEpisodeMetadata, PodcastMetadata, User]
 middleware = []

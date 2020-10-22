@@ -2,6 +2,7 @@ from . import models
 from . import mutations
 from . import query
 from . import podcast_engine
+from . import db
 
 import flask_jwt_extended
 
@@ -43,75 +44,8 @@ def assert_podcast_edit_permission(podcast_metadata):
 ###########################################################################################################
 #                                           PodcastEpisode                                                #
 ###########################################################################################################
-class DeletePodcastEpisode(ClientIDMutation):
-    success = graphene.Boolean()
-
-    class Input:
-        # Can provide either id
-        podcast_episode_id = graphene.ID(required=True)
-
-    @classmethod
-    @flask_jwt_extended.jwt_required
-    def mutate_and_get_payload(cls, root, info, podcast_episode_id):
-        
-        # Lookup the mongodb object from the relay Node ID
-        podcast_episode = get_node_from_global_id(info=info, global_id=podcast_episode_id, only_type=query.PodcastEpisode)
-        podcast_metadata = models.PodcastMetadata.objects(episodes__episode=podcast_episode).get()
-        
-        assert_podcast_edit_permission(podcast_metadata)
-
-        podcast_metadata.episodes.filter(episode=podcast_episode).delete()
-        podcast_metadata.save()
-
-        podcast_episode.delete()
-
-        return DeletePodcastEpisode(success=True)
-
-class UpdatePodcastEpisode(ClientIDMutation):
-    podcast_episode = graphene.Field(query.PodcastEpisode)
-    podcast_metadata = graphene.Field(query.PodcastMetadata)
-    podcast_episode_metadata = graphene.Field(query.PodcastEpisodeMetadata)
-    success = graphene.Boolean()
-
-    class Input:
-        podcast_id = graphene.ID(required=True)
-        name = graphene.String()
-        description = graphene.String()
-        audio = graphene_file_upload.scalars.Upload()
-        keywords = graphene.List(graphene.String)
-
-    @classmethod
-    @flask_jwt_extended.jwt_required
-    def mutate_and_get_payload(cls, root, info, podcast_id, name=None, description=None, audio=None, keywords=None):
-        # Retrieve the episode
-        episode = get_node_from_global_id(info, podcast_id, only_type=query.PodcastEpisode)
-        podcast_metadata = models.PodcastMetadata.objects(episodes__episode=episode).get()
-        podcast_episode_metadata = podcast_metadata.episodes.filter(episode=episode).get()
-
-        assert_podcast_edit_permission(podcast_metadata)
-        
-        # Update the modified fields (only)
-        if name is not None:
-            podcast_episode_metadata.name = name
-        if description is not None:
-            podcast_episode_metadata.description = description
-        if audio is not None:
-            episode.audio = audio
-        if keywords is not None:
-            podcast_episode_metadata.keywords = keywords
-
-        # Save out our changes
-        episode.save()
-        podcast_metadata.save()
-
-        success = True
-        return UpdatePodcastEpisode(podcast_episode=episode, 
-            podcast_metadata=podcast_metadata, 
-            podcast_episode_metadata=podcast_episode_metadata,
-            success=success)
 
 class CreatePodcastEpisodeMutation(ClientIDMutation):
-    podcast_episode = graphene.Field(query.PodcastEpisode)
     podcast_metadata = graphene.Field(query.PodcastMetadata)
 
     class Input:
@@ -125,18 +59,87 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
     @classmethod
     @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
-        episode = models.PodcastEpisode(audio=audio)
-        episode.save()
-        episode_metadata = models.PodcastEpisodeMetadata(episode=episode, **kwargs)
+        audio_url = None
+        if audio is not None:
+            audio_url = db.add_audio_file(data=audio)
+        
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
-
         assert_podcast_edit_permission(podcast_metadata)
+
+        episode_metadata = models.PodcastEpisodeMetadata(audio_url=audio_url, podcast_metadata=podcast_metadata,
+                **kwargs)
+        episode_metadata.save()
 
         podcast_metadata.episodes.append(episode_metadata)
         podcast_metadata.save()
 
-        return CreatePodcastEpisodeMutation(podcast_episode=episode,
-                podcast_metadata=podcast_metadata)
+        return CreatePodcastEpisodeMutation(podcast_metadata=podcast_metadata)
+
+class DeletePodcastEpisode(ClientIDMutation):
+    success = graphene.Boolean()
+
+    class Input:
+        # Can provide either id
+        podcast_episode_metadata_id = graphene.ID(required=True)
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id):
+        
+        # Lookup the mongodb object from the relay Node ID
+        podcast_episode = get_node_from_global_id(info=info, global_id=podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
+        podcast_metadata = podcast_episode.podcast_metadata.get()
+        
+        assert_podcast_edit_permission(podcast_metadata)
+
+        podcast_metadata.episodes.filter(episode=podcast_episode).delete()
+        podcast_metadata.save()
+        
+        if podcast_episode.audio_url is not None:
+            db.remove_file(podcast_episode.audio_url)
+
+        return DeletePodcastEpisode(success=True)
+
+class UpdatePodcastEpisode(ClientIDMutation):
+    podcast_metadata = graphene.Field(query.PodcastMetadata)
+    podcast_episode_metadata = graphene.Field(query.PodcastEpisodeMetadata)
+    success = graphene.Boolean()
+
+    class Input:
+        podcast_episode_metadata_id = graphene.ID(required=True)
+        name = graphene.String()
+        description = graphene.String()
+        audio = graphene_file_upload.scalars.Upload()
+        keywords = graphene.List(graphene.String)
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id, name=None, description=None, audio=None, keywords=None):
+        # Retrieve the episode
+        podcast_episode_metadata = get_node_from_global_id(info, podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
+        podcast_metadata = podcast_episode_metadata.podcast_metadata.get()
+
+        assert_podcast_edit_permission(podcast_metadata)
+        
+        # Update the modified fields (only)
+        if name is not None:
+            podcast_episode_metadata.name = name
+        if description is not None:
+            podcast_episode_metadata.description = description
+        if audio is not None:
+            podcast_episode_metadata.audio_url = db.update_audio_file(podcast_episode_metadata.audio_url, audio)
+        if keywords is not None:
+            podcast_episode_metadata.keywords = keywords
+
+        # Save out our changes
+        podcast_episode_metadata.save()
+        podcast_metadata.save()
+
+        success = True
+        return UpdatePodcastEpisode(
+            podcast_metadata=podcast_metadata, 
+            podcast_episode_metadata=podcast_episode_metadata,
+            success=success)
 
 ###########################################################################################################
 #                                           PodcastMetadata                                               #
@@ -187,8 +190,10 @@ class DeletePodcastMetadata(ClientIDMutation):
         # Track through deleting all episodes
         num_deleted = 0
         for episode_metadata in podcast_metadata.episodes:
-            if (episode_metadata.episode is not None): 
-                episode_metadata.episode.delete()
+            audio_url = episode_metadata.audio_url
+            if audio_url is not None:
+                db.remove_file(audio_url)
+            episode_metadata.delete()
             num_deleted += 1
 
         # Remove podcast from all users subscriptions
@@ -285,13 +290,13 @@ class MarkPodcastListened(ClientIDMutation):
     user = graphene.Field(query.User)
 
     class Input:
-        podcast_episode_id = graphene.ID(required=True)
+        podcast_episode_metadata_id = graphene.ID(required=True)
 
     @classmethod
     @flask_jwt_extended.jwt_required
-    def mutate_and_get_payload(cls, root, info, user_id, podcast_episode_id):
+    def mutate_and_get_payload(cls, root, info, user_id, podcast_episode_metadata_id):
         user = flask_jwt_extended.current_user
-        episode = get_node_from_global_id(info, podcast_episode_id, only_type=query.PodcastEpisode)
+        episode = get_node_from_global_id(info, podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
         listen_entry = models.ListenHistoryEntry(episode=episode)
         user.listen_history.append(listen_entry)
         user.save()
