@@ -108,7 +108,7 @@ class Query(graphene.ObjectType):
     #all_user = AuthenticatedMongoengineConnectionField(User)
     all_user = MongoengineConnectionField(User)
     # https://docs.graphene-python.org/en/latest/api/ 
-    recommendations = Field(getRecommendations) # May need to add something else here
+    #recommendations = graphene.Field(getRecommendations) # May need to add something else here
 
 # https://docs.graphene-python.org/en/latest/execution/execute/
 # https://docs.graphene-python.org/en/latest/relay/nodes/
