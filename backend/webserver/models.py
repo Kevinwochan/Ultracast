@@ -22,6 +22,8 @@ class PodcastMetadata(mongoengine.Document):
     category = mongofields.StringField()
     sub_category = mongofields.StringField()
     keywords = mongofields.ListField(mongofields.StringField())
+    # Nullify on delete
+    subscribers = mongofields.ListField(mongofields.ReferenceField("User"))
 
 class PodcastEpisodeMetadata(mongoengine.Document):
     meta = {'collection': 'podcast_episode_metadata'}
@@ -66,3 +68,4 @@ class User(mongoengine.Document):
 # Register reverse delete rules
 User.register_delete_rule(PodcastMetadata, "author", mongoengine.CASCADE)
 PodcastEpisodeMetadata.register_delete_rule(PodcastMetadata, "episodes__S", mongoengine.CASCADE)
+User.register_delete_rule(PodcastMetadata, "subscribers__S", mongoengine.NULLIFY)
