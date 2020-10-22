@@ -25,11 +25,17 @@ class DownloadUploadThread(threading.Thread):
             self.queue.task_done()
 
     def download_upload(self, entry):
-        episode_id, url, content_type, ext = entry
-        print(f"Downloading {url}")
+        episode_id, url, allowed_mime_types = entry
+        
+        print(f"Downloading [{url}]")
         response = requests.get(url, timeout=10)
-        data = response.content
-        print(f"Uploading {url} content")
-        upload_url = db.add_file(data=data, content_type=content_type, ext=ext)
+        
+        mime_type = response.headers['Content-Type']
+        if mime_type not in allowed_mime_types:
+            print(f"{OKRED}Invalid mime_type {mime_type}. Url[{url}]{ENDCOL}")
+            return
+
+        print(f"Uploading [{url}] content")
+        upload_url = db.add_file(data=response.content)
         self.episode_id_to_uploaded_url[episode_id] = upload_url
-        print(f"Upload done for content from {url}")
+        print(f"Upload done for [{url}] content")

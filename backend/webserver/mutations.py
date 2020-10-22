@@ -61,7 +61,7 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
         audio_url = None
         if audio is not None:
-            audio_url = db.add_audio_file(data=audio)
+            audio_url = db.add_file(data=audio)
         
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         assert_podcast_edit_permission(podcast_metadata)
@@ -127,7 +127,7 @@ class UpdatePodcastEpisode(ClientIDMutation):
         if description is not None:
             podcast_episode_metadata.description = description
         if audio is not None:
-            podcast_episode_metadata.audio_url = db.update_audio_file(podcast_episode_metadata.audio_url, audio)
+            podcast_episode_metadata.audio_url = db.update_file(podcast_episode_metadata.audio_url, audio)
         if keywords is not None:
             podcast_episode_metadata.keywords = keywords
 
