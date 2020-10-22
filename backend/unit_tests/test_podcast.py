@@ -18,7 +18,7 @@ class CreatePodcastTest(snapshottest.TestCase):
         # Create a user
         result = self.execute_with_jwt(''' 
             mutation create_user {
-                createUser(input: {email: "ta11f1112112131112esty_testy123@test.com" password: "password"}) {
+                createUser(input: {email: "ta11f1112112131112esty_testy123@test.com" password: "password" name: "testy name"}) {
                     success
                     user {
                         id
@@ -251,3 +251,66 @@ class CreatePodcastTest(snapshottest.TestCase):
             '''
         variables = {"podcast_id": podcast_metadata_id}
         self.assertMatchSnapshot(self.execute_with_jwt(update_query, variables=variables))
+
+    def test_subscribe(self):
+        podcast_metadata_id = self.createPodcast()
+
+        query = \
+            '''
+            mutation a($podcast_id: ID!) {
+                subscribePodcast(input: {
+                    podcastMetadataId: $podcast_id
+                }) {
+                    success
+                }
+            }
+            '''
+
+        variables = {"podcast_id": podcast_metadata_id}
+        self.assertMatchSnapshot(self.execute_with_jwt(query, variables=variables))
+
+        # Check that the user has subscribed
+        check_user_query = \
+            '''
+            query a($user: ID!){
+                allUser(id: $user) {
+                    edges {
+                        node {
+                            subscribedPodcasts { 
+                                edges {
+                                    node {
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            '''
+        check_user_variables = {"user": self.user_id}
+        self.assertMatchSnapshot(self.execute_with_jwt(check_user_query, variables=check_user_variables))
+
+        # Check that the podcast has the user listed as a subscriber
+        check_podcast_query = \
+            '''
+            query a($podcast: ID!) {
+                allPodcastMetadata(id: $podcast) {
+                    edges {
+                        node {
+                            subscribers {
+                                edges {
+                                    node {
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            '''
+        check_podcast_variables = {"podcast": podcast_metadata_id}
+        self.assertMatchSnapshot(self.execute_with_jwt(check_podcast_query, variables=check_podcast_variables))
+
+
