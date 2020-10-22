@@ -58,3 +58,17 @@ snapshots['APITestCast::test_login login with invalid password'] = {
         }
     }
 }
+
+snapshots['APITestCast::test_new_subscribed_episodes 1'] = {
+    'data': {
+        'newSubscribedPodcasts': {
+            'edges': [
+                {
+                    'node': {
+                        'name': 'podcast episode title'
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -146,7 +146,8 @@ class User(BusinessLayerObject):
         return self._model.id
 
     def login(self):
-        self._model.modify(last_login=datetime.datetime.now())
+        self._model.modify(last_login=self._model.login_time)
+        self._model.modify(login_time=datetime.datetime.now())
 
     @classmethod
     def from_email(cls, email):

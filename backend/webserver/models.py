@@ -58,7 +58,10 @@ class User(mongoengine.Document):
     '''
     subscribed_podcasts = mongofields.ListField(mongofields.ReferenceField(PodcastMetadata), default=list)
     listen_history = mongofields.EmbeddedDocumentListField(ListenHistoryEntry)
+    # For previous session
     last_login = mongofields.DateTimeField(default=datetime.datetime.now)
+    # For current session
+    login_time = mongofields.DateTimeField(default=datetime.datetime.now)
 
     # Bi-directional relationship with PodcastMetadata
     # Consider the User to own the PodcastMetadata

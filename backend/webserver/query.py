@@ -4,7 +4,8 @@ import flask_jwt_extended
 
 import graphene
 import graphql
-from graphene.relay import Node
+from graphene.relay import Node, Connection, ConnectionField
+import graphql_relay
 from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 import graphene_file_upload
 import graphene_file_upload.scalars
@@ -109,6 +110,19 @@ class Query(graphene.ObjectType):
     all_user = MongoengineConnectionField(User)
     # https://docs.graphene-python.org/en/latest/api/ 
     #recommendations = graphene.Field(getRecommendations) # May need to add something else here
+    '''
+    Custom query to get all the new podcasts the user has subscribed to since the last login
+    '''
+    new_subscribed_podcasts = MongoengineConnectionField(PodcastEpisodeMetadata)
+
+    @staticmethod
+    @flask_jwt_extended.jwt_required
+    def resolve_new_subscribed_podcasts(root, info, **args):
+        user = flask_jwt_extended.current_user
+        # Quite the query....
+        # Find all the podcast episodes who were created since the last login date and then filter by those subscribed by this user
+        iterables = models.PodcastEpisodeMetadata.objects(publish_date__gte=user.model().last_login)(podcast_metadata__in=user.model().subscribed_podcasts)
+        return iterables
 
 # https://docs.graphene-python.org/en/latest/execution/execute/
 # https://docs.graphene-python.org/en/latest/relay/nodes/
@@ -119,5 +133,5 @@ class getRecommendations(graphene.ObjectType):
         # Set up the 'recommendations' list here, then return it
         return recommendations
 
-types = [PodcastEpisodeMetadata, PodcastMetadata, User]
+types = [PodcastEpisodeMetadata, PodcastMetadata, ]
 middleware = []
