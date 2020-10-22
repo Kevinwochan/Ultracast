@@ -59,6 +59,9 @@ def file_exists(key):
     except:
         return False
 
+def url_exists(url):
+    return file_exists(get_key_from_url(url))
+
 def get_key(data, key=None, ext=""):
     if key is None:
         return get_key_from_binary_data(data, ext)
@@ -70,6 +73,9 @@ def add_file(data, key=None, override=False, content_type=None, ext=""):
     
     if not override and file_exists(key):
         return get_file_url(key)
+    
+    if content_type is None:
+        content_type = 'plain/text'
 
     resp = client.put_object(
         Body=data, 
@@ -88,7 +94,7 @@ def remove_file(url):
     check_status(resp, [200, 204], 'Remove File')
 
 def update_file(old_url, data, new_key=None, content_type=None, ext=""):
-    if file_exists(get_key_from_url(old_url)):
+    if url_exists(old_url):
         remove_file(old_url)
     return add_file(data, new_key, content_type=content_type, ext=ext)
 
