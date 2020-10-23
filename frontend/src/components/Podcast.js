@@ -220,6 +220,13 @@ export function PodcastCover({ podcast, state }) {
         src={podcast.image}
         alt="podcast cover"
         className={classes.podcastCover}
+        onError={(e) => {
+          const getRandomNumber = () => {
+            return Math.floor(Math.random() * 1000);
+          };
+
+          e.target.src = `https://source.unsplash.com/random?sig=${getRandomNumber()}`;
+        }}
       ></img>
       <div
         className={classes.podcastPlay}

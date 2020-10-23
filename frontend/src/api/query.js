@@ -1,9 +1,5 @@
 import graphql from "../api/graphql";
 
-const getRandomNumber = () => {
-  return Math.floor(Math.random() * 1000);
-};
-
 /*
 An async function that wraps a graphql query to standardise/abstract away the graphql implementation
 */
@@ -58,7 +54,7 @@ const getRecommended = async () => {
     author:
       (podcast.node.author ?? { name: "unknown author" }).name ??
       "unknown author name", // hack for our incomplete database
-    image: podcast.node.coverUrl, //TODO get random cover when this resolves to a 404
+    image: podcast.node.coverUrl,
     url: podcast.node.episodes.edges[0].node.audioUrl,
   }));
 };
