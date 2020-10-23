@@ -117,10 +117,11 @@ snapshots['CreatePodcastTest::test_subscribe 3'] = {
                             'edges': [
                                 {
                                     'node': {
-                                        'name': 'testy name'
+                                        'name': 'oli the tester'
                                     }
                                 }
-                            ]
+                            ],
+                            'totalCount': 1
                         }
                     }
                 }

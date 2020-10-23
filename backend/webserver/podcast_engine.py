@@ -1,10 +1,13 @@
 from . import models
 from . import query
+from . import db
 
 from abc import ABC
 import graphene
 import graphene.relay
 import werkzeug.security
+
+import datetime
 
 '''
 Business Logic Layer
@@ -108,6 +111,15 @@ class User(BusinessLayerObject):
 
     def delete(self):
         # TODO: Delete all the podcasts!
+        for podcast in self.model().published_podcasts:
+            self.model().modify(pull__published_podcasts=podcast)
+            for episode in podcast.episodes:
+                if episode.audio_url is not None:
+                    db.removeFile(episode.audio_url)
+                podcast.modify(pull__episodes=episode)
+                # TODO: Delete from s3 store
+                episode.delete()
+            podcast.delete()
         super().delete()
 
     def subscribe_podcast(self, podcast_metadata_model):
@@ -132,6 +144,10 @@ class User(BusinessLayerObject):
 
     def get_mongo_id(self):
         return self._model.id
+
+    def login(self):
+        self._model.modify(last_login=self._model.login_time)
+        self._model.modify(login_time=datetime.datetime.now())
 
     @classmethod
     def from_email(cls, email):

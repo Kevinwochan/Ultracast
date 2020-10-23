@@ -31,3 +31,23 @@ a basic flask app (UL-31), setup mongodb on a remote server (UL-32) and
 setup a basic working example of graph-ql to connect the remote mongodb
 instance to the backend webserver (UL-33). JIRAs for next sprint are UL-45,
 UL-54.
+
+Week 4
+
+Started using a large data source on podcasts to produce dummy data. Simple
+script created to use this data source to create some basic test data. There
+is still significant room for improvement with several issues with the current
+script. For example, whenever the script is run again (e.g. to in include new fields) 
+audio files are reuploaded taking hours for ~20GB of data when the final dataset 
+is expected be closer to ~150GB. For the next sprint I aim to improve the script
+with the primary change to be avoid reuploading audio files and improved logging
+to find what filters are removing most of the test data.
+
+Week 5
+
+The generate test data script now avoids reuploading audio files and logs filtering
+so we know what impact the filters are having on the amound of output test data.
+I also realised that each download of an episode (often >50MB) can take a noticible
+amount of time and graphql doesn't support streaming. For the next sprint I am
+going to look into how we can stream our audio to the frontend so the user can have a
+low latency experience.

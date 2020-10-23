@@ -18,7 +18,7 @@ class CreatePodcastTest(snapshottest.TestCase):
         # Create a user
         result = self.execute_with_jwt(''' 
             mutation create_user {
-                createUser(input: {email: "ta11f1112112131112esty_testy123@test.com" password: "password" name: "testy name"}) {
+                createUser(input: {email: "taa1h13hfj311112112131112esty_testy123@test.com" password: "password" name: "oli the tester"}) {
                     success
                     user {
                         id
@@ -28,16 +28,10 @@ class CreatePodcastTest(snapshottest.TestCase):
                 }
             }
                 ''')
-        try:
-            self.user_id = result["data"]["createUser"]["user"]["id"]
-            self.jwt_token = result["data"]["createUser"]["token"]
-        except Exception as e:
-            print("Failed to create user! {}".format(result["data"]["createUser"]["failWhy"]))
-            self.user_id = None
-            self.jwt_token = None
-            self.skipTest("Failed to create user! {}".format(result["data"]["createUser"]["failWhy"]))
-
-
+        if result is None:
+            raise RuntimeError("Failed to create user!")
+        self.user_id = result["data"]["createUser"]["user"]["id"]
+        self.jwt_token = result["data"]["createUser"]["token"]
 
     def tearDown(self):
         query = '''
@@ -122,6 +116,9 @@ class CreatePodcastTest(snapshottest.TestCase):
                           name
                         }
                       }
+                    }
+                    author {
+                        name
                     }
                   }
                 }
@@ -304,6 +301,7 @@ class CreatePodcastTest(snapshottest.TestCase):
                                         name
                                     }
                                 }
+                                totalCount
                             }
                         }
                     }

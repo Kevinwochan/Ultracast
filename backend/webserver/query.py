@@ -4,10 +4,23 @@ import flask_jwt_extended
 
 import graphene
 import graphql
-from graphene.relay import Node
+from graphene.relay import Node, Connection, ConnectionField
+import graphql_relay
 from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 import graphene_file_upload
 import graphene_file_upload.scalars
+
+class EdgeCountedConnection(graphene.Connection):
+    '''
+    Connection which allows you to query the number of edges
+    '''
+    class Meta:
+        abstract = True
+    
+    total_count = graphene.Int()
+
+    def resolve_total_count(self, info):
+        return len(self.edges)
 
 class AuthenticatedMongoengineConnectionField(MongoengineConnectionField):
     '''
@@ -40,15 +53,11 @@ class AuthenticatedMongoengineConnectionField(MongoengineConnectionField):
             return resolved
         return super().default_resolver(_root, info, **args)
 
-class PodcastEpisode(MongoengineObjectType):
-    class Meta:
-        model = models.PodcastEpisode
-        interfaces = (Node,)
-
 class PodcastEpisodeMetadata(MongoengineObjectType):
     class Meta:
         model = models.PodcastEpisodeMetadata
         interfaces = (Node, )
+        connection_class = EdgeCountedConnection
 
 class PodcastMetadata(MongoengineObjectType):
     class Meta:
@@ -62,11 +71,13 @@ class PodcastMetadata(MongoengineObjectType):
         I'm not happy with this...
         '''
         filter_args = {"hackedy hack hack": graphene.String}
+        connection_class = EdgeCountedConnection
 
 class ListenHistoryEntry(MongoengineObjectType):
     class Meta:
         model = models.ListenHistoryEntry
         interfaces = (Node,)
+        connection_class = EdgeCountedConnection
 
 class User(MongoengineObjectType):
     class Meta:
@@ -74,6 +85,7 @@ class User(MongoengineObjectType):
         interfaces = (Node,)
         exclude_fields = ["password"]
         #filter_fields = {"id": graphene.ID}
+        connection_class = EdgeCountedConnection
 
     class AuthenticationResolver:
         @staticmethod
@@ -92,10 +104,34 @@ class User(MongoengineObjectType):
 
 class Query(graphene.ObjectType):
     node = Node.Field()
-    all_podcast_episode = MongoengineConnectionField(PodcastEpisode)
+    all_podcast_episode_metadata = MongoengineConnectionField(PodcastEpisodeMetadata)
     all_podcast_metadata = MongoengineConnectionField(PodcastMetadata)
     #all_user = AuthenticatedMongoengineConnectionField(User)
     all_user = MongoengineConnectionField(User)
+    # https://docs.graphene-python.org/en/latest/api/ 
+    #recommendations = graphene.Field(getRecommendations) # May need to add something else here
+    '''
+    Custom query to get all the new podcasts the user has subscribed to since the last login
+    '''
+    new_subscribed_podcasts = MongoengineConnectionField(PodcastEpisodeMetadata)
 
-types = [PodcastEpisode, PodcastMetadata, User]
+    @staticmethod
+    @flask_jwt_extended.jwt_required
+    def resolve_new_subscribed_podcasts(root, info, **args):
+        user = flask_jwt_extended.current_user
+        # Quite the query....
+        # Find all the podcast episodes who were created since the last login date and then filter by those subscribed by this user
+        iterables = models.PodcastEpisodeMetadata.objects(publish_date__gte=user.model().last_login)(podcast_metadata__in=user.model().subscribed_podcasts)
+        return iterables
+
+# https://docs.graphene-python.org/en/latest/execution/execute/
+# https://docs.graphene-python.org/en/latest/relay/nodes/
+class getRecommendations(graphene.ObjectType):
+    recommendations = graphene.List(PodcastMetadata)
+
+    def resolve_recommendations(root, info):
+        # Set up the 'recommendations' list here, then return it
+        return recommendations
+
+types = [PodcastEpisodeMetadata, PodcastMetadata, ]
 middleware = []
