@@ -10,11 +10,10 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
-import axios from "axios";
-import configuration from "../api/configuration";
 import { useHistory } from "react-router-dom";
 import ucTheme from "../theme";
 import Alert from "@material-ui/lab/Alert";
+import { register } from "../api/query";
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -49,37 +48,15 @@ export default function SignUp({ handleCookie }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios
-      .post(
-        configuration.BACKEND_ENDPOINT,
-        JSON.stringify({
-          query:
-            "mutation($email: String!, $password: String!) {createUser(input: {email: $email, password: $password}) {success token failWhy}}",
-          variables: {
-            email: `${emailRef.current.value}`,
-            password: `${passwordRef.current.value}`,
-          },
-        }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        console.log(response.data.data.createUser.success);
-        if (response.data.data.createUser.success) {
-          handleCookie("token", response.data.data.createUser.token);
-          history.push("/");
-        }else{
-          setMessage(response.data.data.createUser.failWhy);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    register(emailRef.current.value, passwordRef.current.value).then((data) => {
+      console.log(data);
+      if (data.success) {
+        handleCookie("token", data.token);
+        history.push("/");
+      } else {
+        setMessage(data.message);
+      }
+    })
   };
 
   return (

@@ -13,10 +13,9 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
-import axios from "axios";
-import configuration from "../api/configuration";
 import ucTheme from "../theme";
 import Alert from "@material-ui/lab/Alert";
+import { login } from "../api/query";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -55,36 +54,14 @@ export default function SignIn({ handleCookie }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios
-      .post(
-        configuration.BACKEND_ENDPOINT,
-        JSON.stringify({
-          query:
-            "mutation($email: String!, $password: String!) {login(input: {email: $email, password: $password}) {success token message}}",
-          variables: {
-            email: `${emailRef.current.value}`,
-            password: `${passwordRef.current.value}`,
-          },
-        }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        if (response.data.data.login.success) {
-          handleCookie("token", response.data.data.login.token);
-          history.push("/");
-        } else {
-          setMessage("Invalid email or password");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    login(emailRef.current.value, passwordRef.current.value).then((data) => {
+      if (data.success) {
+        handleCookie("token", data.token);
+        history.push("/");
+      } else {
+        setMessage(data.message);
+      }
+    })
   };
 
   return (
