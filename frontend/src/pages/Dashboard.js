@@ -5,63 +5,13 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { Link } from "react-router-dom";
+import { getRecommended } from "../api/query";
 
-const getRandomNumber = () => {
-  return Math.floor(Math.random() * 1000);
-};
 
-// ! Faked data
-const recommended = [
-  {
-    title: "73 Questions with Oliver",
-    author: "Oli Oligopoly",
-    image: `https://source.unsplash.com/random?sig=${getRandomNumber()}`,
-    imageText: "Image Text",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  },
-  {
-    title: "120 Questions with Dan",
-    author: "Dan",
-    image: `https://source.unsplash.com/random?sig=${getRandomNumber()}`,
-    imageText: "Image Text",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-  },
-  {
-    title: "68.5 Questions with Connor",
-    author: "Connor O'Shea",
-    image: `https://source.unsplash.com/random?sig=${getRandomNumber()}`,
-    imageText: "Image Text",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-  },
-  {
-    title: "12 Questions with Peter",
-    author: "Peter",
-    image: `https://source.unsplash.com/random?sig=${getRandomNumber()}`,
-    imageText: "Image Text",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
-  },
-  {
-    title: "3 Questions with Kevin",
-    author: "Kevin",
-    image: `https://source.unsplash.com/random?sig=${getRandomNumber()}`,
-    imageText: "Image Text",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
-  },
-  {
-    title: "50 Questions with Tatjana",
-    author: "Tatjana",
-    image: `https://source.unsplash.com/random?sig=${getRandomNumber()}`,
-    imageText: "Image Text",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
-  },
-  {
-    title: "The Politics of Pandemic Relief",
-    author: "Kevin Chan",
-    image: `https://source.unsplash.com/random?sig=${getRandomNumber()}`,
-    imageText: "Image Text",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
-  },
-];
+let recommended = []
+getRecommended().then((data) => {
+  recommended = data;
+});
 
 const useStyles = makeStyles((theme) => ({
   titleBar: {
