@@ -30,12 +30,7 @@ class DownloadUploadThread(threading.Thread):
         print(f"Downloading [{url}]")
         response = requests.get(url, timeout=10)
         
-        mime_type = response.headers['Content-Type']
-        if mime_type not in allowed_mime_types:
-            print(f"{OKRED}Invalid mime_type {mime_type}. Url[{url}]{ENDCOL}")
-            return
-
         print(f"Uploading [{url}] content")
-        upload_url = db.add_file(data=response.content)
+        upload_url = db.add_file(data=response.content, valid_mimes=allowed_mime_types)
         self.episode_id_to_uploaded_url[episode_id] = upload_url
         print(f"Upload done for [{url}] content")
