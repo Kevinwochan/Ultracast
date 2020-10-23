@@ -285,7 +285,7 @@ const AccountOptions = ({ classes, handleCookie }) => {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    handleCookie("loggedin", null);
+    handleCookie("token", null);
     history.push("/");
   };
 

@@ -35,21 +35,27 @@ client = session.client('s3',
 BUCKET = 'ultracast-files'
 FILE_ACCESS = 'public-read'
 
+
 def get_bucket_url():
     return re.sub(r"^https://", f"https://{BUCKET}.", STATIC_FILE_BASE_URL)
+
 
 def get_file_url(filename):
     return get_bucket_url() + f"/{filename}"
 
+
 def get_key_from_url(url):
     return re.sub(get_bucket_url() + "/", "", url)
+
 
 def get_key_from_binary_data(data, ext=""):
     return urlsafe_b64encode(hashlib.sha256(data).digest()).decode('UTF-8') + ext
 
+
 def check_status(resp, ok_statuses, op):
     if resp['ResponseMetadata']['HTTPStatusCode'] not in ok_statuses:
         raise Exception(f"Error for operation [{op}] - Response: {resp}")
+
 
 def file_exists(key):
     try:
@@ -58,8 +64,10 @@ def file_exists(key):
     except:
         return False
 
+
 def url_exists(url):
     return file_exists(get_key_from_url(url))
+
 
 def get_key(data, key=None, ext=""):
     if key is None:
@@ -67,26 +75,29 @@ def get_key(data, key=None, ext=""):
     else:
         return key
 
+
 def add_file(data, key=None, override=False):
     mime_type = magic.from_buffer(data, mime=True)
     extension = mimetypes.guess_extension(mime_type)
     key = get_key(data, key, extension)
-    
+
     if not override and file_exists(key):
         return get_file_url(key)
 
     resp = client.put_object(
-        Body=data, 
-        Bucket=BUCKET, 
-        Key=key, 
-        ACL=FILE_ACCESS, 
+        Body=data,
+        Bucket=BUCKET,
+        Key=key,
+        ACL=FILE_ACCESS,
         ContentType=mime_type)
     check_status(resp, [200], 'Add File')
     return get_file_url(key)
 
+
 def remove_file(url):
     resp = client.delete_object(Bucket=BUCKET, Key=get_key_from_url(url))
     check_status(resp, [200, 204], 'Remove File')
+
 
 def update_file(old_url, data, new_key=None):
     if url_exists(old_url):

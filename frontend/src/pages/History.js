@@ -4,6 +4,7 @@ import { Playlist } from "../components/Podcast";
 import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
+import { getHistory } from "../api/query";
 
 const episodes = [
   {
@@ -27,6 +28,10 @@ const episodes = [
     podcast: { id: 1, title: "Oli's True Crime Series" },
   },
 ];
+
+getHistory().then((data) => {
+  console.log(data);
+});
 
 const useStyles = makeStyles((theme) => ({
   cardGrid: {

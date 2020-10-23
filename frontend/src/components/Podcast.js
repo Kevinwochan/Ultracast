@@ -17,6 +17,14 @@ const playlistStyles = makeStyles((theme) => ({
 export function Playlist({ episodes, state, variant = "episode" }) {
   const classes = playlistStyles();
 
+  if (!episodes || episodes.length == 0) {
+    return (
+      <Grid container spacing={4} className={classes.podcastContainer}>
+        <Typography variant="body1">Nothing is currently available.</Typography>
+      </Grid>
+    );
+  }
+
   const EpisodeTitle = ({ episode }) => (
     <Grid item lg={6}>
       {variant == "podcast" ? (
@@ -55,7 +63,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
                   <PodcastCover podcast={episode} state={state} />
                 </Grid>
                 <Grid item lg={10} container direction="column">
-                  <Grid item spacing={1}>
+                  <Grid item>
                     <Grid container>
                       <EpisodeTitle episode={episode} />
                     </Grid>
@@ -104,6 +112,14 @@ const sliderStyles = makeStyles((theme) => ({
 
 export function Slider({ state, podcasts }) {
   const classes = sliderStyles();
+
+  if (!podcasts || podcasts.length == 0) {
+    return (
+      <Grid container spacing={4} className={classes.podcastContainer}>
+        <Typography variant="body1">Nothing is currently available.</Typography>
+      </Grid>
+    );
+  }
 
   return (
     <Grid container spacing={4} className={classes.podcastContainer}>

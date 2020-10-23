@@ -1,17 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@material-ui/core/Box";
 import { Slider } from "../components/Podcast";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { Link } from "react-router-dom";
-import { getRecommended } from "../api/query";
-
-
-let recommended = []
-getRecommended().then((data) => {
-  recommended = data;
-});
+import { getHistory, getRecommended } from "../api/query";
 
 const useStyles = makeStyles((theme) => ({
   titleBar: {
@@ -29,6 +23,20 @@ export default function Dashboard({ state }) {
   const classes = useStyles();
   const [sessionState, updateState] = state;
 
+  const [recommended, setRecommended] = useState([]);
+  const [history, setHistory] = useState([]);
+
+  // Need to update recommended and history like this, otherwise it won't work for larger/longer queries
+  useEffect(() => {
+    getRecommended().then((data) => {
+      setRecommended(data);
+    });
+
+    getHistory(false).then((data) => {
+      setHistory(data);
+    });
+  }, []);
+
   return (
     <Container
       className={classes.cardGrid}
@@ -37,7 +45,7 @@ export default function Dashboard({ state }) {
       <PodcastSliderTitle title="Recommended Podcasts" url="/" />
       <Slider state={state} podcasts={recommended} />
       <PodcastSliderTitle title="Recently Listened" url="/history" />
-      <Slider state={state} podcasts={recommended} />
+      <Slider state={state} podcasts={history} />
     </Container>
   );
 }

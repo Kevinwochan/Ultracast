@@ -56,7 +56,7 @@ export default function SignUp({ handleCookie }) {
       } else {
         setMessage(data.message);
       }
-    })
+    });
   };
 
   return (
@@ -71,7 +71,7 @@ export default function SignUp({ handleCookie }) {
         <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              {message.length > 0 && <Alert severity="error">{message}</Alert>}
+              {message && <Alert severity="error">{message}</Alert>}
             </Grid>
             <Grid item xs={12}>
               <TextField
