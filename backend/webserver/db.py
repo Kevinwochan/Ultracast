@@ -15,7 +15,7 @@ MONGO_USERNAME = 'ultracast_admin'
 MONGO_PASSWORD = 'vtcXHq7fS$si9$Bi6c&2'
 MONGO_IP = '139.59.227.230'
 MONGO_AUTH_DB = 'admin'
-MONGO_DB = 'ultracast_sandbox'
+MONGO_DB = 'ultracast_sandbox_static_files'
 
 MONGO_URI = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_DB}?authSource={MONGO_AUTH_DB}'
 

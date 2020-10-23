@@ -18,7 +18,7 @@ class PodcastMetadata(mongoengine.Document):
     # PodcastMetadata owns the PodcastEpisodeMetadata (CASCADE reverse_delete_rule is set later)
     episodes = mongofields.ListField(mongofields.ReferenceField("PodcastEpisodeMetadata"))
 
-    cover = mongofields.FileField()
+    cover_url = mongofields.StringField()
     category = mongofields.StringField()
     sub_category = mongofields.StringField()
     keywords = mongofields.ListField(mongofields.StringField())

@@ -158,14 +158,18 @@ class CreatePodcastMetadata(ClientIDMutation):
     
     @classmethod
     @flask_jwt_extended.jwt_required
-    def mutate_and_get_payload(cls, root, info, **input):
+    def mutate_and_get_payload(cls, root, info, cover=None, **input):
         author = flask_jwt_extended.current_user
         
+        cover_url = None
+        if cover is not None:
+            cover_url = db.add_file(data=cover)
+
         podcast_metadata_args = input
         podcast_metadata_args["author"] = author.get_mongo_id()
         
         # De dictionary the kwargs (by design match up with the model)
-        podcast_metadata = models.PodcastMetadata(**podcast_metadata_args)
+        podcast_metadata = models.PodcastMetadata(cover_url=cover_url, **podcast_metadata_args)
         podcast_metadata.save()
 
         author.model().published_podcasts.append(podcast_metadata)
@@ -195,6 +199,9 @@ class DeletePodcastMetadata(ClientIDMutation):
                 db.remove_file(audio_url)
             episode_metadata.delete()
             num_deleted += 1
+        
+        if podcast_metadata.cover_url is not None:
+            db.remove_file(podcast_metadata.cover_url)
 
         # Remove podcast from all users subscriptions
         models.User.objects(subscribed_podcasts=podcast_metadata).modify(pull__subscribed_podcasts=podcast_metadata)
@@ -222,13 +229,16 @@ class UpdatePodcastMetadata(ClientIDMutation):
         keywords = graphene.List(graphene.String)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, podcast_metadata_id, **kwargs):
+    def mutate_and_get_payload(cls, root, info, podcast_metadata_id, cover=None, **kwargs):
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, query.PodcastMetadata)
 
         assert_podcast_edit_permission(podcast_metadata)
 
+        if cover is not None:
+            podcast_metadata.cover_url = db.update_file(podcast_metadata.cover_url, cover)
+
         # Remove None's from kwargs
-        filtered_args = {k: v for k, v in kwargs.items() if v is not None}
+        filtered_args = {k: v for k, v in kwargs.items() if v is not None and k != 'cover'}
         podcast_metadata.modify(**filtered_args)
 
         return UpdatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)

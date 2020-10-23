@@ -6,6 +6,7 @@ import re
 import requests
 import queue
 import pickle
+import traceback
 from bson.objectid import ObjectId
 
 from webserver import db
@@ -27,7 +28,6 @@ SCRIPT_DIR = os.path.dirname(__file__)
 RAW_EPISODES_CSV = f'{SCRIPT_DIR}/episodes.csv'
 RAW_PODCASTS_CSV = f'{SCRIPT_DIR}/shows.csv'
 FILTERED_CSV_NAME = f"{SCRIPT_DIR}/filtered_episodes.csv"
-AUDIO_MAPPING_FILENAME = f"{SCRIPT_DIR}/audio_file_mapping.csv"
 VALID_AUDIO_URLS_FILE = f"{SCRIPT_DIR}/valid_audio_urls.pickle"
 UPLOADED_AUDIO_FILE = f"{SCRIPT_DIR}/uploaded_audio.pickle"
 UPLOADED_IMAGE_FILE = f"{SCRIPT_DIR}/uploaded_images.pickle"
@@ -44,7 +44,7 @@ VALID_IMAGE_FORMATS = ['image/jpeg', 'image/png']
 EPISODE_DROP_COLS = ['link', 'guid', 'description', 'summary', 'pub_date', 'author', 'explicit']
 EPISODE_ALLOW_NA_COLS = ['category', 'subtitle']
 # TODO - consider adding explicit and language info
-PODCAST_DROP_COLS = ['explicit', 'language', 'feed_url', 'subtitle', 'description', 'created_at', 'last_build_date', 'link']
+PODCAST_DROP_COLS = ['explicit', 'language', 'feed_url', 'description', 'created_at', 'last_build_date', 'link']
 
 def main():
     # Process data
@@ -54,8 +54,7 @@ def main():
     episode_id_to_uploaded_audio_url = download_upload_files(df, UPLOADED_AUDIO_FILE, ['id', 'audio_url'], VALID_AUDIO_FORMATS)
     podcast_id_to_uploaded_cover_url = download_upload_files(podcasts_df, UPLOADED_IMAGE_FILE, ['id', 'image'], VALID_IMAGE_FORMATS)
     # Write documents to mongodb
-    # TODO enable
-    # write_to_db(df, podcasts_df, episode_id_to_uploaded_audio_url)
+    write_to_db(df, podcasts_df, episode_id_to_uploaded_audio_url, podcast_id_to_uploaded_cover_url)
     print(f"{OKGREEN}Finished Successfully{ENDCOL}")
 
 def get_data():
@@ -73,6 +72,7 @@ def get_data():
         print(f"{OKGREEN}Opening csv...{ENDCOL}")
         df = pd.read_csv(FILTERED_CSV_NAME, sep=',')
 
+    # Podcasts df only contains podcast data for podcast ids in episodes df
     podcasts_df = podcasts_df[podcasts_df['id'].isin(df['show_id'].tolist())]
     return (df, podcasts_df)
 
@@ -189,7 +189,6 @@ def valid_download_link(df, url_column_name, cache_file):
 #                                      Download & Upload Static data                                      #
 ###########################################################################################################
 
-# 
 def download_upload_files(df, cache_file, id_url_cols, valid_mime_formats):
 
     entity_id_to_uploaded_url = {}
@@ -217,75 +216,80 @@ def download_upload_files(df, cache_file, id_url_cols, valid_mime_formats):
 #                                      Write Data                                                         #
 ###########################################################################################################
 
-def write_to_db(df, podcasts_df, episode_id_to_uploaded_url):
+def write_to_db(df, podcasts_df, episode_id_to_audio_url, podcast_id_to_cover_url):
     print(f"{OKGREEN}Writing to db...{ENDCOL}")
 
-    # podcast_id_to_user = write_users_to_db(podcasts_df)
-    # podcast_id_to_episodes = write_podcast_episodes_to_db(df)
-    # podcast_id_to_podcasts = write_podcasts_to_db(df, podcasts_df, podcast_id_to_episodes, podcast_id_to_user)
+    podcast_id_to_user = write_users_to_db(podcasts_df)
+    podcast_id_to_podcast = write_podcasts_to_db(df, podcasts_df, podcast_id_to_user, podcast_id_to_cover_url)
+    write_podcast_episodes_to_db(df, episode_id_to_audio_url, podcast_id_to_podcast)
 
     # Link users to podcasts
-    # print(f"{OKGREEN}Linking users to podcasts...{ENDCOL}")
-    # for podcast_id, user in podcast_id_to_user.items():
-    #     user.update(published_podcasts=podcast_id_to_podcasts.get(podcast_id, []))
+    print(f"{OKGREEN}Linking users to podcasts...{ENDCOL}")
+    for podcast_id, user in podcast_id_to_user.items():
+        user.update(published_podcasts=podcast_id_to_podcast.get(podcast_id, []))
 
 def write_users_to_db(podcasts_df):
     print(f"{OKGREEN}Creating users...{ENDCOL}")
     podcast_id_to_user = {}
-    # emails = list(set(podcasts_df['email'].tolist()))
-    # for email in emails:
-    #     row = podcasts_df[podcasts_df['email'] == email].iloc[0]
-    #     author = row['author']
-    #     user = models.User(
-    #         name=author, 
-    #         email=email, 
-    #         password="test",
-    #         published_podcasts=[])
-    #     user.save()
-    #     podcast_id_to_user[row['id']] = user
+    for index, row in podcasts_df.iterrows():
+        user = models.User(
+            name=row['author'], 
+            email=row['email'], 
+            password="test",
+            published_podcasts=[])
+        user.save()
+        podcast_id_to_user[row['id']] = user
     return podcast_id_to_user
 
-def write_podcast_episodes_to_db(df):
+def write_podcast_episodes_to_db(df, episode_id_to_uploaded_audio_url, podcast_id_to_podcast):
     print(f"{OKGREEN}Creating podcast episodes...{ENDCOL}")
-    podcast_id_to_episodes = {}
-    
-    # # Try to use existing objects in mongo
-    # if os.path.isfile(AUDIO_MAPPING_FILENAME):
-    #     podcast_audio_df = pd.read_csv(AUDIO_MAPPING_FILENAME)
-    # else:
-    #     podcast_audio_df = pd.DataFrame(columns=["csv_id", "mongo_id"])
 
     for index, row in df.iterrows():
-        audio_url = upload_audio_file(row['id'])
         keywords = row['keywords'].split(",")
-        # podcast_episode_meta = models.PodcastEpisodeMetadata(
-        #     name=row['title'], 
-        #     description=row['subtitle'],
-        #     episode=podcast_episode_id,
-        #     keywords=keywords)
-        # podcast_id_to_episodes.setdefault(row['show_id'], []).append(podcast_episode_meta)
-    # podcast_audio_df.to_csv(AUDIO_MAPPING_FILENAME, index=False)
+        podcast_meta = podcast_id_to_podcast[row['show_id']]
+        description = row.get('subtitle', "")
+        if not isinstance(description, str):
+            description = ""
+        try:
+            podcast_episode_meta = models.PodcastEpisodeMetadata(
+                name=row['title'], 
+                description=description,
+                audio_url=episode_id_to_uploaded_audio_url.get(row['id'], None),
+                keywords=keywords,
+                podcast_metadata=podcast_meta)
+            podcast_episode_meta.save()
+            
+            # Add episode to podcast
+            podcast_meta.episodes.append(podcast_episode_meta)
+            podcast_meta.save()
+        except Exception as e:
+            print(f"{OKRED}Error: {e}{ENDCOL}")
 
-    return podcast_id_to_episodes
-
-def write_podcasts_to_db(df, podcasts_df, podcast_id_to_episodes, podcast_id_to_user):
+def write_podcasts_to_db(df, podcasts_df, podcast_id_to_user, podcast_id_to_cover_url):
     print(f"{OKGREEN}Creating podcasts...{ENDCOL}")
-    podcast_id_to_podcasts = {}
-    # podcast_ids = df['show_id'].unique()
-    # for podcast_id in podcast_ids:
-    #     podcast_data = podcasts_df[podcasts_df['id'] == podcast_id].iloc[0]
-    #     podcast_metadata = models.PodcastMetadata(
-    #         name=podcast_data['title'], 
-    #         author=podcast_id_to_user.get(podcast_id),
-    #         description=podcast_data['summary'],
-    #         episodes=podcast_id_to_episodes.get(podcast_id, []),
-    #         category=podcast_data['category'],
-    #         sub_category=podcast_data['subcategory'])
-
-    #     podcast_id_to_podcasts.setdefault(podcast_id, []).append(podcast_metadata)
-    #     podcast_metadata.save()
+    podcast_id_to_podcast = {}
+    podcast_ids = df['show_id'].unique()
+    for podcast_id in podcast_ids:
+        current_podcast_df = podcasts_df[podcasts_df['id'] == podcast_id]
+        if current_podcast_df.shape[0] == 0:
+            print(f"{OKRED}ERROR: podcast_id missing: {podcast_id}{ENDCOL}")
+            continue
+        podcast_data = current_podcast_df.iloc[0]
+        try:
+            podcast_metadata = models.PodcastMetadata(
+                name=podcast_data['title'], 
+                author=podcast_id_to_user.get(podcast_id),
+                description=podcast_data.get('summary', ""),
+                episodes=[],
+                cover_url=podcast_id_to_cover_url.get(podcast_id, ""),
+                category=podcast_data['category'],
+                sub_category=podcast_data['subcategory'])
+            podcast_metadata.save()
+            podcast_id_to_podcast[podcast_id] = podcast_metadata
+        except Exception as e:
+            print(f"{OKRED}Error: {e}{ENDCOL}")
     
-    return podcast_id_to_podcasts
+    return podcast_id_to_podcast
 
 ###########################################################################################################
 #                                      Utility Functions                                                  #
