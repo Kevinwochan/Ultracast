@@ -5,6 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const playlistStyles = makeStyles((theme) => ({
   card: {
@@ -17,11 +18,15 @@ const playlistStyles = makeStyles((theme) => ({
 export function Playlist({ episodes, state, variant = "episode" }) {
   const classes = playlistStyles();
 
+  // Waiting for DB query - just show loader for now
+  if (episodes == "loader") {
+    return <CircularProgress />;
+  }
+
+  // No episodes are available - show error message
   if (!episodes || episodes.length == 0) {
     return (
-      <Grid container spacing={4} className={classes.podcastContainer}>
-        <Typography variant="body1">Nothing is currently available.</Typography>
-      </Grid>
+      <Typography variant="body1">Nothing is currently available.</Typography>
     );
   }
 
@@ -113,6 +118,12 @@ const sliderStyles = makeStyles((theme) => ({
 export function Slider({ state, podcasts }) {
   const classes = sliderStyles();
 
+  // Waiting for DB query - just show loader for now
+  if (podcasts == "loader") {
+    return <CircularProgress />;
+  }
+
+  // No podcasts are available - show error message
   if (!podcasts || podcasts.length == 0) {
     return (
       <Grid container spacing={4} className={classes.podcastContainer}>

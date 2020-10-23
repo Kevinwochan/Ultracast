@@ -23,8 +23,8 @@ export default function Dashboard({ state }) {
   const classes = useStyles();
   const [sessionState, updateState] = state;
 
-  const [recommended, setRecommended] = useState([]);
-  const [history, setHistory] = useState([]);
+  const [recommended, setRecommended] = useState("loader");
+  const [history, setHistory] = useState("loader");
 
   // Need to update recommended and history like this, otherwise it won't work for larger/longer queries
   useEffect(() => {
