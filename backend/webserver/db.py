@@ -5,6 +5,8 @@ import re
 import boto3
 from botocore.client import Config
 from mongoengine import connect
+import hashlib
+from base64 import urlsafe_b64encode
 
 # Mongodb connection
 MONGO_USERNAME = 'ultracast_admin'
@@ -31,28 +33,49 @@ client = session.client('s3',
 BUCKET = 'ultracast-files'
 FILE_ACCESS = 'public-read'
 
-def getBucketUrl():
+def get_bucket_url():
     return re.sub(r"^https://", f"https://{BUCKET}.", STATIC_FILE_BASE_URL)
 
-def getFileUrl(filename):
-    return getBucketUrl() + f"/{filename}"
+def get_file_url(filename):
+    return get_bucket_url() + f"/{filename}"
 
-def getKeyFromUrl(url):
-    return re.sub(getBucketUrl() + "/", "", url)
+def get_key_from_url(url):
+    return re.sub(get_bucket_url() + "/", "", url)
 
-def checkStatus(resp, ok_statuses):
-    return {'ok': resp['ResponseMetadata']['HTTPStatusCode'] not in ok_statuses, 'server_response': resp}
+def get_key_from_binary_data(data, ext=""):
+    return urlsafe_b64encode(hashlib.sha256(data).digest()).decode('UTF-8') + ext
 
-def addFile(key, data):
-    resp = client.put_object(Body=data, Bucket=BUCKET, Key=key, ACL=FILE_ACCESS)
-    return {'status': checkStatus(resp, [200]), 'url': getFileUrl(key)} 
+def check_status(resp, ok_statuses):
+    if resp['ResponseMetadata']['HTTPStatusCode'] not in ok_statuses:
+        raise Exception(f"Error - server response: {resp}")
 
-def removeFile(url):
-    resp = client.delete_object(Bucket=BUCKET, Key=getKeyFromUrl(url))
-    return {'status': checkStatus(resp, [200, 204])}
+def file_exists(key):
+    try:
+        client.head_object(Bucket=BUCKET, Key=key)
+        return True
+    except:
+        return False
 
-def updateFile(old_url, new_key, data):
-    remove_resp = removeFile(old_url)
-    if not remove_resp['status']['ok']:
-        return remove_resp
-    return addFile(new_key, data)
+def add_file(data, key=None, override=True, content_type=None, ext=""):
+    if key is None:
+        key = get_key_from_binary_data(data, ext)
+    
+    if not override and file_exists(key):
+        return get_file_url(key)
+
+    resp = client.put_object(
+        Body=data, 
+        Bucket=BUCKET, 
+        Key=key, 
+        ACL=FILE_ACCESS, 
+        ContentType=content_type)
+    check_status(resp, [200])
+    return get_file_url(key)
+
+def remove_file(url):
+    resp = client.delete_object(Bucket=BUCKET, Key=get_key_from_url(url))
+    check_status(resp, [200, 204])
+
+def update_file(old_url, data, new_key=None, content_type=None):
+    remove_file(old_url)
+    return add_file(data, new_key, content_type=content_type)

@@ -34,6 +34,8 @@ class PodcastMetadata(mongoengine.Document):
     category = mongofields.StringField()
     sub_category = mongofields.StringField()
     keywords = mongofields.ListField(mongofields.StringField())
+    # Nullify on delete
+    subscribers = mongofields.ListField(mongofields.ReferenceField("User"))
 
 class ListenHistoryEntry(mongoengine.EmbeddedDocument):
     episode = mongofields.ReferenceField(
@@ -64,3 +66,4 @@ class User(mongoengine.Document):
     published_podcasts = mongofields.ListField(
             mongofields.ReferenceField(PodcastMetadata, reverse_delete_rule=mongoengine.DENY), default=list)
 
+User.register_delete_rule(PodcastMetadata, "subscribers__S", mongoengine.NULLIFY)
