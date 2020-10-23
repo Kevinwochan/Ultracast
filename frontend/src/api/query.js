@@ -93,6 +93,42 @@ const getHistory = async (verbose = true) => {
   });
 };
 
+/**
+ * Fetches the logged in user's podcasts
+ */
+const getUserPodcasts = async () => {
+  const data = await graphql(
+    `
+      query getUserPodcasts($user: ID) {
+        allPodcastMetadata(id: $user) {
+          edges {
+            node {
+              id
+              name
+              author {
+                id
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      // TODO remove this - currently hardcoded
+      user: "VXNlcjo1ZjkyY2UwM2M2OTU3ZmM2MWI4OWUzZGY=",
+    }
+  );
+
+  return data.allPodcastMetadata.edges.map((n) => {
+    const podcast = n.node;
+    return {
+      value: podcast.id,
+      label: podcast.name,
+      author: podcast.author.id,
+    };
+  });
+};
+
 // Query for lots of information on an episode (like for the Recommended page)
 const verboseEpisode = `
   name
@@ -162,4 +198,4 @@ const compactPodcast = `
   }
 `;
 
-export { getRecommended, getHistory, login, register };
+export { getRecommended, getUserPodcasts, getHistory, login, register };

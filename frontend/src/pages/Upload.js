@@ -10,14 +10,13 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
 import Fade from "@material-ui/core/Fade";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import CheckIcon from "@material-ui/icons/Check";
 import theme from "../theme";
 import { extractFiles } from "extract-files";
-import axios from "axios";
+import { getUserPodcasts } from "../api/query";
 import configuration from "../api/configuration";
 import getDominantColour from "../common/dominantColor";
 
@@ -63,102 +62,67 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// The default fields in the upload form
+const defaultFields = {
+  image: "/branding/square.svg",
+  allPodcasts: [{ label: "Create new podcast", value: "new-podcast" }],
+  podcast: {
+    label: "",
+    value: "",
+  },
+  audioFile: null,
+  duration: "",
+  title: "",
+  description: "",
+  isNewPodcast: false,
+  status: 0,
+};
+
 export default function Upload() {
   const classes = useStyles();
-  const originalState = {
-    image: "/branding/square.svg",
-    allPodcasts: [{ label: "Create new podcast", value: "new-podcast" }],
-    podcast: {
-      label: "",
-      value: "",
-    },
-    audioFile: null,
-    duration: "",
-    title: "",
-    description: "",
-    isNewPodcast: false,
-    status: 0,
-  };
+  const [fields, setFields] = useState(defaultFields);
 
-  // ! State management should always be done in the top-level component :)
-  const [state, setState] = useState(originalState);
-
+  // Add all the podcasts the user has created already
   useEffect(() => {
-    getPodcasts();
+    getUserPodcasts().then((podcasts) => {
+      setFields((prevState) => ({
+        ...prevState,
+        allPodcasts: prevState.allPodcasts.concat(podcasts),
+      }));
+    });
   }, []);
 
-  const getPodcasts = () => {
-    axios
-      .post(
-        configuration.BACKEND_ENDPOINT,
-        JSON.stringify({
-          query: `query($author: ID!) {allPodcastMetadata(author: $author) {
-            edges {
-              node {
-                id
-                name
-                author {
-                  id
-                }
-              }
-            }
-          }
-        }`,
-          variables: {
-            author: "VXNlcjo1Zjg1OWQ1YzlkNzZjNDcyYWZhZTNlYTI=",
-          },
-        }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        let podcasts = [];
-        response.data.data.allPodcastMetadata.edges.forEach((item) => {
-          podcasts.push({
-            value: item.node.id,
-            label: item.node.name,
-            author: item.node.author.id,
-          });
-        });
-        setState((prevState) => ({
-          ...prevState,
-          allPodcasts: prevState.allPodcasts.concat(podcasts),
-        }));
-        console.log("fetched podcasts");
-        console.log(podcasts);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   const resetFields = () => {
-    setState(originalState);
+    setFields(defaultFields);
   };
 
   return (
     <Grid container className={`${classes.center} ${classes.container}`}>
       <Grid item xs={12} sm={8} lg={6}>
-        <Paper>
-          <Box p={5} my={3}>
-            <Fields state={state} setState={setState} />
-          </Box>
-        </Paper>
-        <Actions state={state} resetFields={resetFields} setState={setState} />
+        <Box mt={2}>
+          <Typography gutterBottom variant="h5">
+            <b>Upload your next sensation</b>
+          </Typography>
+        </Box>
+
+        <Box my={3}>
+          <Fields state={fields} setState={setFields} />
+        </Box>
+        <Actions
+          state={fields}
+          resetFields={resetFields}
+          setState={setFields}
+        />
       </Grid>
       <Grid item xs={12} sm={4}>
-        <Fade in={state.title ? true : false} timeout={750}>
+        <Fade in={fields.title ? true : false} timeout={750}>
           <Box ml={2} mt={-2}>
             <Preview
-              image={state.image}
-              title={state.title}
-              description={state.description}
-              podcast={state.podcast.label}
-              duration={state.duration}
+              image={fields.image}
+              title={fields.title}
+              description={fields.description}
+              podcast={fields.podcast.label}
+              duration={fields.duration}
             />
           </Box>
         </Fade>
