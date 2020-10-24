@@ -117,9 +117,11 @@ class UpdatePodcastEpisode(ClientIDMutation):
 
     @classmethod
     @flask_jwt_extended.jwt_required
-    def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id, name=None, description=None, audio=None, keywords=None):
+    def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id, 
+            name=None, description=None, audio=None, keywords=None):
         # Retrieve the episode
-        podcast_episode_metadata = get_node_from_global_id(info, podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
+        podcast_episode_metadata = get_node_from_global_id(info, 
+                podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
         podcast_metadata = podcast_episode_metadata.podcast_metadata.get()
 
         assert_podcast_edit_permission(podcast_metadata)
@@ -130,7 +132,9 @@ class UpdatePodcastEpisode(ClientIDMutation):
         if description is not None:
             podcast_episode_metadata.description = description
         if audio is not None:
-            podcast_episode_metadata.audio_url = db.update_file(podcast_episode_metadata.audio_url, audio, valid_mimes=VALID_AUDIO_FORMATS)
+            podcast_episode_metadata.audio_url = db.update_file(
+                    podcast_episode_metadata.audio_url, audio,
+                    valid_mimes=VALID_AUDIO_FORMATS)
         if keywords is not None:
             podcast_episode_metadata.keywords = keywords
 
@@ -233,16 +237,16 @@ class UpdatePodcastMetadata(ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id, cover=None, **kwargs):
-        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, query.PodcastMetadata)
+        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, 
+                query.PodcastMetadata)
 
         assert_podcast_edit_permission(podcast_metadata)
 
         if cover is not None:
-            podcast_metadata.cover_url = db.update_file(podcast_metadata.cover_url, cover, valid_mimes=VALID_IMAGE_FORMATS)
+            podcast_metadata.cover_url = db.update_file(
+                    podcast_metadata.cover_url, cover, valid_mimes=VALID_IMAGE_FORMATS)
 
-        # Remove None's from kwargs
-        filtered_args = {k: v for k, v in kwargs.items() if v is not None and k != 'cover'}
-        podcast_metadata.modify(**filtered_args)
+        podcast_metadata.modify(**kwargs)
 
         return UpdatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
