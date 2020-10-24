@@ -28,6 +28,19 @@ snapshots['APITestCast::test_create_user Delete a user'] = {
     }
 }
 
+snapshots['APITestCast::test_current_user Current user is the last logged in user'] = {
+    'data': {
+        'currentUser': {
+            'email': 'testytest123@test.com',
+            'name': 'oli tests current user',
+            'publishedPodcasts': {
+                'edges': [
+                ]
+            }
+        }
+    }
+}
+
 snapshots['APITestCast::test_login Create a user'] = {
     'data': {
         'createUser': {
