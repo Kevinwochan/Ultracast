@@ -1,5 +1,7 @@
 from webserver import db
 
+from pydub import AudioSegment
+import io
 import unittest
 
 class TestStringMethods(unittest.TestCase):
@@ -72,4 +74,14 @@ class TestStringMethods(unittest.TestCase):
         self.assertTrue(db.url_exists(new_url))
         db.remove_file(new_url)
         self.assertFalse(db.url_exists(new_url))
+
+    def test_audio_file_duration(self):
+        with open('unit_tests/resources/sample.mp3', 'rb') as fh:
+            data = fh.read()
+            self.assertEqual(db.audio_file_duration_secs(data), 1)
+
+        with open('unit_tests/resources/0bQtvjwOSGOR5YO184fc25A2702UtnX3w60BnXA8-0Q=.mp2', 'rb') as fh:
+            data = fh.read()
+            audio = AudioSegment.from_file(io.BytesIO(data), format="mp3")
+            self.assertEqual(db.audio_file_duration_secs(data), 1709)
     

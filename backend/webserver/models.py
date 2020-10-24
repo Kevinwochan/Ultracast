@@ -31,6 +31,8 @@ class PodcastEpisodeMetadata(mongoengine.Document):
     name = mongofields.StringField()
     publish_date = mongofields.DateTimeField(default=datetime.datetime.now)
     audio_url = mongofields.StringField()
+    # Duration in seconds
+    duration = mongofields.IntField()
     description = mongofields.StringField()
     keywords = mongofields.ListField(mongofields.StringField())
     # Bidirectional relationship with PodcastMetadata. PodcastEpisodeMetadata is owned by PodcastMetadata
