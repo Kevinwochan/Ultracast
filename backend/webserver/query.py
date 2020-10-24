@@ -124,6 +124,18 @@ class Query(graphene.ObjectType):
         iterables = models.PodcastEpisodeMetadata.objects(publish_date__gte=user.model().last_login)(podcast_metadata__in=user.model().subscribed_podcasts)
         return iterables
 
+
+    '''
+    Custom query to get current logged in user
+    '''
+
+    current_user = graphene.Field(User)
+
+    @staticmethod
+    @flask_jwt_extended.jwt_required
+    def resolve_current_user(root, info):
+        return flask_jwt_extended.current_user.model()
+
 # https://docs.graphene-python.org/en/latest/execution/execute/
 # https://docs.graphene-python.org/en/latest/relay/nodes/
 class getRecommendations(graphene.ObjectType):
