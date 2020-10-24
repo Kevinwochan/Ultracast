@@ -7,6 +7,8 @@ import mimetypes
 import boto3
 from botocore.client import Config
 from mongoengine import connect
+from pydub import AudioSegment
+import io
 import hashlib
 from base64 import urlsafe_b64encode
 
@@ -121,3 +123,10 @@ def update_file(old_url, data, new_key=None, valid_mimes=[]):
     if url_exists(old_url):
         remove_file(old_url)
     return add_file(data, new_key, valid_mimes)
+
+def audio_file_duration_secs(data):
+    try:
+        audio = AudioSegment.from_file(io.BytesIO(data), format="mp3")
+        return int(round(audio.duration_seconds))
+    except:
+        return -1

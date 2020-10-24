@@ -102,6 +102,23 @@ class User(MongoengineObjectType):
             '''
             return None
 
+
+'''
+Custom query field resolvers
+'''
+
+@flask_jwt_extended.jwt_required
+def resolve_new_subscribed_podcasts(root, info, **args):
+    user = flask_jwt_extended.current_user
+    # Quite the query....
+    # Find all the podcast episodes who were created since the last login date and then filter by those subscribed by this user
+    iterables = models.PodcastEpisodeMetadata.objects(publish_date__gte=user.model().last_login)(podcast_metadata__in=user.model().subscribed_podcasts)
+    return iterables
+
+@flask_jwt_extended.jwt_required
+def resolve_current_user(root, info):
+    return flask_jwt_extended.current_user.model()
+
 class Query(graphene.ObjectType):
     node = Node.Field()
     all_podcast_episode_metadata = MongoengineConnectionField(PodcastEpisodeMetadata)
@@ -113,28 +130,18 @@ class Query(graphene.ObjectType):
     '''
     Custom query to get all the new podcasts the user has subscribed to since the last login
     '''
-    new_subscribed_podcasts = MongoengineConnectionField(PodcastEpisodeMetadata)
-
-    @staticmethod
-    @flask_jwt_extended.jwt_required
-    def resolve_new_subscribed_podcasts(root, info, **args):
-        user = flask_jwt_extended.current_user
-        # Quite the query....
-        # Find all the podcast episodes who were created since the last login date and then filter by those subscribed by this user
-        iterables = models.PodcastEpisodeMetadata.objects(publish_date__gte=user.model().last_login)(podcast_metadata__in=user.model().subscribed_podcasts)
-        return iterables
-
+    new_subscribed_podcasts = MongoengineConnectionField(PodcastEpisodeMetadata, 
+            resolver=resolve_new_subscribed_podcasts,
+            description="Get the podcast episodes that the currently logged in user has subscribed to \
+                    which were released since their last login or sign up")
 
     '''
     Custom query to get current logged in user
     '''
 
-    current_user = graphene.Field(User)
+    current_user = graphene.Field(User, resolver=resolve_current_user,
+            description="Get the currently logged in user (as indicated by the JWT token)")
 
-    @staticmethod
-    @flask_jwt_extended.jwt_required
-    def resolve_current_user(root, info):
-        return flask_jwt_extended.current_user.model()
 
 # https://docs.graphene-python.org/en/latest/execution/execute/
 # https://docs.graphene-python.org/en/latest/relay/nodes/

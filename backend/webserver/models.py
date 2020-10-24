@@ -31,6 +31,8 @@ class PodcastEpisodeMetadata(mongoengine.Document):
     name = mongofields.StringField()
     publish_date = mongofields.DateTimeField(default=datetime.datetime.now)
     audio_url = mongofields.StringField()
+    # Duration in seconds
+    duration = mongofields.IntField()
     description = mongofields.StringField()
     keywords = mongofields.ListField(mongofields.StringField())
     # Bidirectional relationship with PodcastMetadata. PodcastEpisodeMetadata is owned by PodcastMetadata
@@ -51,12 +53,12 @@ class User(mongoengine.Document):
     '''
     User Authentication
     '''
-    email = mongofields.StringField(required=True)
+    email = mongofields.StringField(required=True, unique=True)
     password = mongofields.StringField(required=True)
     '''
     User usage data
     '''
-    subscribed_podcasts = mongofields.ListField(mongofields.ReferenceField(PodcastMetadata), default=list)
+    subscribed_podcasts = mongofields.ListField(mongofields.ReferenceField(PodcastMetadata), default=list, reverse_delete_rule=mongoengine.PULL)
     listen_history = mongofields.EmbeddedDocumentListField(ListenHistoryEntry)
     # For previous session
     last_login = mongofields.DateTimeField(default=datetime.datetime.now)
@@ -68,8 +70,10 @@ class User(mongoengine.Document):
     published_podcasts = mongofields.ListField(
             mongofields.ReferenceField(PodcastMetadata, reverse_delete_rule=mongoengine.DENY), default=list)
 
-
 # Register reverse delete rules
 User.register_delete_rule(PodcastMetadata, "author", mongoengine.CASCADE)
-PodcastEpisodeMetadata.register_delete_rule(PodcastMetadata, "episodes__S", mongoengine.CASCADE)
-User.register_delete_rule(PodcastMetadata, "subscribers__S", mongoengine.NULLIFY)
+PodcastEpisodeMetadata.register_delete_rule(PodcastMetadata, "episodes", mongoengine.PULL)
+User.register_delete_rule(PodcastMetadata, "subscribers", mongoengine.PULL)
+
+# A little mean but this is the only reverse delete rule we can use in embedded documents...
+PodcastEpisodeMetadata.register_delete_rule(User, "listen_history__episode", mongoengine.DENY)

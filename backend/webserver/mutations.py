@@ -50,6 +50,7 @@ def assert_podcast_edit_permission(podcast_metadata):
 
 class CreatePodcastEpisodeMutation(ClientIDMutation):
     podcast_metadata = graphene.Field(query.PodcastMetadata)
+    podcast_episode_metadata = graphene.Field(query.PodcastEpisodeMetadata)
 
     class Input:
         podcast_metadata_id = graphene.ID(required=True)
@@ -63,20 +64,24 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
     @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
         audio_url = None
+        duration = None
         if audio is not None:
             audio_url = db.add_file(data=audio, valid_mimes=VALID_AUDIO_FORMATS)
+            duration = db.audio_file_duration_secs(audio)
         
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         assert_podcast_edit_permission(podcast_metadata)
 
-        episode_metadata = models.PodcastEpisodeMetadata(audio_url=audio_url, podcast_metadata=podcast_metadata,
+        episode_metadata = models.PodcastEpisodeMetadata(audio_url=audio_url, 
+                duration=duration, podcast_metadata=podcast_metadata,
                 **kwargs)
         episode_metadata.save()
 
         podcast_metadata.episodes.append(episode_metadata)
         podcast_metadata.save()
 
-        return CreatePodcastEpisodeMutation(podcast_metadata=podcast_metadata)
+        return CreatePodcastEpisodeMutation(podcast_metadata=podcast_metadata,
+                podcast_episode_metadata=episode_metadata)
 
 class DeletePodcastEpisode(ClientIDMutation):
     success = graphene.Boolean()
@@ -97,6 +102,10 @@ class DeletePodcastEpisode(ClientIDMutation):
 
         podcast_metadata.episodes.filter(episode=podcast_episode).delete()
         podcast_metadata.save()
+
+        # Remove episode from any subscribers listen history 
+        # This may be a little slow...
+        models.User.objects.update(pull__listen_history__episode=podcast_episode)
         
         if podcast_episode.audio_url is not None:
             db.remove_file(podcast_episode.audio_url)
@@ -117,9 +126,11 @@ class UpdatePodcastEpisode(ClientIDMutation):
 
     @classmethod
     @flask_jwt_extended.jwt_required
-    def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id, name=None, description=None, audio=None, keywords=None):
+    def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id, 
+            name=None, description=None, audio=None, keywords=None):
         # Retrieve the episode
-        podcast_episode_metadata = get_node_from_global_id(info, podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
+        podcast_episode_metadata = get_node_from_global_id(info, 
+                podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
         podcast_metadata = podcast_episode_metadata.podcast_metadata.get()
 
         assert_podcast_edit_permission(podcast_metadata)
@@ -130,7 +141,10 @@ class UpdatePodcastEpisode(ClientIDMutation):
         if description is not None:
             podcast_episode_metadata.description = description
         if audio is not None:
-            podcast_episode_metadata.audio_url = db.update_file(podcast_episode_metadata.audio_url, audio, valid_mimes=VALID_AUDIO_FORMATS)
+            podcast_episode_metadata.audio_url = db.update_file(
+                    podcast_episode_metadata.audio_url, audio,
+                    valid_mimes=VALID_AUDIO_FORMATS)
+            podcast_episode_metadata.duration = db.audio_file_duration_secs(audio)
         if keywords is not None:
             podcast_episode_metadata.keywords = keywords
 
@@ -200,6 +214,9 @@ class DeletePodcastMetadata(ClientIDMutation):
             audio_url = episode_metadata.audio_url
             if audio_url is not None:
                 db.remove_file(audio_url)
+            
+            # eww... trawl all users and remove from listen history
+            models.User.objects.update(pull__listen_history__episode=episode_metadata)
             episode_metadata.delete()
             num_deleted += 1
         
@@ -208,7 +225,6 @@ class DeletePodcastMetadata(ClientIDMutation):
 
         # Remove podcast from all users subscriptions
         models.User.objects(subscribed_podcasts=podcast_metadata).modify(pull__subscribed_podcasts=podcast_metadata)
-
         # Remove podcast_metadata from the authors published set
         podcast_metadata.author.modify(pull__published_podcasts=podcast_metadata)
 
@@ -233,16 +249,16 @@ class UpdatePodcastMetadata(ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id, cover=None, **kwargs):
-        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, query.PodcastMetadata)
+        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, 
+                query.PodcastMetadata)
 
         assert_podcast_edit_permission(podcast_metadata)
 
         if cover is not None:
-            podcast_metadata.cover_url = db.update_file(podcast_metadata.cover_url, cover, valid_mimes=VALID_IMAGE_FORMATS)
+            podcast_metadata.cover_url = db.update_file(
+                    podcast_metadata.cover_url, cover, valid_mimes=VALID_IMAGE_FORMATS)
 
-        # Remove None's from kwargs
-        filtered_args = {k: v for k, v in kwargs.items() if v is not None and k != 'cover'}
-        podcast_metadata.modify(**filtered_args)
+        podcast_metadata.modify(**kwargs)
 
         return UpdatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
@@ -295,9 +311,7 @@ class DeleteUser(ClientIDMutation):
 
 class MarkPodcastListened(ClientIDMutation):
     '''
-    Mark a podcast as listened to by the user
-    Not sure if we want to grab the user from the JWT
-    Or pass it in as an input @Dan @Kevin
+    Mark a podcast as listened to by the current user
     '''
     success = graphene.Boolean()
     user = graphene.Field(query.User)
@@ -307,13 +321,11 @@ class MarkPodcastListened(ClientIDMutation):
 
     @classmethod
     @flask_jwt_extended.jwt_required
-    def mutate_and_get_payload(cls, root, info, user_id, podcast_episode_metadata_id):
+    def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id):
         user = flask_jwt_extended.current_user
         episode = get_node_from_global_id(info, podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
-        listen_entry = models.ListenHistoryEntry(episode=episode)
-        user.listen_history.append(listen_entry)
-        user.save()
-        return MarkPodcastListened(success=True, user=user)
+        user.mark_podcast_listened(episode)
+        return MarkPodcastListened(success=True, user=user.model())
 
 class Login(ClientIDMutation):
     success = graphene.Boolean()
