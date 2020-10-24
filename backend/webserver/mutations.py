@@ -64,6 +64,7 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
     @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
         audio_url = None
+        duration = None
         if audio is not None:
             audio_url = db.add_file(data=audio, valid_mimes=VALID_AUDIO_FORMATS)
             duration = db.audio_file_duration_secs(audio)
@@ -71,7 +72,8 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         assert_podcast_edit_permission(podcast_metadata)
 
-        episode_metadata = models.PodcastEpisodeMetadata(audio_url=audio_url, duration=duration, podcast_metadata=podcast_metadata,
+        episode_metadata = models.PodcastEpisodeMetadata(audio_url=audio_url, 
+                duration=duration, podcast_metadata=podcast_metadata,
                 **kwargs)
         episode_metadata.save()
 
