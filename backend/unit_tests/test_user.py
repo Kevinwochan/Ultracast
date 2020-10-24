@@ -115,6 +115,43 @@ class APITestCast(snapshottest.TestCase):
         self.assertLess(last_login_time - datetime.datetime.now(), datetime.timedelta(seconds=1), 
                 "last login time too old")
 
+    def test_current_user(self):
+        # Create a user
+        result = self.execute_with_jwt(''' 
+            mutation create_user {
+                createUser(input: {email: "testytest123@test.com" password: "password" name: "oli tests current user"}) {
+                    success
+                    failWhy
+                    user {
+                        email
+                        name
+                    }
+                    token
+                }
+            }
+                ''')
+        self.assertTrue(result["data"]["createUser"]["success"])
+        self.jwt_token = result["data"]["createUser"].pop("token")
+
+        # Query that the name and email are correct
+        result = self.execute_with_jwt(
+            '''
+            query currUser {
+                currentUser {
+                    name
+                    email
+                    publishedPodcasts {
+                        edges {
+                            node {
+                                name
+                            }
+                        }
+                    }
+                }
+            }
+            ''')
+        self.assertMatchSnapshot(result, "Current user is the last logged in user")
+
     def createPodcast(self):
         '''
         Create a podcast and return the ID

@@ -15,6 +15,9 @@ import graphene_file_upload.scalars
 import flask_jwt_extended
 import werkzeug
 
+VALID_AUDIO_FORMATS = ['audio/mpeg', 'audio/mp3', 'Audio/MP3', 'audio/mpeg3', 'audio/x-mp3']
+VALID_IMAGE_FORMATS = ['image/jpeg', 'image/png']
+
 '''
 Trying things out relay style...
 See https://docs.graphene-python.org/en/latest/relay/mutations/
@@ -61,7 +64,7 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
         audio_url = None
         if audio is not None:
-            audio_url = db.add_file(data=audio)
+            audio_url = db.add_file(data=audio, valid_mimes=VALID_AUDIO_FORMATS)
         
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         assert_podcast_edit_permission(podcast_metadata)
@@ -127,7 +130,7 @@ class UpdatePodcastEpisode(ClientIDMutation):
         if description is not None:
             podcast_episode_metadata.description = description
         if audio is not None:
-            podcast_episode_metadata.audio_url = db.update_file(podcast_episode_metadata.audio_url, audio)
+            podcast_episode_metadata.audio_url = db.update_file(podcast_episode_metadata.audio_url, audio, valid_mimes=VALID_AUDIO_FORMATS)
         if keywords is not None:
             podcast_episode_metadata.keywords = keywords
 
@@ -163,7 +166,7 @@ class CreatePodcastMetadata(ClientIDMutation):
         
         cover_url = None
         if cover is not None:
-            cover_url = db.add_file(data=cover)
+            cover_url = db.add_file(data=cover, valid_mimes=VALID_IMAGE_FORMATS)
 
         podcast_metadata_args = input
         podcast_metadata_args["author"] = author.get_mongo_id()
@@ -235,7 +238,7 @@ class UpdatePodcastMetadata(ClientIDMutation):
         assert_podcast_edit_permission(podcast_metadata)
 
         if cover is not None:
-            podcast_metadata.cover_url = db.update_file(podcast_metadata.cover_url, cover)
+            podcast_metadata.cover_url = db.update_file(podcast_metadata.cover_url, cover, valid_mimes=VALID_IMAGE_FORMATS)
 
         # Remove None's from kwargs
         filtered_args = {k: v for k, v in kwargs.items() if v is not None and k != 'cover'}

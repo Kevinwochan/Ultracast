@@ -36,6 +36,10 @@ BUCKET = 'ultracast-files'
 FILE_ACCESS = 'public-read'
 
 
+class IllegalMimeException(Exception):
+    pass
+
+
 def get_bucket_url():
     return re.sub(r"^https://", f"https://{BUCKET}.", STATIC_FILE_BASE_URL)
 
@@ -76,8 +80,19 @@ def get_key(data, key=None, ext=""):
         return key
 
 
-def add_file(data, key=None, override=False):
-    mime_type = magic.from_buffer(data, mime=True)
+def check_mime(data, valid_mimes):
+    try:
+        mime_type = magic.from_buffer(data, mime=True)
+    except:
+        raise IllegalMimeException(f"Could not interpret MIME type of payload")
+
+    if mime_type not in valid_mimes:
+        raise IllegalMimeException(f"MIME type {mime_type} not allowed")
+    return mime_type
+
+
+def add_file(data, key=None, valid_mimes=[], override=False):
+    mime_type = check_mime(data, valid_mimes)
     extension = mimetypes.guess_extension(mime_type)
     key = get_key(data, key, extension)
 
@@ -94,12 +109,15 @@ def add_file(data, key=None, override=False):
     return get_file_url(key)
 
 
-def remove_file(url):
-    resp = client.delete_object(Bucket=BUCKET, Key=get_key_from_url(url))
+def remove_file(url, key=None):
+    if key is None:
+        resp = client.delete_object(Bucket=BUCKET, Key=get_key_from_url(url))
+    else:
+        resp = client.delete_object(Bucket=BUCKET, Key=key)
     check_status(resp, [200, 204], 'Remove File')
 
 
-def update_file(old_url, data, new_key=None):
+def update_file(old_url, data, new_key=None, valid_mimes=[]):
     if url_exists(old_url):
         remove_file(old_url)
-    return add_file(data, new_key)
+    return add_file(data, new_key, valid_mimes)

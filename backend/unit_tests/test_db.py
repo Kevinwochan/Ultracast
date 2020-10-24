@@ -37,23 +37,37 @@ class TestStringMethods(unittest.TestCase):
         expected = db.get_key_from_binary_data(data, '.mp3')
         self.assertEqual(db.get_key(data=data, ext='.mp3'), expected)
 
+    def test_unknown_mime(self):
+        with self.assertRaises(db.IllegalMimeException):
+            db.check_mime(data=bytearray.fromhex('deadbeef'), valid_mimes=['text/plain'])
+    
+    def test_invalid_mime(self):
+        with self.assertRaises(db.IllegalMimeException):
+            with open('unit_tests/resources/sample.mp3', 'rb') as fh:
+                data = fh.read()
+                db.check_mime(data=data, valid_mimes=['audio/mp4'])
+
+    def test_valid_mime(self):
+        data = open('unit_tests/resources/sample.mp3', 'rb').read()
+        db.check_mime(data=data, valid_mimes=['audio/mpeg'])
+
     def test_add_file_data_file_then_remove(self):
-        url = db.add_file(data=b'data')
+        url = db.add_file(data=b'data', valid_mimes=['text/plain'])
         self.assertTrue(db.url_exists(url))
         db.remove_file(url)
         self.assertFalse(db.url_exists(url))
 
     def test_add_file_with_key_then_remove(self):
-        url = db.add_file(data=b'data', key='test_temp')
+        url = db.add_file(data=b'data', key='test_temp', valid_mimes=['text/plain'])
         self.assertTrue(db.url_exists(url))
         self.assertEqual(db.get_key_from_url(url), "test_temp")
         db.remove_file(url)
         self.assertFalse(db.url_exists(url))
 
     def test_update_file_then_remove(self):
-        original_url = db.add_file(data=b'data', key='test_temp')
+        original_url = db.add_file(data=b'data', key='test_temp', valid_mimes=['text/plain'])
         self.assertTrue(db.url_exists(original_url))
-        new_url = db.update_file(old_url=original_url, data=b'new_data')
+        new_url = db.update_file(old_url=original_url, data=b'new_data', valid_mimes=['text/plain'])
         self.assertFalse(db.url_exists(original_url))
         self.assertTrue(db.url_exists(new_url))
         db.remove_file(new_url)

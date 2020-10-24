@@ -51,10 +51,10 @@ def main():
     df, podcasts_df = get_data()
     confirm_data_ok_prompt(df)
     # Upload static data
-    episode_id_to_uploaded_audio_url = download_upload_files(df, UPLOADED_AUDIO_FILE, ['id', 'audio_url'], VALID_AUDIO_FORMATS)
-    podcast_id_to_uploaded_cover_url = download_upload_files(podcasts_df, UPLOADED_IMAGE_FILE, ['id', 'image'], VALID_IMAGE_FORMATS)
+    podcast_id_to_cover_url = download_upload_files(podcasts_df, UPLOADED_IMAGE_FILE, ['id', 'image'], VALID_IMAGE_FORMATS)
+    episode_id_to_audio_url = download_upload_files(df, UPLOADED_AUDIO_FILE, ['id', 'audio_url'], VALID_AUDIO_FORMATS)
     # Write documents to mongodb
-    write_to_db(df, podcasts_df, episode_id_to_uploaded_audio_url, podcast_id_to_uploaded_cover_url)
+    write_to_db(df, podcasts_df, episode_id_to_audio_url, podcast_id_to_cover_url)
     print(f"{OKGREEN}Finished Successfully{ENDCOL}")
 
 def get_data():
@@ -241,7 +241,7 @@ def write_users_to_db(podcasts_df):
         podcast_id_to_user[row['id']] = user
     return podcast_id_to_user
 
-def write_podcast_episodes_to_db(df, episode_id_to_uploaded_audio_url, podcast_id_to_podcast):
+def write_podcast_episodes_to_db(df, episode_id_to_audio_url, podcast_id_to_podcast):
     print(f"{OKGREEN}Creating podcast episodes...{ENDCOL}")
 
     for index, row in df.iterrows():
@@ -254,7 +254,7 @@ def write_podcast_episodes_to_db(df, episode_id_to_uploaded_audio_url, podcast_i
             podcast_episode_meta = models.PodcastEpisodeMetadata(
                 name=row['title'], 
                 description=description,
-                audio_url=episode_id_to_uploaded_audio_url.get(row['id'], None),
+                audio_url=episode_id_to_audio_url[row['id']],
                 keywords=keywords,
                 podcast_metadata=podcast_meta)
             podcast_episode_meta.save()
