@@ -110,15 +110,19 @@ class User(BusinessLayerObject):
         self._model.modify(password=werkzeug.security.generate_password_hash(password))
 
     def delete(self):
-        # TODO: Delete all the podcasts!
+        # Delete all the podcasts!
         for podcast in self.model().published_podcasts:
+            #print("deleting podcast")
             self.model().modify(pull__published_podcasts=podcast)
             for episode in podcast.episodes:
+                #print("deleting episode")
                 if episode.audio_url is not None:
                     db.removeFile(episode.audio_url)
                 podcast.modify(pull__episodes=episode)
-                # TODO: Delete from s3 store
+                # Pull episode from all users listen history (ewww slow)
+                models.User.objects.update(pull__listen_history__episode=episode.id)
                 episode.delete()
+
             podcast.delete()
         super().delete()
 
@@ -148,6 +152,13 @@ class User(BusinessLayerObject):
     def login(self):
         self._model.modify(last_login=self._model.login_time)
         self._model.modify(login_time=datetime.datetime.now())
+
+    def mark_podcast_listened(self, podcast_episode_metadata_model):
+        listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)
+        self.model().listen_history.append(listen_entry)
+        self.model().save()
+        return True
+
 
     @classmethod
     def from_email(cls, email):

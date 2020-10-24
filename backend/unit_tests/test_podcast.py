@@ -28,8 +28,8 @@ class CreatePodcastTest(snapshottest.TestCase):
                 }
             }
                 ''')
-        if result is None:
-            raise RuntimeError("Failed to create user!")
+        if not result["data"]["createUser"]["success"]:
+            raise RuntimeError("Failed to create user: {}".format(result["data"]["createUser"]["failWhy"]))
         self.user_id = result["data"]["createUser"]["user"]["id"]
         self.jwt_token = result["data"]["createUser"]["token"]
 
@@ -159,6 +159,9 @@ class CreatePodcastTest(snapshottest.TestCase):
                     podcastMetadata {
                         name
                     }
+                    podcastEpisodeMetadata {
+                        id
+                    }
                 } 
             }
             '''
@@ -169,7 +172,9 @@ class CreatePodcastTest(snapshottest.TestCase):
                 }
         
         result = self.execute_with_jwt(query, variables=variables)
-        print(result)
+
+        return result["data"]["createPodcastEpisode"]["podcastEpisodeMetadata"]["id"]
+
         
 
     def test_delete_podcast_no_episode(self):
@@ -224,6 +229,78 @@ class CreatePodcastTest(snapshottest.TestCase):
             '''
 
         self.assertMatchSnapshot(self.execute_with_jwt(check_user_query, variables={"user_id": self.user_id}))
+
+    def test_delete_podcast_1_episode_1_listener(self):
+        podcast_metadata_id = self.createPodcast()
+        podcast_episode_id = self.createPodcastEpisode(podcast_metadata_id)
+
+        # Mark the podcast as listened to
+        result = self.execute_with_jwt(
+            '''
+            mutation mark_listened($podcast_id: ID!) {
+                markPodcastListened(input: {
+                    podcastEpisodeMetadataId: $podcast_id
+                }) {
+                    success
+                    user {
+                        listenHistory {
+                            edges {
+                                node {
+                                    episode {
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }''', variables={"podcast_id": podcast_episode_id})
+
+        self.assertMatchSnapshot(result, "Podcast episode is added to listen history")
+
+        delete_query = '''
+        mutation delete ($id: ID!) {
+          deletePodcastMetadata(input: {
+            podcastMetadataId: $id
+          }) {
+            success
+            numDeletedEpisodes
+          }
+        }
+        '''
+        self.assertMatchSnapshot(self.execute_with_jwt(delete_query, variables={'id': podcast_metadata_id}))
+
+        # Check that the creator has the podcast removed
+        check_user_query = '''
+            query check_user ($user_id: ID!) {
+                allUser(id: $user_id) {
+                    edges {
+                        node {
+                            listenHistory {
+                                edges {
+                                    node {
+                                        episode {
+                                            name
+                                        }
+                                    }
+                                }
+                            }
+                            publishedPodcasts {
+                                edges {
+                                    node {
+                                        name
+                                        description
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            '''
+
+        self.assertMatchSnapshot(self.execute_with_jwt(check_user_query, variables={"user_id": self.user_id}))
+
 
     def test_update_podcast(self):
         podcast_metadata_id = self.createPodcast()
