@@ -78,13 +78,13 @@ const defaultFields = {
   status: 0,
 };
 
-export default function Upload() {
+export default function Upload({ userToken }) {
   const classes = useStyles();
   const [fields, setFields] = useState(defaultFields);
 
   // Add all the podcasts the user has created already
   useEffect(() => {
-    getUserPodcasts().then((podcasts) => {
+    getUserPodcasts(userToken).then((podcasts) => {
       setFields((prevState) => ({
         ...prevState,
         allPodcasts: prevState.allPodcasts.concat(podcasts),

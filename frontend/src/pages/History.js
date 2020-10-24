@@ -14,11 +14,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function History({ state }) {
+  const [sessionState, updateState] = state;
   const classes = useStyles();
 
   const [history, setHistory] = useState("loader");
   useEffect(() => {
-    getHistory(false).then((data) => {
+    getHistory(false, sessionState.cookies.token).then((data) => {
       setHistory(data);
     });
   }, []);

@@ -31,7 +31,7 @@ export default function Dashboard({ state }) {
       setRecommended(data);
     });
 
-    getHistory(false).then((data) => {
+    getHistory(false, sessionState.cookies.token).then((data) => {
       setHistory(data);
     });
   }, []);

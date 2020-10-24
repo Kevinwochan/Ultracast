@@ -92,7 +92,7 @@ export default function App() {
         <Route path="/upload">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state}>
-              <Upload />
+              <Upload userToken={sessionState.cookies.token} />
             </Page>
           </PrivateRoute>
         </Route>

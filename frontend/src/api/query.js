@@ -64,9 +64,13 @@ const getRecommended = async () => {
   // TODO: put the mapping into another function similar to parseEpisode
   return data.allPodcastMetadata.edges.map((podcast) => ({
     title: podcast.node.name ?? "unknown title",
-    author:
-      (podcast.node.author ?? { name: "unknown author" }).name ??
-      "unknown author name", // hack for our incomplete database
+    author: {
+      // ! @Kev this problem should be fixed now
+      // name: (podcast.node.author ?? { name: "unknown author" }).name ??
+      // "unknown author name", // hack for our incomplete database
+      name: podcast.node.author.name,
+      id: podcast.node.author.id,
+    },
     image: podcast.node.coverUrl,
     id: podcast.node.id,
     episode: {
@@ -77,34 +81,32 @@ const getRecommended = async () => {
   }));
 };
 
-const getHistory = async (verbose = true) => {
+/**
+ * Gets the listening history of the user
+ *
+ * @param {boolean} verbose get the verbose episode output
+ * @param {string} token JWT token of the user
+ */
+const getHistory = async (verbose = true, token) => {
   const data = await graphql(
-    `
-    query getListenHistory($user: ID!) {
-      allUser(id: $user) {
+    `query getListenHistory {
+      currentUser {
+        listenHistory {
           edges {
             node {
-              listenHistory {
-                edges {
-                  node {
-                    episode {
-                      ${verbose ? verboseEpisode : compactEpisode}
-                    }
-                  }
-                }
+              episode {
+                ${verbose ? verboseEpisode : compactEpisode}
               }
             }
           }
         }
       }
-    `,
-    {
-      // TODO remove this - currently hardcoded
-      user: "VXNlcjo1ZjkyY2RmY2M2OTU3ZmM2MWI4OWUzOWQ=",
-    }
+    }`,
+    {},
+    token
   );
 
-  const userListenHistory = data.allUser.edges[0].node.listenHistory.edges;
+  const userListenHistory = data.currentUser.listenHistory.edges;
   return userListenHistory.map((n) => {
     const episode = n.node.episode;
     return parseEpisode(episode, verbose);
@@ -113,28 +115,30 @@ const getHistory = async (verbose = true) => {
 
 /**
  * Fetches the logged in user's podcasts
+ *
+ * @param {string} token the JWT token of the usr
  */
-const getUserPodcasts = async () => {
+const getUserPodcasts = async (token) => {
   const data = await graphql(
     `
       query getUserPodcasts($user: ID) {
-        allPodcastMetadata(id: $user) {
-          edges {
-            node {
-              id
-              name
-              author {
+        currentUser {
+          publishedPodcasts {
+            edges {
+              node {
+                name
                 id
+                author {
+                  id
+                }
               }
             }
           }
         }
       }
     `,
-    {
-      // TODO remove this - currently hardcoded
-      user: "VXNlcjo1ZjkyY2UwM2M2OTU3ZmM2MWI4OWUzZGY=",
-    }
+    {},
+    token
   );
 
   return data.allPodcastMetadata.edges.map((n) => {
