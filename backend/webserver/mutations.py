@@ -66,11 +66,12 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
         audio_url = None
         if audio is not None:
             audio_url = db.add_file(data=audio, valid_mimes=VALID_AUDIO_FORMATS)
+            duration = db.audio_file_duration_secs(audio)
         
         podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         assert_podcast_edit_permission(podcast_metadata)
 
-        episode_metadata = models.PodcastEpisodeMetadata(audio_url=audio_url, podcast_metadata=podcast_metadata,
+        episode_metadata = models.PodcastEpisodeMetadata(audio_url=audio_url, duration=duration, podcast_metadata=podcast_metadata,
                 **kwargs)
         episode_metadata.save()
 
@@ -141,6 +142,7 @@ class UpdatePodcastEpisode(ClientIDMutation):
             podcast_episode_metadata.audio_url = db.update_file(
                     podcast_episode_metadata.audio_url, audio,
                     valid_mimes=VALID_AUDIO_FORMATS)
+            podcast_episode_metadata.duration = db.audio_file_duration_secs(audio)
         if keywords is not None:
             podcast_episode_metadata.keywords = keywords
 
