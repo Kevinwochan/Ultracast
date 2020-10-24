@@ -195,6 +195,8 @@ const coverStyles = makeStyles((theme) => ({
   },
 }));
 
+const not_found = [];
+
 // Image for the podcast
 export function PodcastCover({ podcast, state }) {
   const classes = coverStyles();
@@ -227,11 +229,17 @@ export function PodcastCover({ podcast, state }) {
         alt="podcast cover"
         className={classes.podcastCover}
         onError={(e) => {
-          const getRandomNumber = () => {
-            return Math.floor(Math.random() * 1000);
-          };
+          // TODO remove this once Connor fixes deadlinks issue
+          if (podcast.image !== "") {
+            not_found.push({
+              title: podcast.title,
+              url: podcast.image,
+            });
+            // console.log(not_found);
+          }
 
-          e.target.src = `https://source.unsplash.com/random?sig=${getRandomNumber()}`;
+          // If no image is found, use our default one
+          e.target.src = `/branding/square.svg`;
         }}
       ></img>
       <div
