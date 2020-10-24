@@ -97,8 +97,11 @@ def add_file(data, key=None, valid_mimes=[], override=False):
     check_status(resp, [200], 'Add File')
     return get_file_url(key)
 
-def remove_file(url):
-    resp = client.delete_object(Bucket=BUCKET, Key=get_key_from_url(url))
+def remove_file(url, key=None):
+    if key is None:
+        resp = client.delete_object(Bucket=BUCKET, Key=get_key_from_url(url))
+    else:
+        resp = client.delete_object(Bucket=BUCKET, Key=key)
     check_status(resp, [200, 204], 'Remove File')
 
 def update_file(old_url, data, new_key=None, valid_mimes=[]):
