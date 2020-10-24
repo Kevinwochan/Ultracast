@@ -43,7 +43,7 @@ const register = async (email, password) => {
 };
 
 /*
-Retriveves an array of podcast episodes recommended for the user
+Retriveves the first episode of 
 */
 const getRecommended = async () => {
   const data = await graphql(
@@ -62,21 +62,19 @@ const getRecommended = async () => {
   );
 
   // TODO: put the mapping into another function similar to parseEpisode
+  // Maps the first  into episodes
   return data.allPodcastMetadata.edges.map((podcast) => ({
-    title: podcast.node.name ?? "unknown title",
+    url: podcast.node.episodes.edges[0].node.audioUrl,
+    id: podcast.node.episodes.edges[0].node.id,
+    name: podcast.node.episodes.edges[0].node.name,
+    podcast: {
+      image: podcast.node.coverUrl,
+      id: podcast.node.id,
+      title: podcast.node.name,
+    },
     author: {
-      // ! @Kev this problem should be fixed now
-      // name: (podcast.node.author ?? { name: "unknown author" }).name ??
-      // "unknown author name", // hack for our incomplete database
       name: podcast.node.author.name,
       id: podcast.node.author.id,
-    },
-    image: podcast.node.coverUrl,
-    id: podcast.node.id,
-    episode: {
-      url: podcast.node.episodes.edges[0].node.audioUrl, // replace with podcast.episodes.edges[0].node.audioUrl when databse is fixed
-      id: podcast.node.episodes.edges[0].node.id,
-      name: podcast.node.episodes.edges[0].node.name,
     },
   }));
 };

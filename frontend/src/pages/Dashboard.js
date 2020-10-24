@@ -31,9 +31,9 @@ export default function Dashboard({ state }) {
       setRecommended(data);
     });
 
-    getHistory(false, sessionState.cookies.token).then((data) => {
+    /*getHistory(false, sessionState.cookies.token).then((data) => {
       setHistory(data);
-    });
+    });*/
   }, []);
 
   return (
@@ -42,9 +42,9 @@ export default function Dashboard({ state }) {
       maxWidth={sessionState.open ? "md" : "lg"}
     >
       <PodcastSliderTitle title="Recommended Podcasts" url="/" />
-      <Slider state={state} podcasts={recommended} />
+      <Slider state={state} episodes={recommended} />
       <PodcastSliderTitle title="Recently Listened" url="/history" />
-      <Slider state={state} podcasts={history} />
+      <Slider state={state} episodes={history} />
     </Container>
   );
 }

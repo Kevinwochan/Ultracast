@@ -9,27 +9,31 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
+import { CenterFocusStrong, LinearScale } from "@material-ui/icons";
+import { transform } from "@babel/core";
 
 const podcast = {
   id: 1,
   title: "Oliver's True Crime Series",
   description:
     "In this innovative podcast, retired cold case investigator Paul Holes and true crime journalist Billy Jensen team up to tackle unsolved crimes and missing person cases each week. They invite listeners to contribute their own research and theories, so you can put on your own Sherlock hat.",
+  image: "https://source.unsplash.com/random/150x150",
   author: { name: "Oliver Productions", id: 1 },
 };
 
 const episodes = [
   {
+    id: 1,
     title: "Episode 1: Giving Lawyer X a Voice",
     length: "20",
     description:
       "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
-    image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
+    podcast: podcast,
   },
   {
+    id: 2,
     title: "Episode 2: Dead Man's Chest",
     length: "20",
     description:
@@ -37,9 +41,10 @@ const episodes = [
     image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     author: { name: "Oliver Productions", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
+    podcast: podcast,
   },
   {
+    id: 3,
     title: "Episode 3: A Locked Door",
     length: "20",
     description:
@@ -47,9 +52,10 @@ const episodes = [
     image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
+    podcast: podcast,
   },
   {
+    id: 4,
     title: "Episode 4",
     length: "20",
     description:
@@ -57,9 +63,10 @@ const episodes = [
     image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
+    podcast: podcast,
   },
   {
+    id: 5,
     title: "Episode 5",
     length: "20",
     description:
@@ -67,21 +74,44 @@ const episodes = [
     image: "https://source.unsplash.com/random",
     url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
+    podcast: podcast,
   },
 ];
 
 const useStyles = makeStyles((theme) => ({
   podcastHero: {
     background: "white",
-    paddingLeft: theme.spacing(8),
-    paddingTop: theme.spacing(8),
+    paddingLeft: theme.spacing(5),
+    paddingTop: theme.spacing(5),
     marginBottom: theme.spacing(3),
-    minHeight: 300,
+    minHeight: 150,
   },
   podcastCover: {
-    width: 150,
-    height: 150,
+    minHeight: 150,
+    minWidth: 150,
+    backgroundImage: `url(${podcast.image})`,
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    zIndex: 2,
+  },
+  overlay: {
+    height: "100%",
+    width: "100%",
+    background: "black",
+    opacity: 0.4
+  },
+  coverGlass: {
+    position: "relative",
+    minHeight: 150,
+    minWidth: 150,
+    backgroundImage: `url(${podcast.image})`,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    backgroundBlendMode: "screen",
   },
 }));
 
@@ -96,7 +126,7 @@ export default function Podcast({ state }) {
   return (
     <>
       <Grid container>
-        <Grid item xs className={classes.podcastHero}>
+        <Grid item xs={8} className={classes.podcastHero}>
           <Typography variant="h4" paragraph>
             {podcast.title}
           </Typography>
@@ -128,16 +158,9 @@ export default function Podcast({ state }) {
             </Button>
           )}
         </Grid>
-        <Grid item>
-          <img
-            src={
-              podcast.cover
-                ? podcast.cover
-                : "https://source.unsplash.com/random"
-            }
-            alt="podcast cover"
-            className={classes.podcastCover}
-          ></img>
+        <Grid item xs={4} className={classes.coverGlass}>
+          <div className={classes.overlay}></div>
+          <div className={classes.podcastCover}></div>
         </Grid>
       </Grid>
       <Playlist episodes={episodes} state={state} />

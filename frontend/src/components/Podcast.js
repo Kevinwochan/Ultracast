@@ -66,7 +66,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
             <Grid container alignItems="center" className={classes.card}>
               <Grid item lg={11} container spacing={2}>
                 <Grid item>
-                  <PodcastCover podcast={episode} state={state} />
+                  <PodcastCover episode={episode} state={state} />
                 </Grid>
                 <Grid item lg={10} container direction="column">
                   <Grid item>
@@ -116,16 +116,16 @@ const sliderStyles = makeStyles((theme) => ({
   },
 }));
 
-export function Slider({ state, podcasts }) {
+export function Slider({ state, episodes }) {
   const classes = sliderStyles();
 
   // Waiting for DB query - just show loader for now
-  if (podcasts == "loader") {
+  if (episodes === "loader") {
     return <CircularProgress />;
   }
 
   // No podcasts are available - show error message
-  if (!podcasts || podcasts.length == 0) {
+  if (!episodes || episodes.length === 0) {
     return (
       <Grid container spacing={4} className={classes.podcastContainer}>
         <Typography variant="body1">Nothing is currently available.</Typography>
@@ -135,9 +135,9 @@ export function Slider({ state, podcasts }) {
 
   return (
     <Grid container spacing={4} className={classes.podcastContainer}>
-      {podcasts.map((podcast) => (
-        <Grid item key={uid(podcast)} lg={2} className={classes.podcast}>
-          <LargePodcast state={state} podcast={podcast} />
+      {episodes.map((episode) => (
+        <Grid item key={uid(episode)} lg={2} className={classes.podcast}>
+          <LargePodcast state={state} episode={episode} />
         </Grid>
       ))}
     </Grid>
@@ -156,21 +156,21 @@ const largePodcastStyles = makeStyles((theme) => ({
   },
 }));
 
-export function LargePodcast({ state, podcast }) {
+export function LargePodcast({ state, episode }) {
   const classes = largePodcastStyles();
 
   return (
     <>
-      <PodcastCover podcast={podcast} state={state} />
+      <PodcastCover episode={episode} state={state} />
       <CardContent className={classes.podcastDetailsContainer}>
-        <Link to={`/podcast/${podcast.id}`}>
+        <Link to={`/podcast/${episode.podcast.id}`}>
           <Typography variant="subtitle2" className={classes.podcastDetails}>
-            <b>{podcast.title}</b>
+            <b>{episode.podcast.title}</b>
           </Typography>
         </Link>
-        <Link to={`/author/${podcast.author.id}`}>
+        <Link to={`/author/${episode.author.id}`}>
           <Typography variant="caption" className={classes.podcastDetails}>
-            {podcast.author.name}
+            {episode.author.name}
           </Typography>
         </Link>
       </CardContent>
@@ -198,7 +198,7 @@ const coverStyles = makeStyles((theme) => ({
 const not_found = [];
 
 // Image for the podcast
-export function PodcastCover({ podcast, state }) {
+export function PodcastCover({ episode, state }) {
   const classes = coverStyles();
   const [play, updatePlay] = useState(false);
 
@@ -216,25 +216,24 @@ export function PodcastCover({ podcast, state }) {
       onMouseEnter={showPlay}
       onMouseLeave={hidePlay}
       onClick={() => {
-        console.log(podcast);
         addAudio(state, {
-          name: podcast.title,
-          musicSrc: podcast.episode.url,
-          cover: podcast.image,
-          id: podcast.episode.id,
+          name: episode.title,
+          musicSrc: episode.url,
+          cover: episode.podcast.image,
+          id: episode.id,
         });
       }}
     >
       <img
-        src={podcast.image}
+        src={episode.podcast.image}
         alt="podcast cover"
         className={classes.podcastCover}
         onError={(e) => {
           // TODO remove this once Connor fixes deadlinks issue
-          if (podcast.image !== "") {
+          if (episode.podcast.image !== "") {
             not_found.push({
-              title: podcast.title,
-              url: podcast.image,
+              title: episode.title,
+              url: episode.podcast.image,
             });
             // console.log(not_found);
           }
