@@ -68,6 +68,57 @@ snapshots['CreatePodcastTest::test_delete_podcast_1_episode 2'] = {
     }
 }
 
+snapshots['CreatePodcastTest::test_delete_podcast_1_episode_1_listener 1'] = {
+    'data': {
+        'deletePodcastMetadata': {
+            'numDeletedEpisodes': 1,
+            'success': True
+        }
+    }
+}
+
+snapshots['CreatePodcastTest::test_delete_podcast_1_episode_1_listener 2'] = {
+    'data': {
+        'allUser': {
+            'edges': [
+                {
+                    'node': {
+                        'listenHistory': {
+                            'edges': [
+                            ]
+                        },
+                        'publishedPodcasts': {
+                            'edges': [
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
+
+snapshots['CreatePodcastTest::test_delete_podcast_1_episode_1_listener Podcast episode is added to listen history'] = {
+    'data': {
+        'markPodcastListened': {
+            'success': True,
+            'user': {
+                'listenHistory': {
+                    'edges': [
+                        {
+                            'node': {
+                                'episode': {
+                                    'name': 'podcast episode title'
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
 snapshots['CreatePodcastTest::test_delete_podcast_no_episode 1'] = {
     'data': {
         'deletePodcastMetadata': {
