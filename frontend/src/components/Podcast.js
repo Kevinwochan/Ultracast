@@ -216,6 +216,7 @@ export function PodcastCover({ podcast, state }) {
       onMouseEnter={showPlay}
       onMouseLeave={hidePlay}
       onClick={() => {
+        console.log(podcast);
         addAudio(state, {
           name: podcast.title,
           musicSrc: podcast.episode.url,

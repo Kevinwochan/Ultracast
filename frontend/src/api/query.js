@@ -216,6 +216,8 @@ const compactPodcast = `
   episodes(first: 1) {
     edges {
       node {
+        id
+        name
         audioUrl
       }
     }
