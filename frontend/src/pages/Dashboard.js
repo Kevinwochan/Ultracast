@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard({ state }) {
   const classes = useStyles();
   const [sessionState, updateState] = state;
-
   const [recommended, setRecommended] = useState("loader");
   const [history, setHistory] = useState("loader");
 

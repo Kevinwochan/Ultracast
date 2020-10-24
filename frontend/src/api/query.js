@@ -1,7 +1,17 @@
 import graphql from "../api/graphql";
 
 /*
-An async function that wraps a graphql query to standardise/abstract away the graphql implementation
+This file defines the mutation strings used and how the response data is then unpacked
+*/
+
+const getRandomNumber = () => {
+  return Math.floor(Math.random() * 1000);
+};
+
+/* TODO: handle when the server invalidates the token */
+
+/*
+Logs a user in
 */
 const login = async (email, password) => {
   const data = await graphql(
@@ -15,7 +25,7 @@ const login = async (email, password) => {
 };
 
 /*
-An async function that wraps a graphql query to standardise/abstract away the graphql implementation
+Registers a email password combination as user account
 */
 const register = async (email, password) => {
   const data = await graphql(
@@ -32,6 +42,9 @@ const register = async (email, password) => {
   };
 };
 
+/*
+Retriveves an array of podcast episodes recommended for the user
+*/
 const getRecommended = async () => {
   const data = await graphql(
     `
@@ -55,7 +68,12 @@ const getRecommended = async () => {
       (podcast.node.author ?? { name: "unknown author" }).name ??
       "unknown author name", // hack for our incomplete database
     image: podcast.node.coverUrl,
-    url: podcast.node.episodes.edges[0].node.audioUrl,
+    id: podcast.node.id,
+    episode: {
+      url: podcast.node.episodes.edges[0].node.audioUrl, // replace with podcast.episodes.edges[0].node.audioUrl when databse is fixed
+      id: podcast.node.episodes.edges[0].node.id,
+      name: podcast.node.episodes.edges[0].node.name,
+    },
   }));
 };
 
@@ -131,6 +149,7 @@ const getUserPodcasts = async () => {
 
 // Query for lots of information on an episode (like for the Recommended page)
 const verboseEpisode = `
+  id
   name
   description
   audioUrl
@@ -147,6 +166,7 @@ const verboseEpisode = `
 
 // Query for not a lot of info on an episode (like for the Dashboard)
 const compactEpisode = `
+  id
   name
   audioUrl
   podcastMetadata {
@@ -198,4 +218,59 @@ const compactPodcast = `
   }
 `;
 
-export { getRecommended, getUserPodcasts, getHistory, login, register };
+const newPodcast = async (title, description, keywords, token) => {
+  const data = await graphql(
+    `
+      mutation($author: ID!, $name: String!, $description: String) {
+        createPodcastMetadata(
+          input: { author: $author, name: $name, description: $description }
+        ) {
+          success
+          podcastMetadata {
+            id
+            name
+          }
+        }
+      }
+    `,
+    {
+      name: title,
+      author:
+        "VXNlcjo1Zjg4MDJkODhjMTk0NDgwNTlkNDM4NTY=" /* TODO: dynamic authors */,
+      description: description,
+      keywords: keywords,
+    }
+  );
+  return data.podcastMetadata;
+};
+
+/*
+Marks the podcast id given as watched for the specified user (token)
+TOOD: make the user be identified by token
+*/
+const markAsPlayed = async (episodeId, token) => {
+  const data = await graphql(
+    `
+      mutation($episodeId: ID!) {
+        markPodcastListened(input: { podcastEpisodeMetadataId: $episodeId }) {
+          success
+        }
+      }
+    `,
+    {
+      episodeId: episodeId,
+    },
+    token
+  );
+  return data.markPodcastListened;
+};
+
+export {
+  markAsPlayed,
+  newPodcast,
+  getRecommended,
+  login,
+  register,
+  getUserPodcasts,
+  getHistory,
+};

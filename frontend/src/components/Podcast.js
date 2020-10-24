@@ -6,6 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { uid } from "react-uid";
 
 const playlistStyles = makeStyles((theme) => ({
   card: {
@@ -32,7 +33,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
 
   const EpisodeTitle = ({ episode }) => (
     <Grid item lg={6}>
-      {variant == "podcast" ? (
+      {variant === "podcast" ? (
         <Link to={`/podcast/${episode.podcast.id}`}>
           <Typography gutterBottom variant="subtitle1">
             <b>{episode.title}</b>
@@ -73,7 +74,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
                       <EpisodeTitle episode={episode} />
                     </Grid>
                     <Grid container>
-                      {variant == "podcast" ? null : (
+                      {variant === "podcast" ? null : (
                         <PodcastTitle episode={episode} />
                       )}
                       <Grid item lg={4}>
@@ -85,7 +86,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
                       </Grid>
                       <Grid item lg={4}>
                         <Typography gutterBottom variant="subtitle1">
-                          {variant == "podcast"
+                          {variant === "podcast"
                             ? `${episode.length} episodes`
                             : `${episode.length} minutes`}
                         </Typography>
@@ -135,7 +136,7 @@ export function Slider({ state, podcasts }) {
   return (
     <Grid container spacing={4} className={classes.podcastContainer}>
       {podcasts.map((podcast) => (
-        <Grid item key={podcast.title} lg={2} className={classes.podcast}>
+        <Grid item key={uid(podcast)} lg={2} className={classes.podcast}>
           <LargePodcast state={state} podcast={podcast} />
         </Grid>
       ))}
@@ -162,12 +163,16 @@ export function LargePodcast({ state, podcast }) {
     <>
       <PodcastCover podcast={podcast} state={state} />
       <CardContent className={classes.podcastDetailsContainer}>
-        <Typography variant="subtitle2" className={classes.podcastDetails}>
-          <b>{podcast.title}</b>
-        </Typography>
-        <Typography variant="caption" className={classes.podcastDetails}>
-          {podcast.author}
-        </Typography>
+        <Link to={`/podcast/${podcast.id}`}>
+          <Typography variant="subtitle2" className={classes.podcastDetails}>
+            <b>{podcast.title}</b>
+          </Typography>
+        </Link>
+        <Link to={`/author/${podcast.author.id}`}>
+          <Typography variant="caption" className={classes.podcastDetails}>
+            {podcast.author.name}
+          </Typography>
+        </Link>
       </CardContent>
     </>
   );
@@ -211,8 +216,9 @@ export function PodcastCover({ podcast, state }) {
       onClick={() => {
         addAudio(state, {
           name: podcast.title,
-          musicSrc: podcast.url,
+          musicSrc: podcast.episode.url,
           cover: podcast.image,
+          id: podcast.episode.id,
         });
       }}
     >
@@ -240,7 +246,7 @@ export function PodcastCover({ podcast, state }) {
 
 // Add an audio to the sessionState audioList
 // https://github.com/lijinke666/react-music-player#bulb-audiolistprops
-export function addAudio(state, { name, musicSrc, cover }) {
+export function addAudio(state, { name, musicSrc, cover, id }) {
   const [sessionState, updateState] = state;
   const newList = [
     ...sessionState.audioList,
@@ -248,6 +254,7 @@ export function addAudio(state, { name, musicSrc, cover }) {
       name: name,
       musicSrc: musicSrc,
       cover: cover,
+      id: id,
     },
   ];
 

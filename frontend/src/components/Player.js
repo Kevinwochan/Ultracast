@@ -2,10 +2,19 @@ import React from "react";
 import ReactJkMusicPlayer from "react-jinke-music-player";
 import "react-jinke-music-player/assets/index.css";
 import "./player.css"; // "Override" the default jinke-music-player styles
+import { markAsPlayed } from "../api/query";
 
 export default function Player({ state }) {
   const [sessionState, updateState] = state;
   const mode = sessionState.audioList ? "full" : "";
+
+  const onAudioPlay = (audioInfo) => {
+    console.log(`Marking audio as played ${audioInfo.name}`);
+    markAsPlayed(
+      audioInfo.id,
+      sessionState.cookies.token
+    );
+  };
 
   const options = {
     theme: "light",
@@ -36,6 +45,7 @@ export default function Player({ state }) {
     autoHiddenCover: false,
     quietUpdate: false,
     audioLists: sessionState.audioList,
+    onAudioPlay: onAudioPlay,
   };
 
   return <ReactJkMusicPlayer {...options} />;

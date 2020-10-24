@@ -1,6 +1,11 @@
 import configuration from "../api/configuration";
 import axios from "axios";
 
+/*
+This file contains a defintion for commonly used the commonly used HTTP headers
+and parameterises the graphql interface
+*/
+
 const graphql = (query, variables, token = "") => {
   const promise = axios
     .post(
