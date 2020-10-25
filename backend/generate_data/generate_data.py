@@ -52,9 +52,11 @@ def main():
     confirm_data_ok_prompt(df)
     # Upload static data
     podcast_id_to_cover_url = download_upload_files(podcasts_df, UPLOADED_IMAGE_FILE, ['id', 'image'], VALID_IMAGE_FORMATS)
-    episode_id_to_audio_url = download_upload_files(df, UPLOADED_AUDIO_FILE, ['id', 'audio_url'], VALID_AUDIO_FORMATS)
+    episode_id_to_data = download_upload_files(df, UPLOADED_AUDIO_FILE, ['id', 'audio_url'], VALID_AUDIO_FORMATS)
+    # Keep only mapped urls
+    df = df[df['id'].isin(list(episode_id_to_data.keys()))]
     # Write documents to mongodb
-    write_to_db(df, podcasts_df, episode_id_to_audio_url, podcast_id_to_cover_url)
+    write_to_db(df, podcasts_df, episode_id_to_data, podcast_id_to_cover_url)
     print(f"{OKGREEN}Finished Successfully{ENDCOL}")
 
 def get_data():
@@ -191,37 +193,40 @@ def valid_download_link(df, url_column_name, cache_file):
 
 def download_upload_files(df, cache_file, id_url_cols, valid_mime_formats):
 
-    entity_id_to_uploaded_url = {}
+    entity_id_to_data = {'valid': {}, 'invalid': {}}
     if os.path.isfile(cache_file):
-        entity_id_to_uploaded_url = pickle.load(open(cache_file, "rb"))
+        entity_id_to_data = pickle.load(open(cache_file, "rb"))
 
     file_queue = queue.Queue()
+    checked_entities = list(entity_id_to_data.get('valid', {}).keys())
+    checked_entities.extend(list(entity_id_to_data.get('invalid', {}).keys()))
+
     for entry in [tuple(x) for x in df[id_url_cols].to_numpy()]:
         entity_id = entry[0]
         download_url = entry[1]
 
-        if entity_id not in entity_id_to_uploaded_url.keys():
+        if entity_id not in checked_entities:
             file_queue.put((entity_id, download_url, valid_mime_formats))
 
     num_threads = 16
     for i in range(num_threads):
-        t = DownloadUploadThread(file_queue, entity_id_to_uploaded_url)
+        t = DownloadUploadThread(file_queue, entity_id_to_data)
         t.start()
     file_queue.join()
 
-    pickle.dump(entity_id_to_uploaded_url, open(cache_file, "wb"))
-    return entity_id_to_uploaded_url
+    pickle.dump(entity_id_to_data, open(cache_file, "wb"))
+    return entity_id_to_data['valid']
 
 ###########################################################################################################
 #                                      Write Data                                                         #
 ###########################################################################################################
 
-def write_to_db(df, podcasts_df, episode_id_to_audio_url, podcast_id_to_cover_url):
+def write_to_db(df, podcasts_df, episode_id_to_data, podcast_id_to_data):
     print(f"{OKGREEN}Writing to db...{ENDCOL}")
 
     podcast_id_to_user = write_users_to_db(podcasts_df)
-    podcast_id_to_podcast = write_podcasts_to_db(df, podcasts_df, podcast_id_to_user, podcast_id_to_cover_url)
-    write_podcast_episodes_to_db(df, episode_id_to_audio_url, podcast_id_to_podcast)
+    podcast_id_to_podcast = write_podcasts_to_db(df, podcasts_df, podcast_id_to_user, podcast_id_to_data)
+    write_podcast_episodes_to_db(df, episode_id_to_data, podcast_id_to_podcast)
 
     # Link users to podcasts
     print(f"{OKGREEN}Linking users to podcasts...{ENDCOL}")
@@ -231,17 +236,23 @@ def write_to_db(df, podcasts_df, episode_id_to_audio_url, podcast_id_to_cover_ur
 def write_users_to_db(podcasts_df):
     print(f"{OKGREEN}Creating users...{ENDCOL}")
     podcast_id_to_user = {}
+    email_to_user = {}
     for index, row in podcasts_df.iterrows():
-        user = models.User(
-            name=row['author'], 
-            email=row['email'], 
-            password="test",
-            published_podcasts=[])
-        user.save()
+        email = row['email']
+        if email in email_to_user.keys():
+            user = email_to_user[email]
+        else:
+            user = models.User(
+                name=row['author'], 
+                email=email, 
+                password="test",
+                published_podcasts=[])
+            user.save()
+            email_to_user[email] = user
         podcast_id_to_user[row['id']] = user
     return podcast_id_to_user
 
-def write_podcast_episodes_to_db(df, episode_id_to_audio_url, podcast_id_to_podcast):
+def write_podcast_episodes_to_db(df, episode_id_to_data, podcast_id_to_podcast):
     print(f"{OKGREEN}Creating podcast episodes...{ENDCOL}")
 
     for index, row in df.iterrows():
@@ -254,7 +265,8 @@ def write_podcast_episodes_to_db(df, episode_id_to_audio_url, podcast_id_to_podc
             podcast_episode_meta = models.PodcastEpisodeMetadata(
                 name=row['title'], 
                 description=description,
-                audio_url=episode_id_to_audio_url[row['id']],
+                audio_url=episode_id_to_data[row['id']]['url'],
+                duration=episode_id_to_data[row['id']]['duration'],
                 keywords=keywords,
                 podcast_metadata=podcast_meta)
             podcast_episode_meta.save()
@@ -265,7 +277,7 @@ def write_podcast_episodes_to_db(df, episode_id_to_audio_url, podcast_id_to_podc
         except Exception as e:
             print(f"{OKRED}Error: {e}{ENDCOL}")
 
-def write_podcasts_to_db(df, podcasts_df, podcast_id_to_user, podcast_id_to_cover_url):
+def write_podcasts_to_db(df, podcasts_df, podcast_id_to_user, podcast_id_to_data):
     print(f"{OKGREEN}Creating podcasts...{ENDCOL}")
     podcast_id_to_podcast = {}
     podcast_ids = df['show_id'].unique()
@@ -281,7 +293,7 @@ def write_podcasts_to_db(df, podcasts_df, podcast_id_to_user, podcast_id_to_cove
                 author=podcast_id_to_user.get(podcast_id),
                 description=podcast_data.get('summary', ""),
                 episodes=[],
-                cover_url=podcast_id_to_cover_url.get(podcast_id, ""),
+                cover_url=podcast_id_to_data.get(podcast_id, {}).get('url', ""),
                 category=podcast_data['category'],
                 sub_category=podcast_data['subcategory'])
             podcast_metadata.save()
@@ -307,6 +319,7 @@ def print_batch_stats(df):
     podcasts_count = df.groupby(['show_id']).ngroups
 
     print(f"============ STATS ============")
+    print(f"NOTE: Some episodes might not be downloaded due to unexpected media types")
     print(f"Total episodes: {df.shape[0]}")
     print(f"Total podcasts: {podcasts_count}")
     print(f"Total audio size (GB): {total_audio_media_size}")
