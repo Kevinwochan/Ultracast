@@ -59,7 +59,6 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
         audio = graphene_file_upload.scalars.Upload(required=False)
         keywords = graphene.List(graphene.String)
 
-
     @classmethod
     @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
@@ -262,6 +261,46 @@ class UpdatePodcastMetadata(ClientIDMutation):
 
         return UpdatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
+
+###########################################################################################################
+#                                          Bookmark                                                       #
+###########################################################################################################
+
+class CreateBookmark(ClientIDMutation):
+    success = graphene.Boolean()
+    bookmark = graphene.Field(query.Bookmark)
+
+    class Input:
+        title = graphene.String()
+        description = graphene.String()
+        track_timestamp = graphene.Date(required=True)
+        episode = graphene.ID(required=True)
+    
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, **kwargs):
+        bookmark = models.Bookmark(**kwargs)
+        bookmark.save()
+        return CreateBookmark(success=True, bookmark=bookmark)
+
+class DeleteBookmark(ClientIDMutation):
+    success = graphene.Boolean()
+
+    class Input:
+        bookmarkId = graphene.ID(required=True)
+    
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, bookmarkId):
+        bookmark = get_node_from_global_id(info, bookmarkId, 
+                only_type=query.Bookmark)
+        bookmark.delete()
+        return DeleteBookmark(success=True)
+
+
+###########################################################################################################
+#                                           User                                                          #
+###########################################################################################################
+
+
 class CreateUser(ClientIDMutation):
     '''
     Inserts a user into MongoDB
@@ -392,6 +431,10 @@ class Mutations(graphene.ObjectType):
     create_podcast_metadata = CreatePodcastMetadata.Field()
     delete_podcast_metadata = DeletePodcastMetadata.Field()
     update_podcast_metadata = UpdatePodcastMetadata.Field()
+    '''
+    Bookmark mutations
+    '''
+    create_bookmark = CreateBookmark.Field()
     '''
     User mutations
     '''
