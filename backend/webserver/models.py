@@ -43,7 +43,8 @@ class Bookmark(mongoengine.EmbeddedDocument):
     title = mongofields.StringField()
     description = mongofields.StringField()
     last_updated = mongofields.DateTimeField(default=datetime.datetime.now)
-    episode = mongofields.ReferenceField("PodcastEpisodeMetadata")
+    track_timestamp = mongofields.DateTimeField(required=True)
+    episode = mongofields.ReferenceField("PodcastEpisodeMetadata", required=True)
 
 class ListenHistoryEntry(mongoengine.EmbeddedDocument):
     episode = mongofields.ReferenceField(
