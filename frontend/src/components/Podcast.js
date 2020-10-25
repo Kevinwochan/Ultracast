@@ -20,12 +20,12 @@ export function Playlist({ episodes, state, variant = "episode" }) {
   const classes = playlistStyles();
 
   // Waiting for DB query - just show loader for now
-  if (episodes == "loader") {
+  if (episodes === "loader") {
     return <CircularProgress />;
   }
 
   // No episodes are available - show error message
-  if (!episodes || episodes.length == 0) {
+  if (!episodes || episodes.length === 0) {
     return (
       <Typography variant="body1">Nothing is currently available.</Typography>
     );
@@ -120,12 +120,12 @@ export function Slider({ state, podcasts }) {
   const classes = sliderStyles();
 
   // Waiting for DB query - just show loader for now
-  if (podcasts == "loader") {
+  if (podcasts === "loader") {
     return <CircularProgress />;
   }
 
   // No podcasts are available - show error message
-  if (!podcasts || podcasts.length == 0) {
+  if (!podcasts || podcasts.length === 0) {
     return (
       <Grid container spacing={4} className={classes.podcastContainer}>
         <Typography variant="body1">Nothing is currently available.</Typography>

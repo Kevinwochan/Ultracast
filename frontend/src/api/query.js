@@ -4,10 +4,6 @@ import graphql from "../api/graphql";
 This file defines the mutation strings used and how the response data is then unpacked
 */
 
-const getRandomNumber = () => {
-  return Math.floor(Math.random() * 1000);
-};
-
 /* TODO: handle when the server invalidates the token */
 
 /*
@@ -15,12 +11,21 @@ Logs a user in
 */
 const login = async (email, password) => {
   const data = await graphql(
-    "mutation($email: String!, $password: String!) {login(input: {email: $email, password: $password}) {success token message}}",
+    `
+      mutation($email: String!, $password: String!) {
+        login(input: { email: $email, password: $password }) {
+          success
+          token
+          message
+        }
+      }
+    `,
     {
       email: `${email}`,
       password: `${password}`,
     }
   );
+
   return data.login;
 };
 
@@ -36,14 +41,14 @@ const register = async (email, password) => {
     }
   );
   return {
-    sucess: data.createUser.success,
+    success: data.createUser.success,
     message: data.createUser.failWhy,
     token: data.createUser.token,
   };
 };
 
 /*
-Retriveves an array of podcast episodes recommended for the user
+Retrieves an array of podcast episodes recommended for the user
 */
 const getRecommended = async () => {
   const data = await graphql(
@@ -121,16 +126,15 @@ const getHistory = async (verbose = true, token) => {
 const getUserPodcasts = async (token) => {
   const data = await graphql(
     `
-      query getUserPodcasts($user: ID) {
+      query getUserPodcasts {
         currentUser {
           publishedPodcasts {
             edges {
               node {
                 name
                 id
-                author {
-                  id
-                }
+                description
+                coverUrl
               }
             }
           }
@@ -141,12 +145,13 @@ const getUserPodcasts = async (token) => {
     token
   );
 
-  return data.allPodcastMetadata.edges.map((n) => {
+  return data.currentUser.publishedPodcasts.edges.map((n) => {
     const podcast = n.node;
     return {
-      value: podcast.id,
-      label: podcast.name,
-      author: podcast.author.id,
+      id: podcast.id,
+      title: podcast.name,
+      description: podcast.description,
+      cover: podcast.coverUrl,
     };
   });
 };

@@ -43,6 +43,7 @@ export default function App() {
   const [cookies, setCookie, removeCookie] = useCookies();
   const [sessionState, setState] = useState({
     open: true,
+    userID: "",
     audioList: [],
     cookies: cookies,
   });

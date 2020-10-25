@@ -61,7 +61,7 @@ export default function SignIn({ handleCookie }) {
       } else {
         setMessage(data.message);
       }
-    })
+    });
   };
 
   return (
