@@ -64,7 +64,9 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id=None, audio=None, **kwargs):
         audio_url = None
         duration = None
+
         if audio is not None:
+            audio = audio.read()
             audio_url = db.add_file(data=audio, valid_mimes=VALID_AUDIO_FORMATS)
             duration = db.audio_file_duration_secs(audio)
         
@@ -140,6 +142,7 @@ class UpdatePodcastEpisode(ClientIDMutation):
         if description is not None:
             podcast_episode_metadata.description = description
         if audio is not None:
+            audio = audio.read()
             podcast_episode_metadata.audio_url = db.update_file(
                     podcast_episode_metadata.audio_url, audio,
                     valid_mimes=VALID_AUDIO_FORMATS)
@@ -179,6 +182,7 @@ class CreatePodcastMetadata(ClientIDMutation):
         
         cover_url = None
         if cover is not None:
+            cover = cover.read()
             cover_url = db.add_file(data=cover, valid_mimes=VALID_IMAGE_FORMATS)
 
         podcast_metadata_args = input
@@ -254,6 +258,7 @@ class UpdatePodcastMetadata(ClientIDMutation):
         assert_podcast_edit_permission(podcast_metadata)
 
         if cover is not None:
+            cover = cover.read()
             podcast_metadata.cover_url = db.update_file(
                     podcast_metadata.cover_url, cover, valid_mimes=VALID_IMAGE_FORMATS)
 

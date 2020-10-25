@@ -52,6 +52,8 @@ class TestStringMethods(unittest.TestCase):
     def test_valid_mime(self):
         data = open('unit_tests/resources/sample.mp3', 'rb').read()
         db.check_mime(data=data, valid_mimes=['audio/mpeg'])
+        data = open('unit_tests/resources/nice_flowers2.png', 'rb').read()
+        db.check_mime(data=data, valid_mimes=['image/png'])
 
     def test_add_file_data_file_then_remove(self):
         url = db.add_file(data=b'data', valid_mimes=['text/plain'])
