@@ -39,6 +39,12 @@ class PodcastEpisodeMetadata(mongoengine.Document):
     podcast_metadata = mongofields.ReferenceField("PodcastMetadata", 
             reverse_delete_rule=mongoengine.CASCADE, required=True)
 
+class Bookmark(mongoengine.EmbeddedDocument):
+    title = mongofields.StringField()
+    description = mongofields.StringField()
+    last_updated = mongofields.DateTimeField(default=datetime.datetime.now)
+    episode = mongofields.ReferenceField("PodcastEpisodeMetadata")
+
 class ListenHistoryEntry(mongoengine.EmbeddedDocument):
     episode = mongofields.ReferenceField(
             'PodcastEpisodeMetadata', required=True)
@@ -60,6 +66,8 @@ class User(mongoengine.Document):
     '''
     subscribed_podcasts = mongofields.ListField(mongofields.ReferenceField(PodcastMetadata), default=list, reverse_delete_rule=mongoengine.PULL)
     listen_history = mongofields.EmbeddedDocumentListField(ListenHistoryEntry)
+    bookmarks = mongofields.EmbeddedDocumentListField(Bookmark)
+
     # For previous session
     last_login = mongofields.DateTimeField(default=datetime.datetime.now)
     # For current session
