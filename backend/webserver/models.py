@@ -50,9 +50,12 @@ class ListenHistoryEntry(mongoengine.EmbeddedDocument):
     episode = mongofields.ReferenceField(
             'PodcastEpisodeMetadata', required=True)
     listen_time = mongofields.DateTimeField(default=datetime.datetime.now)
+    num_listens = mongofields.IntField(min_value=1, default=1)
 
 class User(mongoengine.Document):
-    meta = {'collection': 'user'}
+    meta = {
+            'collection': 'user',
+            }
     '''
     General
     '''
@@ -65,8 +68,13 @@ class User(mongoengine.Document):
     '''
     User usage data
     '''
-    subscribed_podcasts = mongofields.ListField(mongofields.ReferenceField(PodcastMetadata), default=list, reverse_delete_rule=mongoengine.PULL)
+    subscribed_podcasts = mongofields.ListField(mongofields.ReferenceField(PodcastMetadata),
+            default=list, reverse_delete_rule=mongoengine.PULL)
+
+    # Sorted with most recent entry first
+    #   See meta
     listen_history = mongofields.EmbeddedDocumentListField(ListenHistoryEntry)
+
     bookmarks = mongofields.EmbeddedDocumentListField(Bookmark)
 
     # For previous session
