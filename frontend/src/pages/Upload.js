@@ -93,7 +93,13 @@ export default function Upload({ userToken }) {
       severity: "info",
       open: false,
     },
-    allPodcasts: [{ title: "New podcast", id: "new-podcast" }],
+    allPodcasts: [
+      {
+        title: "New podcast",
+        id: "new-podcast",
+        cover: "/branding/square.svg",
+      },
+    ],
     isNewPodcast: false,
     status: 0,
   });
@@ -327,7 +333,11 @@ const SelectPodcast = ({ fieldState }) => {
       if (data.success) {
         setFields((prevState) => ({
           ...prevState,
-          tempPodcastId: data.podcastMetadata.podcast.id,
+          podcast: {
+            ...prevState.podcast,
+            cover: data.podcastMetadata.coverUrl,
+          },
+          tempPodcastId: data.podcastMetadata.id,
           snackbar: {
             message: "Cover image upload successful",
             severity: "success",
@@ -445,6 +455,9 @@ const PodcastPreview = ({ hidden, image, title, description }) => {
             alt="Preview podcast image"
             onLoad={(e) => {
               const img = e.target;
+              // TODO add this back in once we get Access-Control-Allow-Origin "*"
+              // img.src = image + "?" + new Date().getTime();
+              // img.setAttribute("crossOrigin", "Anonymous");
               const colour = getDominantColour(img);
 
               // It's gross i know :(

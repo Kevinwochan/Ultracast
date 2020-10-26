@@ -24,6 +24,8 @@ const graphql = async (query, variables, token = "", upload = false) => {
         token
       )
     );
+    // Get the JSON immediately - GQL never returns a HTTP error
+    response = await response.json();
   } else {
     response = await axios.post(
       configuration.BACKEND_ENDPOINT,
@@ -49,7 +51,7 @@ const graphql = async (query, variables, token = "", upload = false) => {
     // Successfully queried data
     console.log(response);
     /* may want to change this to only .data allowing the components to handle errors */
-    return response.data.data;
+    return upload ? response.data : response.data.data;
   } else {
     // Probably an upload response
     return response;

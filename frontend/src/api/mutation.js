@@ -13,7 +13,7 @@ const newPodcast = async (podcastMetadata, token) => {
         $name: String!
         $description: String
         $cover: Upload
-        $category: String
+        ${podcastMetadata.cover ? "$category: String" : ""}
         $subCategory: String
         $keywords: [String]
       ) {
@@ -21,7 +21,7 @@ const newPodcast = async (podcastMetadata, token) => {
           input: {
             name: $name
             description: $description
-            cover: $cover
+            ${podcastMetadata.cover ? "cover: $cover" : ""}
             category: $category
             subCategory: $subCategory
             keywords: $keywords
@@ -30,19 +30,27 @@ const newPodcast = async (podcastMetadata, token) => {
           success
           podcastMetadata {
             id
+            name
+            description
+            coverUrl
           }
         }
       }
     `,
     podcastMetadata,
     token,
-    true
+    podcastMetadata.cover ? true : false
   );
 
-  return data;
+  return data.createPodcastMetadata;
 };
 
 const newEpisode = async (podcastMetadata, token) => {
+  // createPodcastEpisode(input: { podcastMetadataId: $id, audio: $audio }) {
+  //   podcastMetadata {
+  //     id
+  //   }
+  // }
   return "";
 };
 
