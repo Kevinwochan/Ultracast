@@ -33,7 +33,6 @@ var toHHMMSS = (secs) => {
 
 export default function Playlist({ episodes, state }) {
   const classes = useStyles();
-  console.log(episodes);
   return (
     <>
       {episodes.map((episode, index) => {
