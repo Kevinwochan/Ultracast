@@ -12,6 +12,7 @@ import json
 class CreatePodcastTest(snapshottest.TestCase):
     user_id = None
     jwt_token = None
+    maxDiff = None
 
     def setUp(self):
         self.client = graphene.test.Client(schema)
@@ -300,6 +301,39 @@ class CreatePodcastTest(snapshottest.TestCase):
             '''
 
         self.assertMatchSnapshot(self.execute_with_jwt(check_user_query, variables={"user_id": self.user_id}))
+
+    def test_mark_podcast_listened_duplicates(self):
+        podcast_metadata_id = self.createPodcast()
+        podcast_episode_id = self.createPodcastEpisode(podcast_metadata_id)
+
+        # Listen to the podcast twice
+        mark_listened_query = \
+            '''
+            mutation mark_listened($podcast_id: ID!) {
+                markPodcastListened(input: {
+                    podcastEpisodeMetadataId: $podcast_id
+                }) {
+                    success
+                    user {
+                        listenHistory {
+                            edges {
+                                node {
+                                    episode {
+                                        name
+                                    }
+                                    numListens
+                                }
+                            }
+                        }
+                    }
+                }
+            }'''
+        result = self.execute_with_jwt(mark_listened_query, variables={"podcast_id": podcast_episode_id})
+        self.assertMatchSnapshot(result, "Podcast episode is added to listen history")
+        
+        result = self.execute_with_jwt(mark_listened_query, variables={"podcast_id": podcast_episode_id})
+        self.assertMatchSnapshot(result, "Podcast episode is not added a second time")
+
 
 
     def test_update_podcast(self):
