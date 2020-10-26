@@ -78,6 +78,7 @@ class ListenHistoryEntry(MongoengineObjectType):
         model = models.ListenHistoryEntry
         interfaces = (Node,)
         connection_class = EdgeCountedConnection
+        order_by = "listen_time"
 
 class Bookmark(MongoengineObjectType):
     class Meta:

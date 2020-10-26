@@ -6,6 +6,7 @@ from abc import ABC
 import graphene
 import graphene.relay
 import werkzeug.security
+import logging
 
 import datetime
 
@@ -127,9 +128,7 @@ class User(BusinessLayerObject):
         super().delete()
 
     def subscribe_podcast(self, podcast_metadata_model):
-        print("model in User: " + self._model.to_json())
         self._model.modify(add_to_set__subscribed_podcasts=podcast_metadata_model)
-        #podcast_metadata_model.modify(add_to_set__subscribers=self._model.id)
         podcast_metadata_model.modify(push__subscribers=self._model.id)
 
     def remove_subscribed_podcast(self, podcast_metadata_model):
@@ -154,11 +153,34 @@ class User(BusinessLayerObject):
         self._model.modify(login_time=datetime.datetime.now())
 
     def mark_podcast_listened(self, podcast_episode_metadata_model):
-        listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)
-        self.model().listen_history.append(listen_entry)
-        self.model().save()
-        return True
+        # See if the user has already listened to this episode
+        num_entries = sum(entry.episode == podcast_episode_metadata_model 
+                for entry in self._model.listen_history)
 
+        listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)
+
+        if (num_entries <= 0):
+            # Create new entry
+            self._model.modify(push__listen_history=listen_entry)
+        else:
+            # Update existing entry
+            # Note we pop the old one to ensure the correct ordering
+            old_entry = \
+                self._model.listen_history.filter(episode=podcast_episode_metadata_model) \
+                .first()
+
+            listen_entry.num_listens = old_entry.num_listens + 1
+
+            # Remove the old entries
+            self._model.modify(pull__listen_history__episode=podcast_episode_metadata_model)
+            
+            # Add in the new
+            self._model.modify(push__listen_history=listen_entry)
+
+        if num_entries > 1:
+            logging.warning("User {} has duplicate listen history entries!".format(
+                self.get_email()))
+        return True
 
     @classmethod
     def from_email(cls, email):

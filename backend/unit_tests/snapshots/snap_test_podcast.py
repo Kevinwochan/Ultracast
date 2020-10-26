@@ -128,6 +128,50 @@ snapshots['CreatePodcastTest::test_delete_podcast_no_episode 1'] = {
     }
 }
 
+snapshots['CreatePodcastTest::test_mark_podcast_listened_duplicates Podcast episode is added to listen history'] = {
+    'data': {
+        'markPodcastListened': {
+            'success': True,
+            'user': {
+                'listenHistory': {
+                    'edges': [
+                        {
+                            'node': {
+                                'episode': {
+                                    'name': 'podcast episode title'
+                                },
+                                'numListens': 1
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+snapshots['CreatePodcastTest::test_mark_podcast_listened_duplicates Podcast episode is not added a second time'] = {
+    'data': {
+        'markPodcastListened': {
+            'success': True,
+            'user': {
+                'listenHistory': {
+                    'edges': [
+                        {
+                            'node': {
+                                'episode': {
+                                    'name': 'podcast episode title'
+                                },
+                                'numListens': 2
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
 snapshots['CreatePodcastTest::test_subscribe 1'] = {
     'data': {
         'subscribePodcast': {
