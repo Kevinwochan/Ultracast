@@ -212,15 +212,14 @@ const compactEpisode = `
 // Turns the received data into episode data used in the FE
 const parseEpisode = (episode, verbose = true) => {
   const verboseInfo = {
-    length: "10", //TODO
     description: episode.description,
+    length: episode.duration,
   };
 
   return {
     title: episode.name,
     url: episode.audioUrl,
     author: episode.author,
-    length: episode.duration,
     podcast: {
       title: episode.podcastMetadata.name,
       id: episode.podcastMetadata.id,
