@@ -136,7 +136,7 @@ export function Slider({ state, episodes }) {
   return (
     <Grid container spacing={4} className={classes.podcastContainer}>
       {episodes.map((episode) => (
-        <Grid item key={uid(episode)} lg={2} className={classes.podcast}>
+        <Grid item key={uid(episode)} xs={2} className={classes.podcast}>
           <LargePodcast state={state} episode={episode} />
         </Grid>
       ))}
@@ -198,7 +198,7 @@ const coverStyles = makeStyles((theme) => ({
 const not_found = [];
 
 // Image for the podcast
-export function PodcastCover({ episode, state }) {
+function PodcastCover({ episode, state }) {
   const classes = coverStyles();
   const [play, updatePlay] = useState(false);
 
@@ -229,16 +229,6 @@ export function PodcastCover({ episode, state }) {
         alt="podcast cover"
         className={classes.podcastCover}
         onError={(e) => {
-          // TODO remove this once Connor fixes deadlinks issue
-          if (episode.podcast.image !== "") {
-            not_found.push({
-              title: episode.title,
-              url: episode.podcast.image,
-            });
-            // console.log(not_found);
-          }
-
-          // If no image is found, use our default one
           e.target.src = `/branding/square.svg`;
         }}
       ></img>
@@ -268,3 +258,5 @@ export function addAudio(state, { name, musicSrc, cover, id }) {
 
   updateState("audioList", newList);
 }
+
+export {PodcastCover};

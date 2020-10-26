@@ -250,7 +250,6 @@ const newPodcast = async (title, description, keywords, token) => {
 
 /*
 Marks the podcast id given as watched for the specified user (token)
-TOOD: make the user be identified by token
 */
 const markAsPlayed = async (episodeId, token) => {
   const data = await graphql(
@@ -269,7 +268,117 @@ const markAsPlayed = async (episodeId, token) => {
   return data.markPodcastListened;
 };
 
+/*
+Fetches a array of episodes the are part of the specified podcast
+*/
+const getEpisodes = async (podcastId, token) => {
+  const data = await graphql(
+    `
+      query($podcastId: ID!) {
+        allPodcastMetadata(id: $podcastId) {
+          edges {
+            node {
+              name
+              description
+              coverUrl
+              episodes {
+                edges {
+                  node {
+                    id
+                    name
+                    audioUrl
+                    duration
+                    description
+                  }
+                }
+              }
+              author {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      podcastId: podcastId,
+    },
+    token
+  );
+  if (data.allPodcastMetadata === null) return {};
+  const podcast = {
+    title: data.allPodcastMetadata.edges[0].node.name,
+    description: data.allPodcastMetadata.edges[0].node.description,
+    author: data.allPodcastMetadata.edges[0].node.author,
+    image: data.allPodcastMetadata.edges[0].node.coverUrl,
+  }
+  return {
+    podcast: podcast,
+    episodes: data.allPodcastMetadata.edges[0].node.episodes.edges.map(
+      (episode) => ({
+        id: episode.node.id,
+        title: episode.node.name,
+        url: episode.node.audioUrl,
+        length: episode.node.duration,
+        description: episode.node.description,
+        podcast: podcast,
+      })
+    ),
+  };
+};
+
+/*
+Fetches a array of podcasts published by an author
+*/
+const getPodcasts = async (authorId, token) => {
+  const data = await graphql(
+    `
+      query($authorId: ID!) {
+        allPodcastMetadata(author: $authorId) {
+          edges {
+            node {
+              id
+              name
+              description
+              coverUrl
+              author {
+                id
+                name
+              }
+              episodes {
+                totalCount
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      authorId: authorId,
+    },
+    token
+  );
+  if (data.allPodcastMetadata === null) return [];
+  const author = data.allPodcastMetadata.edges[0].node.author
+  return {
+    author: author,
+    podcasts: data.allPodcastMetadata.edges.map(
+      (podcast) => ({
+        id: podcast.node.id,
+        image: podcast.node.coverUrl,
+        title: podcast.node.name,
+        description: podcast.node.description,
+        author: podcast.node.author,
+        episodeCount: podcast.node.episodes.totalCount
+      })
+    )
+  }
+}
+
 export {
+  getPodcasts,
+  getEpisodes,
   markAsPlayed,
   newPodcast,
   getRecommended,
