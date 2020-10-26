@@ -1,102 +1,78 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import EpisodePlaylist from "../components/EpisodePlaylist";
-import { Playlist } from "../components/Podcast";
-import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
-
-const podcast = {
-  id: 1,
-  title: "Oliver's True Crime Series",
-  description:
-    "In this innovative podcast, retired cold case investigator Paul Holes and true crime journalist Billy Jensen team up to tackle unsolved crimes and missing person cases each week. They invite listeners to contribute their own research and theories, so you can put on your own Sherlock hat.",
-  author: { name: "Oliver Productions", id: 1 },
-};
-
-const episodes = [
-  {
-    title: "Episode 1: Giving Lawyer X a Voice",
-    length: "20",
-    description:
-      "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-  {
-    title: "Episode 2: Dead Man's Chest",
-    length: "20",
-    description:
-      "Captain Jack Sparrow seeks the heart of Davy Jones, a mythical pirate, in order to avoid being enslaved to him. However, others, including his friends Will and Elizabeth, want it for their own gain.",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oliver Productions", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-  {
-    title: "Episode 3: A Locked Door",
-    length: "20",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-  {
-    title: "Episode 4",
-    length: "20",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-  {
-    title: "Episode 5",
-    length: "20",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-];
+import { useParams } from "react-router-dom";
+import { getEpisodes } from "../api/query";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Divider from '@material-ui/core/Divider';
+import EpisodePlaylist from "../components/EpisodeList";
 
 const useStyles = makeStyles((theme) => ({
   podcastHero: {
     background: "white",
-    paddingLeft: theme.spacing(8),
-    paddingTop: theme.spacing(8),
+    padding: theme.spacing(5),
     marginBottom: theme.spacing(3),
-    minHeight: 300,
+    minHeight: 150,
   },
   podcastCover: {
-    width: 150,
-    height: 150,
+    minHeight: 150,
+    minWidth: 150,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    zIndex: 2,
+  },
+  overlay: {
+    height: "100%",
+    width: "100%",
+    background: "black",
+    opacity: 0.7,
+  },
+  coverGlass: {
+    position: "relative",
+    minHeight: 150,
+    minWidth: 150,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
   },
 }));
 
 export default function Podcast({ state }) {
   const classes = useStyles();
+  const { id } = useParams();
   const [subscribed, setSubscription] = useState(false);
+  const [podcast, setPodcast] = useState("loader"); // TODO: paginate the episodes 
+  const [episodes, setEpisodes] = useState([]);
+
+  useEffect(() => {
+    getEpisodes(id).then((data) => {
+      setPodcast(data.podcast);
+      setEpisodes(data.episodes);
+    });
+  }, [id]);
 
   const toggleSubscription = () => {
     setSubscription(!subscribed);
   };
 
+  if (podcast === "loader") {
+    return <CircularProgress />;
+  }
+
   return (
     <>
       <Grid container>
-        <Grid item xs className={classes.podcastHero}>
+        {/* Info section */}
+        <Grid item xs={8} className={classes.podcastHero}>
           <Typography variant="h4" paragraph>
             {podcast.title}
           </Typography>
@@ -128,19 +104,14 @@ export default function Podcast({ state }) {
             </Button>
           )}
         </Grid>
-        <Grid item>
-          <img
-            src={
-              podcast.cover
-                ? podcast.cover
-                : "https://source.unsplash.com/random"
-            }
-            alt="podcast cover"
-            className={classes.podcastCover}
-          ></img>
+        {/* Podcast Cover */}
+        <Grid item xs={4} className={classes.coverGlass}  style={{backgroundImage: `url(${podcast.image})`}}>
+          <div className={classes.overlay}></div>
+          <div className={classes.podcastCover} style={{backgroundImage: `url(${podcast.image})`}}></div>
         </Grid>
       </Grid>
-      <Playlist episodes={episodes} state={state} />
+      <Divider variant="fullWidth" />
+      <EpisodePlaylist episodes={episodes} state={state} />
     </>
   );
 }

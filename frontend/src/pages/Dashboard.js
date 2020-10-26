@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-end",
+    paddingTop: theme.spacing(2),
   },
   cardGrid: {
     paddingTop: theme.spacing(2),
@@ -31,9 +32,10 @@ export default function Dashboard({ state }) {
       setRecommended(data);
     });
 
-    getHistory(false, sessionState.cookies.token).then((data) => {
+    /*getHistory(false, sessionState.cookies.token).then((data) => {
       setHistory(data);
-    });
+      TODO: create a episode slider
+    });*/
   }, []);
 
   return (
@@ -42,9 +44,9 @@ export default function Dashboard({ state }) {
       maxWidth={sessionState.open ? "md" : "lg"}
     >
       <PodcastSliderTitle title="Recommended Podcasts" url="/" />
-      <Slider state={state} podcasts={recommended} />
+      <Slider state={state} episodes={recommended} />
       <PodcastSliderTitle title="Recently Listened" url="/history" />
-      <Slider state={state} podcasts={history} />
+      <Slider state={state} episodes={history} />
     </Container>
   );
 }
@@ -52,7 +54,7 @@ export default function Dashboard({ state }) {
 const PodcastSliderTitle = ({ title, url }) => {
   const classes = useStyles();
   return (
-    <Box className={classes.titleBar} m={2}>
+    <Box className={classes.titleBar}>
       <Typography gutterBottom variant="h5">
         <b>{title}</b>
       </Typography>

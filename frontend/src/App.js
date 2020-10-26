@@ -97,7 +97,7 @@ export default function App() {
             </Page>
           </PrivateRoute>
         </Route>
-        <Route path="/podcast">
+        <Route path="/podcast/:id">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
               <Podcast state={state} />
@@ -118,7 +118,7 @@ export default function App() {
             </Page>
           </PrivateRoute>
         </Route>
-        <Route path="/author">
+        <Route path="/author/:id">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
               <Author state={state} />

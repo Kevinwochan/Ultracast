@@ -28,7 +28,6 @@ const ultraCastTheme = createMuiTheme({
         a: {
           color: "inherit" /* blue colors for links too */,
           textDecoration: "inherit" /* no underline */,
-          fontWeight: "bold",
         },
       },
     },

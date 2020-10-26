@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Playlist } from "../components/Podcast";
 import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { getHistory } from "../api/query";
+import EpisodePlaylist from "../components/EpisodeList";
 
 const useStyles = makeStyles((theme) => ({
   cardGrid: {
@@ -19,10 +20,15 @@ export default function History({ state }) {
 
   const [history, setHistory] = useState("loader");
   useEffect(() => {
-    getHistory(false, sessionState.cookies.token).then((data) => {
+    getHistory(sessionState.cookies.token).then((data) => {
       setHistory(data);
     });
   }, []);
+
+  if (history === "loader") {
+    return <CircularProgress />;
+  }
+
 
   return (
     <Container className={classes.cardGrid} maxWidth="lg">
@@ -31,8 +37,7 @@ export default function History({ state }) {
           <b>Recently Listened</b>
         </Typography>
       </Box>
-
-      <Playlist episodes={history} state={state} />
+      <EpisodePlaylist episodes={history} state={state} />
     </Container>
   );
 }
