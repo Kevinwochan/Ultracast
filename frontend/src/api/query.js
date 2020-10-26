@@ -71,7 +71,7 @@ const getRecommended = async () => {
   return data.allPodcastMetadata.edges.map((podcast) => ({
     url: podcast.node.episodes.edges[0].node.audioUrl,
     id: podcast.node.episodes.edges[0].node.id,
-    title : podcast.node.episodes.edges[0].node.name,
+    title: podcast.node.episodes.edges[0].node.name,
     podcast: {
       image: podcast.node.coverUrl,
       id: podcast.node.id,
@@ -319,7 +319,7 @@ const getEpisodes = async (podcastId, token) => {
     description: data.allPodcastMetadata.edges[0].node.description,
     author: data.allPodcastMetadata.edges[0].node.author,
     image: data.allPodcastMetadata.edges[0].node.coverUrl,
-  }
+  };
   return {
     podcast: podcast,
     episodes: data.allPodcastMetadata.edges[0].node.episodes.edges.map(
@@ -366,22 +366,21 @@ const getPodcasts = async (authorId, token) => {
     },
     token
   );
-  if (data.allPodcastMetadata === null) return [];
-  const author = data.allPodcastMetadata.edges[0].node.author
+  if (data.allPodcastMetadata.edges.length === 0)
+    return { author: { name: "Author not found" }, podcasts: [] };
+  const author = data.allPodcastMetadata.edges[0].node.author;
   return {
     author: author,
-    podcasts: data.allPodcastMetadata.edges.map(
-      (podcast) => ({
-        id: podcast.node.id,
-        image: podcast.node.coverUrl,
-        title: podcast.node.name,
-        description: podcast.node.description,
-        author: podcast.node.author,
-        episodeCount: podcast.node.episodes.totalCount
-      })
-    )
-  }
-}
+    podcasts: data.allPodcastMetadata.edges.map((podcast) => ({
+      id: podcast.node.id,
+      image: podcast.node.coverUrl,
+      title: podcast.node.name,
+      description: podcast.node.description,
+      author: podcast.node.author,
+      episodeCount: podcast.node.episodes.totalCount,
+    })),
+  };
+};
 
 export {
   getPodcasts,
