@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-end",
+    paddingTop: theme.spacing(2),
   },
   cardGrid: {
     paddingTop: theme.spacing(2),
@@ -52,7 +53,7 @@ export default function Dashboard({ state }) {
 const PodcastSliderTitle = ({ title, url }) => {
   const classes = useStyles();
   return (
-    <Box className={classes.titleBar} m={2}>
+    <Box className={classes.titleBar}>
       <Typography gutterBottom variant="h5">
         <b>{title}</b>
       </Typography>
