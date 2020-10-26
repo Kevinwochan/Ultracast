@@ -157,23 +157,27 @@ class User(BusinessLayerObject):
         num_entries = sum(entry.episode == podcast_episode_metadata_model 
                 for entry in self._model.listen_history)
 
-        if (num_entries == 0):
+        listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)
+
+        if (num_entries <= 0):
             # Create new entry
-            listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)
             self._model.modify(push__listen_history=listen_entry)
-        elif (num_entries == 1):
+        else:
             # Update existing entry
             # Note we pop the old one to ensure the correct ordering
-            self._model.listen_history.filter(episode=podcast_episode_metadata_model).update(
-                    listen_time=datetime.datetime.now())
-            num_listens = \
+            old_entry = \
                 self._model.listen_history.filter(episode=podcast_episode_metadata_model) \
-                .first().num_listens
-            self._model.listen_history.filter(episode=podcast_episode_metadata_model).update(
-                    num_listens=num_listens+1)
-            self._model.save()
-            self._model.reload()
-        else:
+                .first()
+
+            listen_entry.num_listens = old_entry.num_listens + 1
+
+            # Remove the old entries
+            self._model.modify(pull__listen_history__episode=podcast_episode_metadata_model)
+            
+            # Add in the new
+            self._model.modify(push__listen_history=listen_entry)
+
+        if num_entries > 1:
             logging.warning("User {} has duplicate listen history entries!".format(
                 self.get_email()))
         return True
