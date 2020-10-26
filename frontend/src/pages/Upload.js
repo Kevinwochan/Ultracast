@@ -455,9 +455,9 @@ const PodcastPreview = ({ hidden, image, title, description }) => {
             alt="Preview podcast image"
             onLoad={(e) => {
               const img = e.target;
-              // TODO add this back in once we get Access-Control-Allow-Origin "*"
-              // img.src = image + "?" + new Date().getTime();
-              // img.setAttribute("crossOrigin", "Anonymous");
+              // TODO fix this
+              img.src = image + "?" + new Date().getTime();
+              img.setAttribute("crossOrigin", "Anonymous");
               const colour = getDominantColour(img);
 
               // It's gross i know :(
@@ -631,6 +631,9 @@ const EpisodePreview = ({ image, title, description, podcast, duration }) => {
             alt="Preview podcast image"
             onLoad={(e) => {
               const img = e.target;
+              // TODO fix this
+              img.src = image + "?" + new Date().getTime();
+              img.setAttribute("crossOrigin", "Anonymous");
               const colour = getDominantColour(img);
 
               // It's gross i know :(

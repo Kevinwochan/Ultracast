@@ -1,4 +1,5 @@
-import graphql from "../api/graphql";
+import graphql from "./graphql";
+import { getUserId } from "./query";
 
 /**
  * Create a new podcast for the user
@@ -45,13 +46,42 @@ const newPodcast = async (podcastMetadata, token) => {
   return data.createPodcastMetadata;
 };
 
-const newEpisode = async (podcastMetadata, token) => {
-  // createPodcastEpisode(input: { podcastMetadataId: $id, audio: $audio }) {
-  //   podcastMetadata {
-  //     id
-  //   }
-  // }
-  return "";
+const newEpisode = async (podcastEpisode, token) => {
+  // podcastMetadataId: ID!
+  // name: String
+  // description: String
+  // audio: Upload
+  // keywords: [String]
+  const data = await graphql(
+    `
+      mutation createEpisode(
+        $id: ID!
+        $name: String
+        $description: description
+        $audio: Upload
+        $keywords: [String]
+      ) {
+        createPodcastEpisode(
+          input: {
+            podcastMetadataId: $id
+            name: $name
+            description: $description
+            audio: $audio
+            keywords: $keywords
+          }
+        ) {
+          podcastMetadata {
+            id
+          }
+        }
+      }
+    `,
+    podcastEpisode,
+    token,
+    true
+  );
+
+  return data.createPodcastEpisode;
 };
 
 export { newPodcast, newEpisode };
