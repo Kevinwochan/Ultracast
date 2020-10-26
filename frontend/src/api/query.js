@@ -85,7 +85,7 @@ const getRecommended = async () => {
  * @param {boolean} verbose get the verbose episode output
  * @param {string} token JWT token of the user
  */
-const getHistory = async (verbose = true, token) => {
+const getHistory = async (token, verbose = true) => {
   const data = await graphql(
     `query getListenHistory {
       currentUser {
@@ -155,6 +155,7 @@ const verboseEpisode = `
   name
   description
   audioUrl
+  duration
   podcastMetadata {
     name
     id
@@ -191,12 +192,13 @@ const parseEpisode = (episode, verbose = true) => {
 
   return {
     title: episode.name,
-    image: episode.podcastMetadata.coverUrl,
     url: episode.audioUrl,
     author: episode.author,
+    length: episode.duration,
     podcast: {
       title: episode.podcastMetadata.name,
       id: episode.podcastMetadata.id,
+      image: episode.podcastMetadata.coverUrl,
     },
     ...(verbose ? verboseInfo : null),
   };
