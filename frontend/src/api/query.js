@@ -130,7 +130,7 @@ const getHistory = async (token, verbose = true) => {
     token
   );
 
-  const userListenHistory = data.currentUser.listenHistory.edges;
+  const userListenHistory = data.currentUser.listenHistory.edges.reverse();
   return userListenHistory.map((n) => {
     const episode = n.node.episode;
     return parseEpisode(episode, verbose);
