@@ -1,4 +1,4 @@
-import graphql from "../api/graphql";
+import graphql from "./graphql";
 
 /*
 This file defines the mutation strings used and how the response data is then unpacked
@@ -45,6 +45,27 @@ const register = async (email, password) => {
     message: data.createUser.failWhy,
     token: data.createUser.token,
   };
+};
+
+/**
+ * Gets the logged in user's ID
+ *
+ * @param {String} token
+ */
+const getUserId = async (token) => {
+  const data = await graphql(
+    `
+      query getListenHistory {
+        currentUser {
+          id
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.currentUser.id;
 };
 
 /*
@@ -282,6 +303,7 @@ export {
   getRecommended,
   login,
   register,
+  getUserId,
   getUserPodcasts,
   getHistory,
 };
