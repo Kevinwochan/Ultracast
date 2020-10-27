@@ -30,7 +30,7 @@ export default function Playlist({ podcasts, state }) {
               className={classes.podcast}
             >
               <Link to={`/podcast/${podcast.id}`}>
-              <Grid item lg={11} container spacing={5}>
+              <Grid item xs container spacing={5}>
                 <Grid item>
                   <img
                     src={podcast.image}
@@ -41,7 +41,7 @@ export default function Playlist({ podcasts, state }) {
                     }}
                   ></img>
                 </Grid>
-                <Grid item lg={10} container direction="column">
+                <Grid item xs container direction="column">
                   <Grid item>
                     <Grid container>
                       <Typography gutterBottom variant="h6">
@@ -49,7 +49,7 @@ export default function Playlist({ podcasts, state }) {
                       </Typography>
                     </Grid>
                     <Grid container>
-                      <Grid item lg={4}>
+                      <Grid item xs>
                         <Typography gutterBottom variant="subtitle1">
                           {`${podcast.episodeCount} episodes`}
                         </Typography>

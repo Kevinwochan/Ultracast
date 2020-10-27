@@ -22,6 +22,7 @@ export default function History({ state }) {
   useEffect(() => {
     getHistory(sessionState.cookies.token).then((data) => {
       setHistory(data);
+      console.log(data);
     });
   }, []);
 

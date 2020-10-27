@@ -309,6 +309,7 @@ const getEpisodes = async (podcastId, token) => {
               description
               coverUrl
               episodes {
+                totalCount
                 edges {
                   node {
                     id
@@ -316,6 +317,7 @@ const getEpisodes = async (podcastId, token) => {
                     audioUrl
                     duration
                     description
+                    publishDate
                   }
                 }
               }
@@ -338,7 +340,8 @@ const getEpisodes = async (podcastId, token) => {
     title: data.allPodcastMetadata.edges[0].node.name,
     description: data.allPodcastMetadata.edges[0].node.description,
     author: data.allPodcastMetadata.edges[0].node.author,
-    image: data.allPodcastMetadata.edges[0].node.coverUrl,
+    image: data.allPodcastMetadata.edges[0].node.coverUrl ?? "/branding/square.svg",
+    episodeCount: data.allPodcastMetadata.edges[0].node.episodes.totalCount,
   };
   return {
     podcast: podcast,
@@ -349,6 +352,7 @@ const getEpisodes = async (podcastId, token) => {
         url: episode.node.audioUrl,
         length: episode.node.duration,
         description: episode.node.description,
+        date: new Date(episode.node.publishDate),
         podcast: podcast,
       })
     ),

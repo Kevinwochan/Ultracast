@@ -9,10 +9,15 @@ import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { getEpisodes } from "../api/query";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Divider from '@material-ui/core/Divider';
+import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
+import PlaylistAddCheckIcon from "@material-ui/icons/PlaylistAddCheck";
+import Divider from "@material-ui/core/Divider";
 import EpisodePlaylist from "../components/EpisodeList";
 
 const useStyles = makeStyles((theme) => ({
+  podcastTitle: {
+    fontWeight: "bold",
+  },
   podcastHero: {
     background: "white",
     padding: theme.spacing(5),
@@ -49,8 +54,10 @@ const useStyles = makeStyles((theme) => ({
 export default function Podcast({ state }) {
   const classes = useStyles();
   const { id } = useParams();
+  const [sessionState, updateState] = state;
   const [subscribed, setSubscription] = useState(false);
-  const [podcast, setPodcast] = useState("loader"); // TODO: paginate the episodes 
+  const [addedToQueue, setAddedToQueue] = useState(false);
+  const [podcast, setPodcast] = useState("loader"); // TODO: paginate the episodes
   const [episodes, setEpisodes] = useState([]);
 
   useEffect(() => {
@@ -64,6 +71,17 @@ export default function Podcast({ state }) {
     setSubscription(!subscribed);
   };
 
+  const addAll = () => {
+    const episodePlaylist = episodes.map((episode) => ({
+      id: episode.id,
+      name: episode.title,
+      musicSrc: episode.audioUrl,
+      cover: podcast.image,
+    }));
+    updateState("audioList", sessionState.audioList.concat(episodePlaylist));
+    setAddedToQueue(true);
+  };
+
   if (podcast === "loader") {
     return <CircularProgress />;
   }
@@ -73,13 +91,16 @@ export default function Podcast({ state }) {
       <Grid container>
         {/* Info section */}
         <Grid item xs={8} className={classes.podcastHero}>
-          <Typography variant="h4" paragraph>
+          <Typography variant="h4" paragraph className={classes.podcastTitle}>
             {podcast.title}
           </Typography>
           <Typography variant="subtitle2" paragraph>
             <Link to={`/author/${podcast.author.id}`}>
-              By: {podcast.author.name}
+              Author: {podcast.author.name}
             </Link>
+          </Typography>
+          <Typography variant="subtitle2" paragraph>
+            Total Episodes: {podcast.episodeCount}
           </Typography>
           <Typography variant="body2" paragraph>
             {podcast.description}
@@ -103,11 +124,37 @@ export default function Podcast({ state }) {
               Unsubscribe
             </Button>
           )}
+          {!addedToQueue ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<PlaylistAddIcon />}
+              onClick={addAll}
+            >
+              Add all to Queue
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<PlaylistAddCheckIcon />}
+            >
+              Added
+            </Button>
+          )}
         </Grid>
         {/* Podcast Cover */}
-        <Grid item xs={4} className={classes.coverGlass}  style={{backgroundImage: `url(${podcast.image})`}}>
+        <Grid
+          item
+          xs={4}
+          className={classes.coverGlass}
+          style={{ backgroundImage: `url(${podcast.image})` }}
+        >
           <div className={classes.overlay}></div>
-          <div className={classes.podcastCover} style={{backgroundImage: `url(${podcast.image})`}}></div>
+          <div
+            className={classes.podcastCover}
+            style={{ backgroundImage: `url(${podcast.image})` }}
+          ></div>
         </Grid>
       </Grid>
       <Divider variant="fullWidth" />
