@@ -182,6 +182,7 @@ const verboseEpisode = `
   description
   audioUrl
   duration
+  publishDate
   podcastMetadata {
     name
     id
@@ -214,6 +215,7 @@ const parseEpisode = (episode, verbose = true) => {
   const verboseInfo = {
     description: episode.description,
     length: episode.duration,
+    date: new Date(episode.publishDate),
   };
 
   return {
@@ -406,7 +408,49 @@ const getPodcasts = async (authorId, token) => {
   };
 };
 
+/*
+subscribes the the specified user (token) to the specified podcast series
+*/
+const subscribe = async (podcastId, token) => {
+  const data = await graphql(
+    `
+      mutation($podcastId: ID!) {
+        subscribePodcast(input: {podcastMetadataId: $podcastId}){
+          success
+        }
+      }
+    `,
+    {
+      podcastId: podcastId,
+    },
+    token
+  );
+  return data.subscribePodcast.success;
+};
+
+/*
+subscribes the the specified user (token) to the specified podcast series
+*/
+const unsubscribe = async (podcastId, token) => {
+  const data = await graphql(
+    `
+      mutation($podcastId: ID!) {
+        unsubscribePodcast(input: {podcastMetadataId: $podcastId}){
+          success
+        }
+      }
+    `,
+    {
+      podcastId: podcastId,
+    },
+    token
+  );
+  return data.unsubscribePodcast.success;
+};
+
 export {
+  subscribe,
+  unsubscribe,
   getPodcasts,
   getEpisodes,
   markAsPlayed,

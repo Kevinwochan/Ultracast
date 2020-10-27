@@ -22,7 +22,6 @@ export default function History({ state }) {
   useEffect(() => {
     getHistory(sessionState.cookies.token).then((data) => {
       setHistory(data);
-      console.log(data);
     });
   }, []);
 
@@ -30,15 +29,14 @@ export default function History({ state }) {
     return <CircularProgress />;
   }
 
-
   return (
-    <Container className={classes.cardGrid} maxWidth="lg">
+    <>
       <Box m={2}>
         <Typography gutterBottom variant="h5">
           <b>Recently Listened</b>
         </Typography>
       </Box>
       <EpisodePlaylist episodes={history} state={state} />
-    </Container>
+    </>
   );
 }

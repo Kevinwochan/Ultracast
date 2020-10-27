@@ -44,26 +44,26 @@ export default function Playlist({ episodes, state }) {
           <Grid item xs={1}>
             #
           </Grid>
-          <Grid item xs={3} lg={2}>
+          <Grid item xs={3} md={2}>
             Cover
           </Grid>
-          <Grid item xs={6} container>
+          <Grid item xs={3} md={8} container>
             <Grid item xs container direction="column">
               <Grid item>
                 <Grid container>
                   <Typography gutterBottom variant="h6"></Typography>
                   <Typography variant="body2" gutterBottom>
-                    Episode
+                    Info
                   </Typography>
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={1} md={2}>
               <Typography gutterBottom variant="subtitle1">
                 Length
               </Typography>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={2} md={3}>
               <Typography gutterBottom variant="subtitle1">
                 Published On
               </Typography>
@@ -83,10 +83,10 @@ export default function Playlist({ episodes, state }) {
             >
               <Grid item xs container spacing={2}>
                 <Grid item xs={1}>{index + 1}</Grid>
-                <Grid item xs={3} lg={2}>
+                <Grid item xs={3} md={2}>
                   <PodcastCover episode={episode} state={state} />
                 </Grid>
-                <Grid item xs={6} container>
+                <Grid item xs={3} md={8} container>
                   <Grid item xs container direction="column">
                     <Grid item>
                       <Grid container>
@@ -99,12 +99,12 @@ export default function Playlist({ episodes, state }) {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid item xs={1}>
+                  <Grid item xs={1} md={2}>
                     <Typography gutterBottom variant="subtitle1">
                       {toHHMMSS(episode.length)}
                     </Typography>
                   </Grid>
-                  <Grid item xs={2}>
+                  <Grid item xs={2} md={3}>
                     <Typography gutterBottom variant="subtitle1">
                       {episode.date.toLocaleDateString()}
                     </Typography>

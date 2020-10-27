@@ -7,7 +7,7 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { getEpisodes } from "../api/query";
+import { getEpisodes, subscribe, unsubscribe } from "../api/query";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import PlaylistAddCheckIcon from "@material-ui/icons/PlaylistAddCheck";
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Podcast({ state }) {
   const classes = useStyles();
-  const { id } = useParams();
+  const { podcastId } = useParams();
   const [sessionState, updateState] = state;
   const [subscribed, setSubscription] = useState(false);
   const [addedToQueue, setAddedToQueue] = useState(false);
@@ -61,13 +61,20 @@ export default function Podcast({ state }) {
   const [episodes, setEpisodes] = useState([]);
 
   useEffect(() => {
-    getEpisodes(id).then((data) => {
+    getEpisodes(podcastId).then((data) => {
       setPodcast(data.podcast);
       setEpisodes(data.episodes);
     });
-  }, [id]);
+  }, [podcastId]);
 
   const toggleSubscription = () => {
+    if (subscribed){
+      console.log(`unsubscribing to ${podcastId}`);
+      unsubscribe(podcastId, sessionState.cookies.token);
+    }else{
+      subscribe(podcastId, sessionState.cookies.token);
+      console.log(`subscribing to ${podcastId}`);
+    }
     setSubscription(!subscribed);
   };
 
@@ -90,58 +97,77 @@ export default function Podcast({ state }) {
     <>
       <Grid container>
         {/* Info section */}
-        <Grid item xs={8} className={classes.podcastHero}>
-          <Typography variant="h4" paragraph className={classes.podcastTitle}>
-            {podcast.title}
-          </Typography>
-          <Typography variant="subtitle2" paragraph>
-            <Link to={`/author/${podcast.author.id}`}>
-              Author: {podcast.author.name}
-            </Link>
-          </Typography>
-          <Typography variant="subtitle2" paragraph>
-            Total Episodes: {podcast.episodeCount}
-          </Typography>
-          <Typography variant="body2" paragraph>
-            {podcast.description}
-          </Typography>
-          {subscribed ? (
-            <Button
-              variant="contained"
-              color="secondary"
-              startIcon={<AddIcon />}
-              onClick={toggleSubscription}
-            >
-              Subscribe
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<RemoveIcon />}
-              onClick={toggleSubscription}
-            >
-              Unsubscribe
-            </Button>
-          )}
-          {!addedToQueue ? (
-            <Button
-              variant="contained"
-              color="secondary"
-              startIcon={<PlaylistAddIcon />}
-              onClick={addAll}
-            >
-              Add all to Queue
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              color="secondary"
-              startIcon={<PlaylistAddCheckIcon />}
-            >
-              Added
-            </Button>
-          )}
+        <Grid
+          item
+          xs={8}
+          className={classes.podcastHero}
+          container
+          direction="column"
+          spacing={2}
+        >
+          <Grid item>
+            <Typography variant="h4" paragraph className={classes.podcastTitle}>
+              {podcast.title}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="subtitle2">
+              <Link to={`/author/${podcast.author.id}`}>
+                Author: {podcast.author.name}
+              </Link>
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="subtitle2">
+              Total Episodes: {podcast.episodeCount}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="body2">
+              {podcast.description}
+            </Typography>
+          </Grid>
+          <Grid item>
+            {!subscribed ? (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={toggleSubscription}
+              >
+                Subscribe
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<RemoveIcon />}
+                onClick={toggleSubscription}
+              >
+                Unsubscribe
+              </Button>
+            )}
+          </Grid>
+          <Grid item>
+            {!addedToQueue ? (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<PlaylistAddIcon />}
+                onClick={addAll}
+              >
+                Add all to Queue
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<PlaylistAddCheckIcon />}
+              >
+                Added
+              </Button>
+            )}
+          </Grid>
         </Grid>
         {/* Podcast Cover */}
         <Grid
