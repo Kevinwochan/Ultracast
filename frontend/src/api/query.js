@@ -342,7 +342,8 @@ const getEpisodes = async (podcastId, token) => {
     title: data.allPodcastMetadata.edges[0].node.name,
     description: data.allPodcastMetadata.edges[0].node.description,
     author: data.allPodcastMetadata.edges[0].node.author,
-    image: data.allPodcastMetadata.edges[0].node.coverUrl ?? "/branding/square.svg",
+    image:
+      data.allPodcastMetadata.edges[0].node.coverUrl ?? "/branding/square.svg",
     episodeCount: data.allPodcastMetadata.edges[0].node.episodes.totalCount,
   };
   return {
@@ -415,7 +416,7 @@ const subscribe = async (podcastId, token) => {
   const data = await graphql(
     `
       mutation($podcastId: ID!) {
-        subscribePodcast(input: {podcastMetadataId: $podcastId}){
+        subscribePodcast(input: { podcastMetadataId: $podcastId }) {
           success
         }
       }
@@ -435,7 +436,7 @@ const unsubscribe = async (podcastId, token) => {
   const data = await graphql(
     `
       mutation($podcastId: ID!) {
-        unsubscribePodcast(input: {podcastMetadataId: $podcastId}){
+        unsubscribePodcast(input: { podcastMetadataId: $podcastId }) {
           success
         }
       }
@@ -448,7 +449,32 @@ const unsubscribe = async (podcastId, token) => {
   return data.unsubscribePodcast.success;
 };
 
+/*
+Fetches subscription notifications for the user
+*/
+const getNotifications = async (token) => {
+  const data = await graphql(
+    `
+    query {
+      newSubscribedPodcasts{
+        edges {
+          node {
+            ${verboseEpisode}
+          }
+        }
+      }
+    }
+    `,
+    {},
+    token
+  );
+  return data.newSubscribedPodcasts.edges.map((edges) => {
+    return parseEpisode(edges.node);
+  });
+};
+
 export {
+  getNotifications,
   subscribe,
   unsubscribe,
   getPodcasts,
