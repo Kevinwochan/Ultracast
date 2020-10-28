@@ -50,8 +50,6 @@ class SearchEngine:
                 sender=models.PodcastMetadata)
 
     def podcast_metadata_save_cb(self, sender, document, created=None):
-        print("hoiiii")
-        logging.info("cb called")
         podcast_metadata = document
         assert(sender == models.PodcastMetadata)
         self.podcast_metadata_to_upload.put(podcast_metadata.id)
@@ -59,7 +57,6 @@ class SearchEngine:
             self.should_upload.set()
 
     def podcast_episode_metadata_save_cb(self, sender, document, created=None):
-        logging.info("cb called")
         assert(sender == models.PodcastEpisodeMetadata)
         podcast_episode_metadata = document
         self.podcast_metadata_to_upload.put(podcast_episode_metadata.podcast_metadata.id)
@@ -71,15 +68,15 @@ class SearchEngine:
 
     def upload_thread_cb(self):
         while not self.is_shutdown.is_set():
-            self.should_upload.wait(timeout=10) # run every 10s or when indicated
+            self.should_upload.wait(timeout=3) # run every 3s or when indicated
             self.should_upload.clear()
             if self.podcast_metadata_to_upload.qsize() >= BATCH_SIZE:
                 # Trigger an upload
                 # Copy ids to local list
-                to_upload = []
+                to_upload = set()
                 try:
                     while self.podcast_metadata_to_upload.qsize() > 0 and len(to_upload) < BATCH_SIZE:
-                        to_upload.append(self.podcast_metadata_to_upload.get(block=False))
+                        to_upload.add(self.podcast_metadata_to_upload.get(block=False))
                 except Empty:
                     pass
 
