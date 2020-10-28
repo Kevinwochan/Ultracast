@@ -12,6 +12,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Landing from "./pages/Landing";
 import Upload from "./pages/Upload";
+import Edit from "./pages/Edit";
 import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
 import History from "./pages/History";
@@ -128,7 +129,7 @@ export default function App() {
         <Route path="/creators/podcasts">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state}>
-              <Upload userToken={sessionState.cookies.token} />
+              <Edit userToken={sessionState.cookies.token} />
             </Page>
           </PrivateRoute>
         </Route>
