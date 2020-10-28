@@ -2,11 +2,17 @@
 #  - A list of existing podcast subscriptions
 #  - A list of recently played episodes
 #  - A list of past podcast searches
+def calculateRecommendations(subscriptions, recentEpisodes, searches):
+    return None
 
 
-
-
-
+# Grab the ids of the things that you're recommending, then return the query set. Eg:
+# iterables = models.PodcastEpisodeMetadata.objects(publish_date__gte=user.model().last_login)(podcast_metadata__in=user.model().subscribed_podcasts)
+# There should be an easy query that will return what you need if you have all of the ids
+# Could be something like this, given that you have a list containing the ids of all of the podcasts that you want to return:
+# models.PodcastMetadata.objects(id__in=object_id_list)
+# See docs for more info:
+# https://docs.mongoengine.org/guide/querying.html
 
 
 
