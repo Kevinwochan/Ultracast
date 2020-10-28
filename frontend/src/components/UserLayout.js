@@ -133,6 +133,11 @@ export default function UserLayout({ handleCookie, state, children }) {
     updateState("open", false);
   };
 
+  const SideBar =
+    sessionState.isCreator && sessionState.creatorView
+      ? () => <CreatorSideBar classes={classes} open={open} />
+      : () => <ListenerSideBar classes={classes} open={open} />;
+
   return (
     <div className={classes.root}>
       <AppBar
@@ -143,7 +148,7 @@ export default function UserLayout({ handleCookie, state, children }) {
       >
         <Toolbar className={classes.toolbar}>
           <Logo />
-          <AccountOptions classes={classes} handleCookie={handleCookie} />
+          <AccountOptions state={state} handleCookie={handleCookie} />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -159,9 +164,7 @@ export default function UserLayout({ handleCookie, state, children }) {
           }),
         }}
       >
-        <ListenerSideBar classes={classes} open={open} />
-        <Divider />
-        <CreatorSideBar classes={classes} open={open} />
+        <SideBar />
         <Divider />
 
         <List>
@@ -194,7 +197,8 @@ export default function UserLayout({ handleCookie, state, children }) {
   );
 }
 
-const ListenerSideBar = ({ classes, open }) => {
+const ListenerSideBar = ({ open }) => {
+  const classes = useStyles();
   const listenerItems = [
     {
       name: "Home",
@@ -214,15 +218,13 @@ const ListenerSideBar = ({ classes, open }) => {
     {
       name: "Library",
       icon: <LibraryMusicIcon />,
-      link: "/author/1",
+      link: "/library",
     },
     {
       name: "Recently Listened",
       icon: <HistoryIcon />,
       link: "/history",
     },
-
-    // TODO add recommended, history, friends and subscribed
   ];
 
   return (
@@ -241,17 +243,23 @@ const ListenerSideBar = ({ classes, open }) => {
   );
 };
 
-const CreatorSideBar = ({ classes, open }) => {
+const CreatorSideBar = ({ open }) => {
+  const classes = useStyles();
   const creatorItems = [
+    {
+      name: "My Podcasts",
+      icon: <LibraryMusicIcon />,
+      link: "/creators/podcasts",
+    },
     {
       name: "Upload",
       icon: <PublishIcon />,
-      link: "/upload",
+      link: "/creators/upload",
     },
     {
       name: "Analytics",
       icon: <ShowChartIcon />,
-      link: "/analytics",
+      link: "/creators/analytics",
     },
   ];
 
@@ -271,7 +279,9 @@ const CreatorSideBar = ({ classes, open }) => {
   );
 };
 
-const AccountOptions = ({ classes, handleCookie }) => {
+const AccountOptions = ({ state, handleCookie }) => {
+  const classes = useStyles();
+  const [sessionState, updateState] = state;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const history = useHistory();
 
@@ -288,6 +298,20 @@ const AccountOptions = ({ classes, handleCookie }) => {
     handleCookie("token", null);
     history.push("/");
   };
+
+  const creatorTitle = sessionState.creatorView
+    ? "For listeners"
+    : "For creators";
+  const creatorLink = sessionState.creatorView ? "/" : "/creators/podcasts";
+  const CreatorItem = sessionState.isCreator
+    ? () => (
+        <MenuItem>
+          <Link to={creatorLink} className={classes.link}>
+            {creatorTitle}
+          </Link>
+        </MenuItem>
+      )
+    : null;
 
   return (
     <div>
@@ -318,6 +342,7 @@ const AccountOptions = ({ classes, handleCookie }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
+        <CreatorItem />
         <MenuItem onClick={handleClose}>
           <Link to="/profile" className={classes.link}>
             Profile

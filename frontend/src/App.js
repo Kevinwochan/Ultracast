@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
+  useLocation,
 } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import Page from "./common/Page";
@@ -46,6 +47,8 @@ export default function App() {
     open: true,
     userID: "",
     audioList: [],
+    isCreator: true, // TODO change this on sign-in/sign-up
+    creatorView: false,
     cookies: cookies,
   });
 
@@ -70,8 +73,31 @@ export default function App() {
     }
   }
 
+  // Change the user's view based on the URL
+  const RoleHandler = () => {
+    const location = useLocation();
+    useEffect(() => {
+      if (!sessionState.isCreator) {
+        // Only concerned with users that are creators
+        return;
+      }
+
+      const creatorPath = location.pathname.includes("creators");
+      if (creatorPath && !sessionState.creatorView) {
+        // Change to creator view if they've navigated away from the listener view
+        updateState("creatorView", true);
+      } else if (!creatorPath && sessionState.creatorView) {
+        // Change to listener view if they've navigated away from the creator view
+        updateState("creatorView", false);
+      }
+    }, [location.pathname]);
+
+    return null;
+  };
+
   return (
     <Router>
+      <RoleHandler />
       <Switch>
         {/* Public Routes */}
         <Route path="/landing">
@@ -91,13 +117,30 @@ export default function App() {
         </Route>
 
         {/* Logged In Routes */}
-        <Route path="/upload">
+        {/* Creator Paths */}
+        <Route path="/creators/upload">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state}>
               <Upload userToken={sessionState.cookies.token} />
             </Page>
           </PrivateRoute>
         </Route>
+        <Route path="/creators/podcasts">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state}>
+              <Upload userToken={sessionState.cookies.token} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/creators/analytics">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state}>
+              <Analytics />
+            </Page>
+          </PrivateRoute>
+        </Route>
+
+        {/* Listener Paths */}
         <Route path="/podcast/:podcastId">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
@@ -123,13 +166,6 @@ export default function App() {
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
               <Author state={state} />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/analytics">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state}>
-              <Analytics />
             </Page>
           </PrivateRoute>
         </Route>
