@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -17,7 +18,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import CheckIcon from "@material-ui/icons/Check";
 import theme from "../theme";
 import { getUserPodcasts } from "../api/query";
-import { newPodcast, newEpisode } from "../api/mutation";
+import { newPodcast, updatePodcast, newEpisode } from "../api/mutation";
 import getDominantColour from "../common/dominantColor";
 import Spinner from "../components/Spinner";
 
@@ -78,6 +79,9 @@ export default function Upload({ userToken }) {
       id: "",
       title: "",
       description: "",
+      category: "",
+      subcategory: "",
+      keywords: [""],
     },
     episode: {
       audio: {
@@ -87,6 +91,7 @@ export default function Upload({ userToken }) {
       },
       title: "",
       description: "",
+      keywords: [""],
     },
     snackbar: {
       message: "",
@@ -105,10 +110,21 @@ export default function Upload({ userToken }) {
   });
   const [fields, setFields] = fieldState;
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => {
-      if (fields.podcast.title === "") {
-        // Check if a podcast has been selected yet
+  // Returns true if there is an error
+  function checkPodcast() {
+    if (fields.podcast.title === "") {
+      if (fields.podcast.id !== "") {
+        // New podcast was selected, but the title was cleared
+        setFields((prevState) => ({
+          ...prevState,
+          snackbar: {
+            message: "Please enter a name for your new podcast.",
+            severity: "error",
+            open: true,
+          },
+        }));
+      } else {
+        // No podcast has been selected yet
         setFields((prevState) => ({
           ...prevState,
           snackbar: {
@@ -117,11 +133,50 @@ export default function Upload({ userToken }) {
             open: true,
           },
         }));
-
-        return prevActiveStep;
       }
 
-      if (prevActiveStep === steps.length - 2) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // Returns true if there is an error
+  function checkEpisode() {
+    if (
+      fields.episode.title === "" ||
+      fields.episode.description === "" ||
+      fields.episode.audio.file === null
+    ) {
+      setFields((prevState) => ({
+        ...prevState,
+        snackbar: {
+          message: "Please fill all the fields.",
+          severity: "error",
+          open: true,
+        },
+      }));
+
+      return true;
+    }
+    return false;
+  }
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => {
+      let hasError;
+      switch (prevActiveStep) {
+        case 0:
+          hasError = checkPodcast();
+          break;
+        case 1:
+          hasError = checkEpisode();
+          break;
+        default:
+          hasError = false;
+      }
+
+      if (!hasError && prevActiveStep == 1) {
         // We're ready to upload!
         setFields((prevState) => ({
           ...prevState,
@@ -129,7 +184,7 @@ export default function Upload({ userToken }) {
         }));
       }
 
-      return prevActiveStep + 1;
+      return hasError ? prevActiveStep : prevActiveStep + 1;
     });
   };
 
@@ -137,8 +192,9 @@ export default function Upload({ userToken }) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  const history = useHistory();
   const handleReset = () => {
-    setActiveStep(0);
+    history.go(0);
   };
 
   const handleClose = (event, reason) => {
@@ -169,7 +225,7 @@ export default function Upload({ userToken }) {
     <Grid container>
       <Box mt={2} ml={2}>
         <Typography gutterBottom variant="h5">
-          <b>Edit your next sensation</b>
+          <b>Upload your next sensation</b>
         </Typography>
       </Box>
 
@@ -182,9 +238,17 @@ export default function Upload({ userToken }) {
           ))}
         </Stepper>
         <Box mx={5}>
+          <Snackbar
+            open={fields.snackbar.open}
+            autoHideDuration={6000}
+            onClose={handleClose}
+          >
+            <Alert onClose={handleClose} severity={fields.snackbar.severity}>
+              {fields.snackbar.message}
+            </Alert>
+          </Snackbar>
           {activeStep === steps.length ? (
             <div>
-              <CheckIcon />
               <Typography className={classes.page}>
                 All done! Thank you for using UltraCast.
               </Typography>
@@ -196,18 +260,6 @@ export default function Upload({ userToken }) {
             <>
               <Box mt={2}>
                 <form noValidate autoComplete="off">
-                  <Snackbar
-                    open={fields.snackbar.open}
-                    autoHideDuration={6000}
-                    onClose={handleClose}
-                  >
-                    <Alert
-                      onClose={handleClose}
-                      severity={fields.snackbar.severity}
-                    >
-                      {fields.snackbar.message}
-                    </Alert>
-                  </Snackbar>
                   {getStepContent(
                     activeStep,
                     fieldState,
@@ -315,7 +367,7 @@ const SelectPodcast = ({ fieldState }) => {
     // Temporarily hide the button
     button.style.display = "none";
 
-    // Create a new podcast without
+    // Create a new podcast with temporary details
     newPodcast(
       {
         name: "temp-name",
@@ -452,16 +504,16 @@ const PodcastPreview = ({ hidden, image, title, description }) => {
           <img
             className={classes.media}
             src={image}
-            alt="Preview podcast image"
+            alt="Preview podcast"
             onLoad={(e) => {
               const img = e.target;
               // TODO fix this
-              img.src = image + "?" + new Date().getTime();
-              img.setAttribute("crossOrigin", "Anonymous");
-              const colour = getDominantColour(img);
+              // img.src = image + "?" + new Date().getTime();
+              // img.setAttribute("crossOrigin", "Anonymous");
+              // const colour = getDominantColour(img);
 
-              // It's gross i know :(
-              img.parentElement.parentElement.parentElement.style.background = `#${colour}`;
+              // // It's gross i know :(
+              // img.parentElement.parentElement.parentElement.style.background = `#${colour}`;
             }}
           />
           <CardContent className={classes.mediaText}>
@@ -628,16 +680,16 @@ const EpisodePreview = ({ image, title, description, podcast, duration }) => {
           <img
             className={classes.media}
             src={image}
-            alt="Preview podcast image"
+            alt="Preview podcast"
             onLoad={(e) => {
               const img = e.target;
               // TODO fix this
-              img.src = image + "?" + new Date().getTime();
-              img.setAttribute("crossOrigin", "Anonymous");
-              const colour = getDominantColour(img);
+              // img.src = image + "?" + new Date().getTime();
+              // img.setAttribute("crossOrigin", "Anonymous");
+              // const colour = getDominantColour(img);
 
-              // It's gross i know :(
-              img.parentElement.parentElement.parentElement.style.background = `#${colour}`;
+              // // It's gross i know :(
+              // img.parentElement.parentElement.parentElement.style.background = `#${colour}`;
             }}
           />
           <CardContent className={classes.mediaText}>
@@ -653,7 +705,7 @@ const EpisodePreview = ({ image, title, description, podcast, duration }) => {
         </Box>
         <Box mx={3}>
           <Typography variant="caption" display="block">
-            {duration !== "" ? `Length: ${duration}` : ""}
+            {duration !== "" ? `Length: ${duration} min` : ""}
           </Typography>
         </Box>
         <Box m={3}>
@@ -675,56 +727,133 @@ const confirmationStyle = makeStyles({
   },
 });
 
+/**
+ * Create a new podcast and episode for the user.
+ * This only happens if the user didn't upload a cover image for their podcast.
+ *
+ * @param {List} fieldState fields and setFields state for this component
+ * @param {Function} handleNext
+ * @param {Function} handleBack
+ */
+async function createNewPodcastAndEpisode(fields) {
+  // Create a new podcast first
+  const data = await newPodcast(
+    {
+      name: fields.podcast.title,
+      description: fields.podcast.description,
+      category: fields.podcast.category,
+      subCategory: fields.podcast.subcategory,
+      keywords: fields.podcast.keywords,
+    },
+    user.token
+  );
+  if (data.success) {
+    return createNewEpisode(data.podcastMetadata.id, fields);
+  } else {
+    return false;
+  }
+}
+
+/**
+ * Updates a podcast and creates a new episode for it.
+ * Expected to be called if a temporary podcast was made with only a cover photo
+ *
+ * @param {String} podcastId the podcast ID
+ * @param {List} fieldState fields state for this component
+ */
+async function updatePodcastCreateEpisode(podcastID, fields) {
+  // Update the temporary podcast details
+  const data = await updatePodcast(
+    {
+      id: podcastID,
+      name: fields.podcast.title,
+      description: fields.podcast.description,
+      category: fields.podcast.category,
+      subCategory: fields.podcast.subcategory,
+      keywords: fields.podcast.keywords,
+    },
+    user.token
+  );
+  if (data.success) {
+    return createNewEpisode(podcastID, fields);
+  } else {
+    return false;
+  }
+}
+
+/**
+ * Creates a new podcast episode given the podcast ID
+ *
+ * @param {String} podcastId the podcast ID
+ * @param {List} fields fields state for this component
+ */
+async function createNewEpisode(podcastId, fields) {
+  const success = await newEpisode(
+    {
+      id: podcastId,
+      name: fields.episode.name,
+      description: fields.episode.description,
+      audio: fields.episode.audio.file,
+      keywords: fields.episode.keywords,
+    },
+    user.token
+  );
+
+  return success;
+}
+
 const Confirmation = ({ fieldState, handleNext, handleBack }) => {
   const classes = confirmationStyle();
   const [fields, setFields] = fieldState;
+  let mutation;
 
   // Status of 1 means we're ready to upload
   if (fields.status === 1) {
-    console.log("uploading!");
     if (fields.podcast.id === "new-podcast") {
       if (fields.tempPodcastId) {
-        // TODO: update the podcast rather than create a new one
+        mutation = updatePodcastCreateEpisode(fields.tempPodcastId, fields);
       } else {
-        newPodcast(
-          {
-            name: fields.podcast.name,
-            description: fields.podcast.description,
-            category: "",
-            subCategory: "",
-            keywords: [""],
-          },
-          user.token
-        ).then((data) => {
-          if (data.success) {
-            // TODO create an episode here
-            // Success --> handleNext
-            // Fail --> handleBack
-          } else {
-            setFields((prevState) => ({
-              ...prevState,
-              snackbar: {
-                message: "Could not upload.",
-                severity: "error",
-                open: true,
-              },
-            }));
-          }
-        });
+        mutation = createNewPodcastAndEpisode(fields);
       }
     } else {
-      // TODO create an episode here
-      // Success --> handleNext
-      // Fail --> handleBack
+      mutation = createNewEpisode(fields.podcast.id, fields);
     }
 
-    // Make sure we don't double upload by resetting the status
-    // TODO move this into the .then statements
-    setFields((prevState) => ({
-      ...prevState,
-      status: 0,
-    }));
+    mutation.then((success) => {
+      if (success) {
+        setFields((prevState) => ({
+          ...prevState,
+          snackbar: {
+            message: "Upload successful!",
+            severity: "success",
+            open: true,
+          },
+          status: 0,
+        }));
+      } else {
+        setFields((prevState) => ({
+          ...prevState,
+          snackbar: {
+            message: "Could not upload. Please try again.",
+            severity: "error",
+            open: true,
+          },
+          status: 0,
+        }));
+      }
+    });
   }
+
+  useEffect(() => {
+    // Once the mutation has resolved, go forward or backward
+    if (fields.status == 0) {
+      if (fields.snackbar.severity === "success") {
+        handleNext();
+      } else if (fields.snackbar.severity === "error") {
+        handleBack();
+      }
+    }
+  }, [fields.status]);
 
   return (
     <div className={classes.root}>

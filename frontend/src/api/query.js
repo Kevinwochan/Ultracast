@@ -175,6 +175,28 @@ const getUserPodcasts = async (token) => {
   });
 };
 
+const getPodcastInfo = async (podcastId, userToken, episodes = true) => {
+  const data = await graphql(
+    `
+  query getPodcast($id: ID!){
+    allPodcastMetadata(id: $id){
+      edges{
+        node{
+          ${episodes ? verbosePodcastAndEpisode : verbosePodcast}
+        }
+      }
+    }
+  }
+  `,
+    {
+      id: podcastId,
+    },
+    userToken
+  );
+
+  return data.allPodcastMetadata;
+};
+
 // Query for lots of information on an episode (like for the Recommended page)
 const verboseEpisode = `
   id
@@ -231,7 +253,38 @@ const parseEpisode = (episode, verbose = true) => {
   };
 };
 
-const verbosePodcast = ``;
+const verbosePodcastAndEpisode = `
+  name
+  description
+  coverUrl
+  category
+  subCategory
+  keywords
+  episodes {
+    totalCount
+    edges {
+      node {
+        id
+        name
+        description
+        audioUrl
+        keywords
+        duration
+        publishDate
+      }
+    }
+  }
+`;
+
+const verbosePodcast = `          
+  name
+  description
+  coverUrl
+  category
+  subCategory
+  keywords
+`;
+
 const compactPodcast = `
   name
   id
@@ -486,5 +539,6 @@ export {
   register,
   getUserId,
   getUserPodcasts,
+  getPodcastInfo,
   getHistory,
 };
