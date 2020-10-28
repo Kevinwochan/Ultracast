@@ -303,15 +303,6 @@ const AccountOptions = ({ state, handleCookie }) => {
     ? "For listeners"
     : "For creators";
   const creatorLink = sessionState.creatorView ? "/" : "/creators/podcasts";
-  const CreatorItem = sessionState.isCreator
-    ? () => (
-        <MenuItem>
-          <Link to={creatorLink} className={classes.link}>
-            {creatorTitle}
-          </Link>
-        </MenuItem>
-      )
-    : null;
 
   return (
     <div>
@@ -342,7 +333,15 @@ const AccountOptions = ({ state, handleCookie }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <CreatorItem />
+        {sessionState.isCreator ? (
+          <MenuItem>
+            <Link to={creatorLink} className={classes.link}>
+              {creatorTitle}
+            </Link>
+          </MenuItem>
+        ) : (
+          ""
+        )}
         <MenuItem onClick={handleClose}>
           <Link to="/profile" className={classes.link}>
             Profile
