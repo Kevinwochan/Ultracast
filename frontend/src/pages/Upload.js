@@ -791,7 +791,7 @@ async function createNewEpisode(podcastId, fields) {
   const success = await newEpisode(
     {
       id: podcastId,
-      name: fields.episode.name,
+      name: fields.episode.title,
       description: fields.episode.description,
       audio: fields.episode.audio.file,
       keywords: fields.episode.keywords,
