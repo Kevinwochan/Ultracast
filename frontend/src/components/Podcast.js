@@ -5,8 +5,8 @@ import Grid from "@material-ui/core/Grid";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { uid } from "react-uid";
+import ultraCastTheme from "../theme";
 
 const playlistStyles = makeStyles((theme) => ({
   card: {
@@ -21,7 +21,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
 
   // Waiting for DB query - just show loader for now
   if (episodes === "loader") {
-    return <CircularProgress />;
+    return <PodcastLoader />;
   }
 
   // No episodes are available - show error message
@@ -121,7 +121,7 @@ export function Slider({ state, episodes }) {
 
   // Waiting for DB query - just show loader for now
   if (episodes === "loader") {
-    return <CircularProgress />;
+    return <PodcastLoader />;
   }
 
   // No podcasts are available - show error message
@@ -259,4 +259,34 @@ export function addAudio(state, { name, musicSrc, cover, id }) {
   updateState("audioList", newList);
 }
 
-export {PodcastCover};
+const PodcastLoaderStyles = makeStyles((theme) => ({
+  container: {
+    flexWrap: "nowrap",
+    overflow: "scroll",
+  },
+  cover: {
+    margin: 10,
+    height: 150,
+    width: 150,
+    background: ultraCastTheme.palette.secondary.main,
+    animation: "$flash 2s linear infinite",
+  },
+  "@keyframes flash": {
+    "50%": {
+      opacity: 0,
+    },
+  },
+}));
+
+const PodcastLoader = () => {
+  const classes = PodcastLoaderStyles();
+  return (
+    <Grid container spacing={4} className={classes.container}>
+      {[...Array(6).keys()].map((item) => (
+        <div key={item} className={classes.cover}></div>
+      ))}
+    </Grid>
+  );
+};
+
+export { PodcastCover };
