@@ -3,9 +3,10 @@
 #  - A list of recently played episodes
 #  - A list of past podcast searches
 def calculateRecommendations(subscriptions, recentEpisodes, searches):
-    print(subscriptions)
-    print("\n")
+    print(type(subscriptions[0]))
+    print(subscriptions[0].name)
     print(recentEpisodes)
+    print("Test")
     
     return None
 
