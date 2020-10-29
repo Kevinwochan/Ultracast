@@ -289,4 +289,57 @@ const PodcastLoader = () => {
   );
 };
 
-export { PodcastCover };
+const searchResultStyles = makeStyles((theme) => ({
+  infoContainer: {
+    padding: "16px 16px 0px",
+  },
+  podcastDetails: {
+    display: "block",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  podcastItem: {
+    display: "grid",
+    justifyContent: "center",
+  },
+  podcastCover: {
+    width: 150,
+    height: 150,
+  },
+}));
+
+const SearchResult = ({ podcast }) => {
+  const classes = searchResultStyles();
+
+  return (
+    <>
+      <div className={classes.podcastItem}>
+        <Link to={`/podcast/${podcast.podcast.id}`}>
+          <img
+            src={podcast.podcast.image}
+            alt="podcast cover"
+            className={classes.podcastCover}
+            onError={(e) => {
+              e.target.src = `/branding/square.svg`;
+            }}
+          ></img>
+        </Link>
+      </div>
+      <div className={classes.infoContainer}>
+        <Link to={`/podcast/${podcast.podcast.id}`}>
+          <Typography variant="subtitle2" className={classes.podcastDetails}>
+            <b>{podcast.podcast.title}</b>
+          </Typography>
+        </Link>
+        <Link to={`/author/${podcast.author.id}`}>
+          <Typography variant="caption" className={classes.podcastDetails}>
+            {podcast.author.name}
+          </Typography>
+        </Link>
+      </div>
+    </>
+  );
+};
+
+export { PodcastCover, SearchResult };

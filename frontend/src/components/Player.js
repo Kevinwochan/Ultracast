@@ -55,6 +55,7 @@ export default function Player({ state }) {
     onAudioPlay: onAudioPlay,
     extendsContent: [
       <Select
+        key={1}
         value={sessionState.playbackRate}
         onChange={setPlaybackRate}
         label="Playback Rate"

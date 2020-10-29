@@ -21,6 +21,7 @@ import Explore from "./pages/Recommended";
 import Author from "./pages/Author";
 import Analytics from "./pages/Analytics";
 import Subscriptions from "./pages/Subscriptions";
+import Search from "./pages/Search";
 
 function PrivateRoute({ cookies, children, ...rest }) {
   return (
@@ -162,6 +163,13 @@ export default function App() {
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
               <History state={state} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/search">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state} player>
+              <Search />
             </Page>
           </PrivateRoute>
         </Route>
