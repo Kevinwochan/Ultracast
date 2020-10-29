@@ -1,4 +1,6 @@
 import React from "react";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
 import ReactJkMusicPlayer from "react-jinke-music-player";
 import "react-jinke-music-player/assets/index.css";
 import "./player.css"; // "Override" the default jinke-music-player styles
@@ -10,10 +12,15 @@ export default function Player({ state }) {
 
   const onAudioPlay = (audioInfo) => {
     console.log(`Marking audio as played ${audioInfo.name}`);
-    markAsPlayed(
-      audioInfo.id,
-      sessionState.cookies.token
-    );
+    markAsPlayed(audioInfo.id, sessionState.cookies.token);
+  };
+
+  const setPlaybackRate = (e) => {
+    // Brute force HTML way but it is what it is
+    const rate = e.target.value;
+    const audio = document.querySelector("audio.music-player-audio");
+    audio.playbackRate = rate;
+    updateState("playbackRate", rate);
   };
 
   const options = {
@@ -46,6 +53,24 @@ export default function Player({ state }) {
     quietUpdate: false,
     audioLists: sessionState.audioList,
     onAudioPlay: onAudioPlay,
+    extendsContent: [
+      <Select
+        value={sessionState.playbackRate}
+        onChange={setPlaybackRate}
+        label="Playback Rate"
+      >
+        <MenuItem value={1}>
+          <em>Playback Rate</em>
+        </MenuItem>
+        <MenuItem value={0.5}>0.5</MenuItem>
+        <MenuItem value={0.75}>0.75</MenuItem>
+        <MenuItem value={1}>1</MenuItem>
+        <MenuItem value={1.25}>1.25</MenuItem>
+        <MenuItem value={1.5}>1.5</MenuItem>
+        <MenuItem value={1.75}>1.75</MenuItem>
+        <MenuItem value={2}>2</MenuItem>
+      </Select>,
+    ],
   };
 
   return <ReactJkMusicPlayer {...options} />;

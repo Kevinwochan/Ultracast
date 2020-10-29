@@ -49,6 +49,7 @@ export default function App() {
     open: true,
     userID: "",
     audioList: [],
+    playbackRate: 1,
     isCreator: true, // TODO change this on sign-in/sign-up
     creatorView: false,
     cookies: cookies,
