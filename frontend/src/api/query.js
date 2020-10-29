@@ -71,25 +71,26 @@ const getUserId = async (token) => {
 /*
 Retrieves an array of podcast episodes recommended for the user
 */
-const getRecommended = async () => {
+const getRecommended = async (token) => {
   const data = await graphql(
     `
-      {
-        allPodcastMetadata(first: 10) {
+      query recommended {
+        recommendations {
           edges {
-            node {
+            node  {
               ${compactPodcast}
             }
           }
         }
       }
     `,
-    {}
+    {},
+    token
   );
 
   // TODO: put the mapping into another function similar to parseEpisode
   // Maps the first  into episodes
-  return data.allPodcastMetadata.edges.map((podcast) => ({
+  return data.recommendations.edges.map((podcast) => ({
     url: podcast.node.episodes.edges[0].node.audioUrl,
     id: podcast.node.episodes.edges[0].node.id,
     title: podcast.node.episodes.edges[0].node.name,
