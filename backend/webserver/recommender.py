@@ -5,7 +5,8 @@
 def calculateRecommendations(subscriptions, recentEpisodes, searches):
     print(type(subscriptions[0]))
     print(subscriptions[0].name)
-    print(recentEpisodes)
+    print(type(recentEpisodes[0]))
+    print(recentEpisodes[0].episode.name)
     print("Test")
     
     return None
