@@ -89,6 +89,8 @@ class PodcastEpisode:
         pass
 '''
 
+
+
 class User(BusinessLayerObject):
     _query_type = query.User
     _model_type = models.User
@@ -141,6 +143,27 @@ class User(BusinessLayerObject):
 
     def get_email(self):
         return self._model.email
+
+    def add_stream(self, search: str) -> models.Stream:
+        stream = models.Stream(search=search, owner=self._model)
+        stream.save()
+        self._model.modify(push__streams=stream)
+        return stream
+
+    def update_stream(self, stream_model: models.Stream, **kwargs) -> models.Stream:
+        assert(self.can_edit_stream(stream_model))
+        stream_model.modify(**kwargs)
+        self._model.reload()
+
+        return stream_model
+
+    def remove_stream(self, stream_model: models.Stream):
+        assert(self.can_edit_stream(stream_model))
+        self._model.modify(pull__streams=stream_model)
+        stream_model.delete()
+
+    def can_edit_stream(self, stream_model):
+        return stream_model in self._model.streams
 
     def can_edit_podcast_metadata(self, podcast_metadata):
         return podcast_metadata.author.id == self._model.id

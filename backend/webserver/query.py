@@ -87,6 +87,12 @@ class Bookmark(MongoengineObjectType):
         interfaces = (Node,)
         connection_class = EdgeCountedConnection
 
+class Stream(MongoengineObjectType):
+    class Meta:
+        model = models.Stream
+        interfaces = (Node,)
+        connection_class = EdgeCountedConnection
+
 class User(MongoengineObjectType):
     class Meta:
         model = models.User
@@ -166,5 +172,5 @@ class Query(graphene.ObjectType):
     current_user = graphene.Field(User, resolver=resolve_current_user,
             description="Get the currently logged in user (as indicated by the JWT token)")
 
-types = [PodcastEpisodeMetadata, PodcastMetadata, ]
+types = [PodcastEpisodeMetadata, PodcastMetadata, Stream]
 middleware = []
