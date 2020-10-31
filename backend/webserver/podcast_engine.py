@@ -129,6 +129,10 @@ class User(BusinessLayerObject):
             podcast.delete()
         super().delete()
 
+    @staticmethod
+    def hash_password(password):
+        return werkzeug.security.generate_password_hash(password)
+
     def subscribe_podcast(self, podcast_metadata_model):
         self._model.modify(add_to_set__subscribed_podcasts=podcast_metadata_model)
         podcast_metadata_model.modify(push__subscribers=self._model.id)
