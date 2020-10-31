@@ -71,7 +71,7 @@ const getUserId = async (token) => {
 /*
 Retrieves an array of podcast episodes recommended for the user
 */
-const getRecommended = async () => {
+const getRecommended = async (token) => {
   const data = await graphql(
     `
       {
@@ -84,20 +84,16 @@ const getRecommended = async () => {
         }
       }
     `,
-    {}
+    {},
+    token
   );
 
   // TODO: put the mapping into another function similar to parseEpisode
   // Maps the first  into episodes
   return data.allPodcastMetadata.edges.map((podcast) => ({
-    url: podcast.node.episodes.edges[0].node.audioUrl,
-    id: podcast.node.episodes.edges[0].node.id,
-    title: podcast.node.episodes.edges[0].node.name,
-    podcast: {
-      image: podcast.node.coverUrl,
-      id: podcast.node.id,
-      title: podcast.node.name,
-    },
+    image: podcast.node.coverUrl,
+    id: podcast.node.id,
+    title: podcast.node.name,
     author: {
       name: podcast.node.author.name,
       id: podcast.node.author.id,
@@ -113,19 +109,20 @@ const getRecommended = async () => {
  */
 const getHistory = async (token, verbose = true) => {
   const data = await graphql(
-    `query getListenHistory {
+    `query{
       currentUser {
-        listenHistory {
-          edges {
-            node {
-              episode {
-                ${verbose ? verboseEpisode : compactEpisode}
-              }
+      listenHistory {
+        edges {
+          node {
+            episode {
+              ${verboseEpisode}
             }
           }
         }
+        }
       }
-    }`,
+    }
+    `,
     {},
     token
   );
@@ -221,7 +218,7 @@ const parseEpisode = (episode, verbose = true) => {
   return {
     title: episode.name,
     url: episode.audioUrl,
-    author: episode.author,
+    author: episode.podcastMetadata.author,
     podcast: {
       title: episode.podcastMetadata.name,
       id: episode.podcastMetadata.id,
@@ -512,7 +509,7 @@ const getSubscriptions = async (token) => {
     image: podcast.node.coverUrl,
     description: podcast.node.description,
     episodeCount: podcast.node.episodes.totalCount,
-    author: podcast.node.author
+    author: podcast.node.author,
   }));
 };
 

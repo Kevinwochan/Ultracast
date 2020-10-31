@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Box from "@material-ui/core/Box";
-import { Slider } from "../components/Podcast";
+import { EpisodeSlider, PodcastSlider } from "../components/Podcast";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -28,15 +28,13 @@ export default function Dashboard({ state }) {
 
   // Need to update recommended and history like this, otherwise it won't work for larger/longer queries
   useEffect(() => {
-    getRecommended().then((data) => {
+    getRecommended(sessionState.cookies.token).then((data) => {
       setRecommended(data);
     });
-
-    /*getHistory(false, sessionState.cookies.token).then((data) => {
+    getHistory(sessionState.cookies.token,).then((data) => {
       setHistory(data);
-      TODO: create a episode slider
-    });*/
-  }, []);
+    });
+  }, [sessionState]);
 
   return (
     <Container
@@ -44,9 +42,9 @@ export default function Dashboard({ state }) {
       maxWidth={sessionState.open ? "md" : "lg"}
     >
       <PodcastSliderTitle title="Recommended Podcasts" url="/" />
-      <Slider state={state} episodes={recommended} />
+      <PodcastSlider state={state} podcasts={recommended} />
       <PodcastSliderTitle title="Recently Listened" url="/history" />
-      <Slider state={state} episodes={history} />
+      <EpisodeSlider state={state} episodes={history} />
     </Container>
   );
 }

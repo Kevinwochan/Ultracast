@@ -107,6 +107,79 @@ export function Playlist({ episodes, state, variant = "episode" }) {
   );
 }
 
+const PodcastSliderStyles = makeStyles((theme) => ({
+  podcastContainer: {
+    flexWrap: "nowrap",
+    overflow: "scroll",
+  },
+  podcast: {
+    cursor: "pointer",
+  },
+  podcastCover: {
+    height: 150,
+    width: 150,
+  },
+  podcastDetailsContainer: {
+    padding: "10px 0px",
+  },
+  podcastDetails: {
+    display: "block",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+}));
+
+export function PodcastSlider({ state, podcasts }) {
+  const classes = PodcastSliderStyles();
+
+  // Waiting for DB query - just show loader for now
+  if (podcasts === "loader") {
+    return <CircularProgress />;
+  }
+
+  // No podcasts are available - show error message
+  if (!podcasts || podcasts.length === 0) {
+    return (
+      <Grid container spacing={4} className={classes.podcastContainer}>
+        <Typography variant="body1">Nothing is currently available.</Typography>
+      </Grid>
+    );
+  }
+
+  return (
+    <Grid container spacing={4} className={classes.podcastContainer}>
+      {podcasts.map((podcast) => (
+        <Grid item key={uid(podcast)} xs={2} className={classes.podcast}>
+          <img
+            src={podcast.image}
+            alt={`${podcast.title} cover`}
+            className={classes.podcastCover}
+            onError={(e) => {
+              e.target.src = `/branding/square.svg`;
+            }}
+          ></img>
+          <CardContent className={classes.podcastDetailsContainer}>
+            <Link to={`/podcast/${podcast.id}`}>
+              <Typography
+                variant="subtitle2"
+                className={classes.podcastDetails}
+              >
+                <b>{podcast.title}</b>
+              </Typography>
+            </Link>
+            <Link to={`/author/${podcast.author.id}`}>
+              <Typography variant="caption" className={classes.podcastDetails}>
+                {podcast.author.name}
+              </Typography>
+            </Link>
+          </CardContent>
+        </Grid>
+      ))}
+    </Grid>
+  );
+}
+
 const sliderStyles = makeStyles((theme) => ({
   podcastContainer: {
     flexWrap: "nowrap",
@@ -117,7 +190,7 @@ const sliderStyles = makeStyles((theme) => ({
   },
 }));
 
-export function Slider({ state, episodes }) {
+export function EpisodeSlider({ state, episodes }) {
   const classes = sliderStyles();
 
   // Waiting for DB query - just show loader for now
@@ -195,7 +268,6 @@ const coverStyles = makeStyles((theme) => ({
     left: 60,
   },
 }));
-
 
 // Image for the podcast
 function PodcastCover({ episode, state }) {
