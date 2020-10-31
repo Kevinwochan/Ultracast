@@ -9,52 +9,65 @@ and parametrises the graphql interface
 
 const graphql = async (query, variables, token = "", upload = false) => {
   // ! Moved this to async cause I was having problems with returning the correct state of the promise
-
-  // If we're uploading a file, use the uploadOptions function
-  // Otherwise, just make a normal query to the backend
   let response;
-  if (upload) {
-    response = await fetch(
-      configuration.BACKEND_ENDPOINT,
-      uploadOptions(
-        {
+  try {
+    // If we're uploading a file, use the uploadOptions function
+    // Otherwise, just make a normal query to the backend
+    if (upload) {
+      response = await fetch(
+        configuration.BACKEND_ENDPOINT,
+        uploadOptions(
+          {
+            query: query,
+            variables: variables,
+          },
+          token
+        )
+      );
+
+      response = await response.json();
+    } else {
+      response = await axios.post(
+        configuration.BACKEND_ENDPOINT,
+        JSON.stringify({
           query: query,
           variables: variables,
-        },
-        token
-      )
-    );
-    // Get the JSON immediately - GQL never returns a HTTP error
-    response = await response.json();
-  } else {
-    response = await axios.post(
-      configuration.BACKEND_ENDPOINT,
-      JSON.stringify({
-        query: query,
-        variables: variables,
-      }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-  }
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    }
+  } catch (error) {
+    if (error.response) {
+      const errors = error.response.data.errors;
+      // Show the error
+      console.error(
+        `graphql.js returned a HTTP ${
+          error.response.status
+        } with error codes: \n${JSON.stringify(errors, null, 4)}`
+      );
+    }
 
-  if (response.data && response.data.errors) {
-    // An error has occurred
-    console.log(response.data.errors);
-    return response.data.errors;
-  } else if (response.data) {
-    // Successfully queried data
-    console.log(response);
-    /* may want to change this to only .data allowing the components to handle errors */
-    return upload ? response.data : response.data.data;
-  } else {
-    // Probably an upload response
-    return response;
+    response = {};
+  } finally {
+    if (response.data && response.data.errors) {
+      // An error has occurred
+      console.log(response.data.errors);
+      return response.data.errors;
+    } else if (response.data) {
+      // Successfully queried data
+      console.log(response);
+      /* may want to change this to only .data allowing the components to handle errors */
+      return upload ? response.data : response.data.data;
+    } else {
+      // Probably an upload response
+      return response;
+    }
   }
 };
 

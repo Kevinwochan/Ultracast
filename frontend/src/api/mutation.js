@@ -13,8 +13,8 @@ const newPodcast = async (podcastMetadata, token) => {
       mutation(
         $name: String!
         $description: String
-        $cover: Upload
-        ${podcastMetadata.cover ? "$category: String" : ""}
+        ${podcastMetadata.cover ? "$cover: Upload" : ""}
+        $category: String
         $subCategory: String
         $keywords: [String]
       ) {
@@ -46,18 +46,53 @@ const newPodcast = async (podcastMetadata, token) => {
   return data.createPodcastMetadata;
 };
 
+const updatePodcast = async (podcastMetadata, token) => {
+  const data = await graphql(
+    `mutation updatePodcastMetadata(
+      $id: ID!
+      $name: String
+      $description: String
+      ${podcastMetadata.cover ? "$cover: Upload" : ""}
+      $category: String
+      $subcategory: String
+      $keywords: [String]
+    ) {
+      updatePodcastMetadata(
+        input: {
+          podcastMetadataId: $id
+          name: $name
+          description: $description
+          ${podcastMetadata.cover ? "cover: $cover" : ""}
+          category: $category
+          subCategory: $subcategory
+          keywords: $keywords
+        }
+      ) {
+        success
+      }
+    }
+    `,
+    podcastMetadata,
+    token,
+    podcastMetadata.cover ? true : false
+  );
+
+  return data.updatePodcastMetadata;
+};
+
+/**
+ * Creates a new episode for a podcast
+ *
+ * @param {Object} podcastEpisode the information of the episode. Should contain {id, name, description, audio, keywords}
+ * @param {*} token the JWT token of the user
+ */
 const newEpisode = async (podcastEpisode, token) => {
-  // podcastMetadataId: ID!
-  // name: String
-  // description: String
-  // audio: Upload
-  // keywords: [String]
   const data = await graphql(
     `
       mutation createEpisode(
         $id: ID!
         $name: String
-        $description: description
+        $description: String
         $audio: Upload
         $keywords: [String]
       ) {
@@ -81,7 +116,8 @@ const newEpisode = async (podcastEpisode, token) => {
     true
   );
 
-  return data.createPodcastEpisode;
+  // If createPodcastEpisode didn't return null, the mutation was successful
+  return data.createPodcastEpisode !== null;
 };
 
-export { newPodcast, newEpisode };
+export { newPodcast, updatePodcast, newEpisode };

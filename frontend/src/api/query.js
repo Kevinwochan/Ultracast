@@ -74,11 +74,11 @@ Retrieves an array of podcast episodes recommended for the user
 const getRecommended = async (token) => {
   const data = await graphql(
     `
-      {
-        allPodcastMetadata(first: 10) {
+      query recommended {
+        recommendations {
           edges {
-            node {
-              ${verbosePodcast}
+            node  {
+              ${compactPodcast}
             }
           }
         }
@@ -88,17 +88,33 @@ const getRecommended = async (token) => {
     token
   );
 
-  // TODO: put the mapping into another function similar to parseEpisode
-  return data.allPodcastMetadata.edges.map((podcast) => ({
-    id: podcast.node.id,
-    title: podcast.node.name,
-    image: podcast.node.coverUrl,
-    description: podcast.node.description,
-    author: {
-      id: podcast.node.author.id,
-      name: podcast.node.author.name,
-    },
-  }));
+  return data.recommendations.edges.map((n) => {
+    const podcast = n.node;
+    // Deal with podcasts that have no episodes
+    const e = podcast.episodes.edges[0] ?? {
+      node: {
+        audioUrl: "",
+        id: "",
+        name: "",
+      },
+    };
+    const episode = e.node;
+
+    return {
+      url: episode.audioUrl,
+      id: episode.id,
+      title: episode.name,
+      podcast: {
+        image: podcast.coverUrl,
+        id: podcast.id,
+        title: podcast.name,
+      },
+      author: {
+        name: podcast.author.name,
+        id: podcast.author.id,
+      },
+    };
+  });
 };
 
 /**
@@ -172,6 +188,28 @@ const getUserPodcasts = async (token) => {
   });
 };
 
+const getPodcastInfo = async (podcastId, userToken, episodes = true) => {
+  const data = await graphql(
+    `
+  query getPodcast($id: ID!){
+    allPodcastMetadata(id: $id){
+      edges{
+        node{
+          ${episodes ? verbosePodcastAndEpisode : verbosePodcast}
+        }
+      }
+    }
+  }
+  `,
+    {
+      id: podcastId,
+    },
+    userToken
+  );
+
+  return data.allPodcastMetadata;
+};
+
 // Query for lots of information on an episode (like for the Recommended page)
 const verboseEpisode = `
   id
@@ -228,16 +266,43 @@ const parseEpisode = (episode, verbose = true) => {
   };
 };
 
-const verbosePodcast = `
+const verbosePodcastAndEpisode = `
+  name
+  description
+  coverUrl
+  category
+  subCategory
+  keywords
+  episodes {
+    totalCount
+    edges {
+      node {
+        id
+        name
+        description
+        audioUrl
+        keywords
+        duration
+        publishDate
+      }
+    }
+  }
+`;
+
+const verbosePodcast = `          
   id
   name
   coverUrl
   description
+  category
+  subCategory
+  keywords
   author {
     id
     name
   }
 `;
+
 const compactPodcast = `
   name
   id
@@ -527,5 +592,6 @@ export {
   register,
   getUserId,
   getUserPodcasts,
+  getPodcastInfo,
   getHistory,
 };

@@ -5,9 +5,9 @@ import Grid from "@material-ui/core/Grid";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { uid } from "react-uid";
 import { addAudio } from "./Player";
+import ultraCastTheme from "../theme";
 
 const playlistStyles = makeStyles((theme) => ({
   card: {
@@ -22,7 +22,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
 
   // Waiting for DB query - just show loader for now
   if (episodes === "loader") {
-    return <CircularProgress />;
+    return <PodcastLoader />;
   }
 
   // No episodes are available - show error message
@@ -135,7 +135,7 @@ export function PodcastSlider({ state, podcasts }) {
 
   // Waiting for DB query - just show loader for now
   if (podcasts === "loader") {
-    return <CircularProgress />;
+    return <PodcastLoader />;
   }
 
   // No podcasts are available - show error message
@@ -195,7 +195,7 @@ export function EpisodeSlider({ state, episodes }) {
 
   // Waiting for DB query - just show loader for now
   if (episodes === "loader") {
-    return <CircularProgress />;
+    return <PodcastLoader />;
   }
 
   // No podcasts are available - show error message
@@ -314,4 +314,87 @@ function PodcastCover({ episode, state }) {
   );
 }
 
-export { PodcastCover };
+const PodcastLoaderStyles = makeStyles((theme) => ({
+  container: {
+    flexWrap: "nowrap",
+    overflow: "scroll",
+  },
+  cover: {
+    margin: 10,
+    height: 150,
+    width: 150,
+    background: ultraCastTheme.palette.secondary.main,
+    animation: "$flash 2s linear infinite",
+  },
+  "@keyframes flash": {
+    "50%": {
+      opacity: 0,
+    },
+  },
+}));
+
+const PodcastLoader = () => {
+  const classes = PodcastLoaderStyles();
+  return (
+    <Grid container spacing={4} className={classes.container}>
+      {[...Array(6).keys()].map((item) => (
+        <div key={item} className={classes.cover}></div>
+      ))}
+    </Grid>
+  );
+};
+
+const searchResultStyles = makeStyles((theme) => ({
+  infoContainer: {
+    padding: "16px 16px 0px",
+  },
+  podcastDetails: {
+    display: "block",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  podcastItem: {
+    display: "grid",
+    justifyContent: "center",
+  },
+  podcastCover: {
+    width: 150,
+    height: 150,
+  },
+}));
+
+const SearchResult = ({ podcast }) => {
+  const classes = searchResultStyles();
+
+  return (
+    <>
+      <div className={classes.podcastItem}>
+        <Link to={`/podcast/${podcast.podcast.id}`}>
+          <img
+            src={podcast.podcast.image}
+            alt="podcast cover"
+            className={classes.podcastCover}
+            onError={(e) => {
+              e.target.src = `/branding/square.svg`;
+            }}
+          ></img>
+        </Link>
+      </div>
+      <div className={classes.infoContainer}>
+        <Link to={`/podcast/${podcast.podcast.id}`}>
+          <Typography variant="subtitle2" className={classes.podcastDetails}>
+            <b>{podcast.podcast.title}</b>
+          </Typography>
+        </Link>
+        <Link to={`/author/${podcast.author.id}`}>
+          <Typography variant="caption" className={classes.podcastDetails}>
+            {podcast.author.name}
+          </Typography>
+        </Link>
+      </div>
+    </>
+  );
+};
+
+export { PodcastCover, SearchResult };
