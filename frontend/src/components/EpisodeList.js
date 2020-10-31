@@ -1,10 +1,13 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import { PodcastCover } from "./Podcast";
-import { uid } from "react-uid";
-import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
@@ -23,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 // https://stackoverflow.com/questions/1322732/convert-seconds-to-hh-mm-ss-with-javascript
 // probably a better way but ceebs
-var toHHMMSS = (secs) => {
+const toHHMMSS = (secs) => {
   var sec_num = parseInt(secs, 10);
   var hours = Math.floor(sec_num / 3600);
   var minutes = Math.floor(sec_num / 60) % 60;
@@ -38,84 +41,38 @@ var toHHMMSS = (secs) => {
 export default function Playlist({ episodes, state }) {
   const classes = useStyles();
   return (
-    <>
-      <Grid container alignItems="center" className={classes.header}>
-        <Grid item xs container spacing={2}>
-          <Grid item xs={1}>
-            #
-          </Grid>
-          <Grid item xs={3} md={2}>
-            Cover
-          </Grid>
-          <Grid item xs={3} md={8} container>
-            <Grid item xs container direction="column">
-              <Grid item>
-                <Grid container>
-                  <Typography gutterBottom variant="h6"></Typography>
-                  <Typography variant="body2" gutterBottom>
-                    Info
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={1} md={2}>
-              <Typography gutterBottom variant="subtitle1">
-                Length
-              </Typography>
-            </Grid>
-            <Grid item xs={2} md={3}>
-              <Typography gutterBottom variant="subtitle1">
-                Published On
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Divider variant="fullWidth" />
-      {episodes.map((episode, index) => {
-        return (
-          <>
-            <Grid
-              key={uid(episode)}
-              container
-              alignItems="center"
-              className={classes.podcast}
-            >
-              <Grid item xs container spacing={2}>
-                <Grid item xs={1}>{index + 1}</Grid>
-                <Grid item xs={3} md={2}>
-                  <PodcastCover episode={episode} state={state} />
-                </Grid>
-                <Grid item xs={3} md={8} container>
-                  <Grid item xs container direction="column">
-                    <Grid item>
-                      <Grid container>
-                        <Typography gutterBottom variant="h6">
-                          <b>{episode.title}</b>
-                        </Typography>
-                        <Typography variant="body2" gutterBottom>
-                          {episode.description}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={1} md={2}>
-                    <Typography gutterBottom variant="subtitle1">
-                      {toHHMMSS(episode.length)}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={2} md={3}>
-                    <Typography gutterBottom variant="subtitle1">
-                      {episode.date.toLocaleDateString()}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Divider variant="fullWidth" />
-          </>
-        );
-      })}
-    </>
+    <TableContainer>
+      <Table className={classes.table} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>#</TableCell>
+            <TableCell>Cover</TableCell>
+            <TableCell>Info</TableCell>
+            <TableCell>Length</TableCell>
+            <TableCell>Published On</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {episodes.map((episode, index) => (
+            <TableRow key={episode.id}>
+              <TableCell>{index}</TableCell>
+              <TableCell>
+                <PodcastCover episode={episode} state={state} />
+              </TableCell>
+              <TableCell>
+                <Typography >
+                  <b>{episode.title}</b>
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  {episode.description}
+                </Typography>
+              </TableCell>
+              <TableCell>{toHHMMSS(episode.length)}</TableCell>
+              <TableCell>{episode.date.toLocaleDateString('en-AU')}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
