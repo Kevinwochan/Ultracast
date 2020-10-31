@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { uid } from "react-uid";
+import { addAudio } from "./Player";
 
 const playlistStyles = makeStyles((theme) => ({
   card: {
@@ -195,7 +196,6 @@ const coverStyles = makeStyles((theme) => ({
   },
 }));
 
-const not_found = [];
 
 // Image for the podcast
 function PodcastCover({ episode, state }) {
@@ -242,21 +242,4 @@ function PodcastCover({ episode, state }) {
   );
 }
 
-// Add an audio to the sessionState audioList
-// https://github.com/lijinke666/react-music-player#bulb-audiolistprops
-export function addAudio(state, { name, musicSrc, cover, id }) {
-  const [sessionState, updateState] = state;
-  const newList = [
-    ...sessionState.audioList,
-    {
-      name: name,
-      musicSrc: musicSrc,
-      cover: cover,
-      id: id,
-    },
-  ];
-
-  updateState("audioList", newList);
-}
-
-export {PodcastCover};
+export { PodcastCover };

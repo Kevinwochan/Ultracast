@@ -462,15 +462,19 @@ const getNotifications = async (token) => {
             ${verboseEpisode}
           }
         }
+        totalCount
       }
     }
     `,
     {},
     token
   );
-  return data.newSubscribedPodcasts.edges.map((edges) => {
-    return parseEpisode(edges.node);
-  });
+  return {
+    episodes: data.newSubscribedPodcasts.edges.map((edges) => {
+      return parseEpisode(edges.node);
+    }),
+    count: data.newSubscribedPodcasts.totalCount,
+  };
 };
 
 export {

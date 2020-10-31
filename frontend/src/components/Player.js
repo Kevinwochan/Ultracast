@@ -4,16 +4,31 @@ import "react-jinke-music-player/assets/index.css";
 import "./player.css"; // "Override" the default jinke-music-player styles
 import { markAsPlayed } from "../api/query";
 
+// Add an audio to the sessionState audioList
+// https://github.com/lijinke666/react-music-player#bulb-audiolistprops
+export function addAudio(state, { name, musicSrc, cover, id }) {
+  console.log(name)
+  const [sessionState, updateState] = state;
+  const newList = [
+    ...sessionState.audioList,
+    {
+      name: name,
+      musicSrc: musicSrc,
+      cover: cover,
+      id: id,
+    },
+  ];
+
+  updateState("audioList", newList);
+}
+
 export default function Player({ state }) {
   const [sessionState, updateState] = state;
   const mode = sessionState.audioList ? "full" : "";
 
   const onAudioPlay = (audioInfo) => {
     console.log(`Marking audio as played ${audioInfo.name}`);
-    markAsPlayed(
-      audioInfo.id,
-      sessionState.cookies.token
-    );
+    markAsPlayed(audioInfo.id, sessionState.cookies.token);
   };
 
   const options = {

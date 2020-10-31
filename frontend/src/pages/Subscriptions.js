@@ -21,7 +21,7 @@ export default function Subscriptions({ state }) {
 
   useEffect(() => {
     getNotifications(sessionState.cookies.token).then((data) => {
-      setEpisodes(data);
+      setEpisodes(data.episodes);
     });
   }, []);
 

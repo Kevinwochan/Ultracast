@@ -27,6 +27,7 @@ import ShowChartIcon from "@material-ui/icons/ShowChart";
 import { Link, useHistory } from "react-router-dom";
 import ucTheme from "../theme";
 import Logo from "./Logo";
+import Notifications from "./Notifications";
 
 const drawerWidth = 240;
 
@@ -144,6 +145,7 @@ export default function UserLayout({ handleCookie, state, children }) {
         <Toolbar className={classes.toolbar}>
           <Logo />
           <AccountOptions classes={classes} handleCookie={handleCookie} />
+          <Notifications state={state} />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -290,7 +292,7 @@ const AccountOptions = ({ classes, handleCookie }) => {
   };
 
   return (
-    <div>
+    <>
       <IconButton
         aria-label="account of current user"
         aria-controls="menu-appbar"
@@ -330,6 +332,6 @@ const AccountOptions = ({ classes, handleCookie }) => {
         </MenuItem>
         <MenuItem onClick={handleLogout}>Log Out</MenuItem>
       </Menu>
-    </div>
+    </>
   );
 };
