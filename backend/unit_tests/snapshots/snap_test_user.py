@@ -41,6 +41,20 @@ snapshots['APITestCast::test_current_user Current user is the last logged in use
     }
 }
 
+snapshots['APITestCast::test_delete_stream Stream is deleted'] = {
+    'data': {
+        'deleteStream': {
+            'success': True,
+            'user': {
+                'streams': {
+                    'edges': [
+                    ]
+                }
+            }
+        }
+    }
+}
+
 snapshots['APITestCast::test_login Create a user'] = {
     'data': {
         'createUser': {
@@ -82,6 +96,50 @@ snapshots['APITestCast::test_new_subscribed_episodes 1'] = {
                     }
                 }
             ]
+        }
+    }
+}
+
+snapshots['APITestCast::test_save_stream Stream is saved'] = {
+    'data': {
+        'createStream': {
+            'stream': {
+                'search': 'dan the man 2 - electric boogadan'
+            },
+            'success': True,
+            'user': {
+                'streams': {
+                    'edges': [
+                        {
+                            'node': {
+                                'search': 'dan the man 2 - electric boogadan'
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+snapshots['APITestCast::test_update_stream Stream is updated'] = {
+    'data': {
+        'updateStream': {
+            'stream': {
+                'search': 'dan the man 3 - 2 fast 2 dan-gerous'
+            },
+            'success': True,
+            'user': {
+                'streams': {
+                    'edges': [
+                        {
+                            'node': {
+                                'search': 'dan the man 3 - 2 fast 2 dan-gerous'
+                            }
+                        }
+                    ]
+                }
+            }
         }
     }
 }

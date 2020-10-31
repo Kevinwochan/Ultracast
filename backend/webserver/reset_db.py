@@ -8,6 +8,7 @@ def drop_collections():
     models.PodcastEpisodeMetadata.drop_collection()
     models.PodcastMetadata.drop_collection()
     models.User.drop_collection()
+    models.Stream.drop_collection()
 
 
 if __name__ == "__main__":

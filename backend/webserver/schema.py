@@ -33,6 +33,15 @@ def get_relay_id(query_class, mongodb_id):
     assert(graphene.relay.is_node(query_class))
     return graphene.relay.Node.to_global_id(query_class.__name__, mongodb_id)
 
+def get_node_from_global_id(info, global_id, only_type):
+    '''
+    Does the same thing as Node.get_node_from_global_id, but throws an exception instead of returning None
+    '''
+    node = Node.get_node_from_global_id(info, global_id, only_type=only_type)
+    if node is None:
+        raise ValueError("Invalid id for type {}: {}".format(only_type.__name__, global_id))
+    return node
+
 def saveSchema(path: str):
     with open(path, "w") as fp:
         schema_str = graphql.utils.schema_printer.print_schema(schema)
