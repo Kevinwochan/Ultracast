@@ -21,6 +21,19 @@ For next week, I have been assigned to implement the frontend for allowing a use
 
 Week 5:
 Last week, i was assigned to implement the frontend and backend for user authenticaiton.
-This week i spent most of my week reading through documentation for the backend 3rd party software (Graphene, GraphQL and Relay) as well as researching existing implementations for use authentication. I was unable to complete the assigned task in the planned week. My biggest challenge was understanding how Graphene worked, i found the documentation provided was scarce and could not find many example usages to reference. Although i was not able to implement the backend functionality for this, i was able to implement session management in the frontend and redirect unauthenticated users to the login page. In preparation for our progressive demo, i have inserted the expected structured data that will be available from our backend to demonstrate the progress of the frontend.
-Next week, I will be working more closely with Oli (who has figured out how this all works) to implement the backend requirements for this user story.
+This week i spent most of my week reading through documentation for the backend 3rd party software (Graphene, GraphQL and Relay) as well as researching existing implementations for use authentication. I was unable to complete the assigned task in the planned week. My biggest challenge was understanding how Graphene worked, i found the documentation provided was scarce and could not find many example usages to reference. Although i was not able to implement the backend functionality for this, i was able to implement session management in the frontend and redirect unauthenticated users to the login page.
+In preparation for our progressive demo i have inserted the expected structured data that will be available from our backend to demonstrate the progress of the frontend and finished off the upload page that was written by Dan so that new podcasts could be created as well as new episodes.
+Next week, I will be working more closely with Oli (who has figured out how this all works) to implement the backend requirements for user authentication. In addition, i have also been assigned to replace all hardcoded data with actually API queries.
 
+Week 6:
+Last week i was tasked with completing user authentication and integrating the frontend with the backend.
+This week i had a working solution for user authentication and completed the backend queries so that all pages are dynamically populated using the backend. My user authentication solution was  sub-par and was replaced by a much better solution Oli implemented. 
+Next week, i have been assigned the frontend requirements for retrieveing audio URLS from the backend to feed into the audio player, marking episodes as listened and managing podcast subscriptions.
+
+Week 7:
+Last week, I was tasked with:
+- the frontend requirements for retrieveing audio URLS from the backend to feed into the audio player
+- marking episodes as listened
+- managing podcast subscriptions
+These have all been completed with a MVP page to view podcast subscriptions to demonstrate working subscription queries.
+Next week, i have been assigned to touch up on the subscription page that i prototyped, notify users of new subscription notificaitons and find a deployment solutions for our application to CSE machines.
