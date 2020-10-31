@@ -41,6 +41,9 @@ class PodcastEpisodeMetadata(mongoengine.Document):
     # Bidirectional relationship with PodcastMetadata. PodcastEpisodeMetadata is owned by PodcastMetadata
     podcast_metadata = mongofields.ReferenceField("PodcastMetadata", 
             reverse_delete_rule=mongoengine.CASCADE, required=True)
+    
+    # Each view is represented by a timestamp
+    views =  mongofields.ListField(mongofields.DateTimeField())
 
 class Bookmark(mongoengine.EmbeddedDocument):
     title = mongofields.StringField()

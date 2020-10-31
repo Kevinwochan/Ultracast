@@ -185,6 +185,10 @@ class User(BusinessLayerObject):
                 for entry in self._model.listen_history)
 
         listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)
+        
+        # Add view to podcast episode
+        podcast_episode_metadata_model.views.append(datetime.datetime.now)
+        podcast_episode_metadata_model.save()
 
         if (num_entries <= 0):
             # Create new entry
