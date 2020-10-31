@@ -45,7 +45,7 @@ class PodcastEpisodeMetadata(mongoengine.Document):
     # Each view is represented by a timestamp
     views =  mongofields.ListField(mongofields.DateTimeField())
 
-class Bookmark(mongoengine.EmbeddedDocument):
+class Bookmark(mongoengine.Document):
     title = mongofields.StringField()
     description = mongofields.StringField()
     last_updated = mongofields.DateTimeField(default=datetime.datetime.now)
@@ -92,7 +92,7 @@ class User(mongoengine.Document):
     # Sorted with most recent entry first
     listen_history = mongofields.EmbeddedDocumentListField(ListenHistoryEntry)
 
-    bookmarks = mongofields.EmbeddedDocumentListField(Bookmark)
+    bookmarks = mongofields.ListField(mongoengine.ReferenceField(Bookmark, unique=True, reverse_delete_rule=mongoengine.PULL))
     following = mongofields.ListField(mongofields.ReferenceField("User"))
 
     # For previous session

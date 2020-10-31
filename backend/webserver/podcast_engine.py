@@ -213,11 +213,23 @@ class User(BusinessLayerObject):
                 self.get_email()))
         return True
 
-    def follow_user(self, follow_user_model):
-        self._model.modify(add_to_set__following=follow_user_model)
+    def follow_user(self, user_model):
+        self._model.modify(add_to_set__following=user_model)
 
-    def unfollow_user(self, unfollow_user_model):
-        self._model.modify(pull__subscribed_podcasts=unfollow_user_model)
+    def unfollow_user(self, user_model):
+        self._model.modify(pull__following=user_model)
+
+    def bookmark(self, track_timestamp, episode, title=None, description=None):
+        # self._model.modify(add_to_set__bookmarks=bookmark_model)
+        # stream = models.Stream(search=search, owner=self._model)
+        # stream.save()
+        bookmark = models.Bookmark(title=title, track_timestamp=track_timestamp, episode=episode)
+        bookmark.save()
+        self._model.modify(push__bookmarks=bookmark)
+        return bookmark
+
+    def unbookmark(self, bookmark_model):
+        self._model.modify(pull__bookmarks=bookmark_model)
 
     @classmethod
     def from_email(cls, email):
