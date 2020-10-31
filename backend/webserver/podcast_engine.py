@@ -149,8 +149,9 @@ class User(BusinessLayerObject):
         return self._model.id
 
     def login(self):
-        self._model.modify(last_login=self._model.login_time)
-        self._model.modify(login_time=datetime.datetime.now())
+        # self._model.modify(last_login=self._model.login_time)
+        # self._model.modify(login_time=datetime.datetime.now())
+        pass
 
     def mark_podcast_listened(self, podcast_episode_metadata_model):
         # See if the user has already listened to this episode
@@ -181,6 +182,12 @@ class User(BusinessLayerObject):
             logging.warning("User {} has duplicate listen history entries!".format(
                 self.get_email()))
         return True
+
+    def follow_user(self, follow_user_model):
+        self._model.modify(add_to_set__following=follow_user_model)
+
+    def unfollow_user(self, unfollow_user_model):
+        self._model.modify(pull__subscribed_podcasts=unfollow_user_model)
 
     @classmethod
     def from_email(cls, email):

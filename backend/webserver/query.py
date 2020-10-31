@@ -87,6 +87,12 @@ class Bookmark(MongoengineObjectType):
         interfaces = (Node,)
         connection_class = EdgeCountedConnection
 
+class FollowingLastListenedEntry(MongoengineObjectType):
+    class Meta:
+        model = models.FollowingLastListenedEntry
+        interfaces = (Node,)
+        connection_class = EdgeCountedConnection
+
 class User(MongoengineObjectType):
     class Meta:
         model = models.User
@@ -135,6 +141,24 @@ def resolve_recommendations(root, info):
     searches = None  # search history isn't implemented yet
     return calculateRecommendations(subscriptions, recentEpisodes, searches)
 
+@flask_jwt_extended.jwt_required
+def resolve_following_last_listened(root, info):
+    following_list = flask_jwt_extended.current_user.model().following
+    
+    res = []
+    for following in following_list:
+        last_listened = None
+        if len(following.listen_history) > 0:
+            last_listened = following.listen_history[0].episode
+
+        last_listened_entry = models.FollowingLastListenedEntry(
+            following_email=following.email, 
+            following_name=following.name,
+            last_listened=last_listened)
+        res.append(last_listened_entry)
+    
+    return res
+
 class Query(graphene.ObjectType):
     node = Node.Field()
     all_podcast_episode_metadata = MongoengineConnectionField(PodcastEpisodeMetadata)
@@ -165,6 +189,15 @@ class Query(graphene.ObjectType):
     '''
     current_user = graphene.Field(User, resolver=resolve_current_user,
             description="Get the currently logged in user (as indicated by the JWT token)")
+    
+    
+    '''
+    Custom query to get the last episode listened to by each user that the logged in user follows
+    '''
+    following_last_listened = MongoengineConnectionField(FollowingLastListenedEntry, 
+            resolver=resolve_following_last_listened,
+            description="Get the last episode listened to by each user that the logged in user follows")
+
 
 types = [PodcastEpisodeMetadata, PodcastMetadata, ]
 middleware = []

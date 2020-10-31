@@ -426,6 +426,38 @@ class UnsubscribePodcast(ClientIDMutation):
 
         return UnsubscribePodcast(success=True)
 
+class FollowUser(ClientIDMutation):
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    class Input:
+        follow_user_id = graphene.ID(required=True)
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, follow_user_id):
+        user = flask_jwt_extended.current_user
+        follow_user = get_node_from_global_id(info, follow_user_id, only_type=query.User)
+        if follow_user == user.model():
+            return FollowUser(success=False, message="User cannot follow themselves")
+        user.follow_user(follow_user)
+        return FollowUser(success=True)
+
+class UnfollowUser(ClientIDMutation):
+    success = graphene.Boolean()
+
+    class Input:
+        unfollow_user_id = graphene.ID(required=True)
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, unfollow_user_id):
+        user = flask_jwt_extended.current_user
+        unfollow_user = get_node_from_global_id(info, unfollow_user_id, only_type=query.User)
+        user.unfollow_user(unfollow_user)
+        return UnfollowUser(success=True)
+
+
 class Mutations(graphene.ObjectType):
     '''
     Podcast mutations
@@ -452,5 +484,7 @@ class Mutations(graphene.ObjectType):
     mark_podcast_listened = MarkPodcastListened.Field()
     subscribe_podcast = SubscribePodcast.Field()
     unsubscribe_podcast = UnsubscribePodcast.Field()
+    follow_user = FollowUser.Field()
+    unfollow_user = UnfollowUser.Field()
 
 middleware = []

@@ -46,6 +46,11 @@ class Bookmark(mongoengine.EmbeddedDocument):
     track_timestamp = mongofields.DateTimeField(required=True)
     episode = mongofields.ReferenceField("PodcastEpisodeMetadata", required=True)
 
+class FollowingLastListenedEntry(mongoengine.Document):
+    following_email = mongofields.StringField()
+    following_name = mongofields.StringField()
+    last_listened = mongofields.ReferenceField("PodcastEpisodeMetadata")
+
 class ListenHistoryEntry(mongoengine.EmbeddedDocument):
     episode = mongofields.ReferenceField(
             'PodcastEpisodeMetadata', required=True)
@@ -76,6 +81,7 @@ class User(mongoengine.Document):
     listen_history = mongofields.EmbeddedDocumentListField(ListenHistoryEntry)
 
     bookmarks = mongofields.EmbeddedDocumentListField(Bookmark)
+    following = mongofields.ListField(mongofields.ReferenceField("User"))
 
     # For previous session
     last_login = mongofields.DateTimeField(default=datetime.datetime.now)
