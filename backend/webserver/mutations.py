@@ -3,6 +3,7 @@ from . import mutations
 from . import query
 from . import podcast_engine
 from . import db
+from . import schema
 
 import flask_jwt_extended
 
@@ -24,14 +25,6 @@ See https://docs.graphene-python.org/en/latest/relay/mutations/
 and https://github.com/graphql-python/graphene/blob/master/graphene/relay/mutation.py
 '''
 
-def get_node_from_global_id(info, global_id, only_type):
-    '''
-    Does the same thing as Node.get_node_from_global_id, but throws an exception instead of returning None
-    '''
-    node = Node.get_node_from_global_id(info, global_id, only_type=only_type)
-    if node is None:
-        raise ValueError("Invalid id for type {}: {}".format(only_type.__name__, global_id))
-    return node
 
 @flask_jwt_extended.jwt_required
 def assert_podcast_edit_permission(podcast_metadata):
@@ -70,7 +63,7 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
             audio_url = db.add_file(data=audio, valid_mimes=VALID_AUDIO_FORMATS)
             duration = db.audio_file_duration_secs(audio)
         
-        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
+        podcast_metadata = schema.get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         assert_podcast_edit_permission(podcast_metadata)
 
         episode_metadata = models.PodcastEpisodeMetadata(audio_url=audio_url, 
@@ -96,7 +89,7 @@ class DeletePodcastEpisode(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id):
         
         # Lookup the mongodb object from the relay Node ID
-        podcast_episode = get_node_from_global_id(info=info, global_id=podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
+        podcast_episode = schema.get_node_from_global_id(info=info, global_id=podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
         podcast_metadata = podcast_episode.podcast_metadata.get()
         
         assert_podcast_edit_permission(podcast_metadata)
@@ -130,7 +123,7 @@ class UpdatePodcastEpisode(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id, 
             name=None, description=None, audio=None, keywords=None):
         # Retrieve the episode
-        podcast_episode_metadata = get_node_from_global_id(info, 
+        podcast_episode_metadata = schema.get_node_from_global_id(info, 
                 podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
         podcast_metadata = podcast_episode_metadata.podcast_metadata.get()
 
@@ -206,7 +199,7 @@ class DeletePodcastMetadata(ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id):
-        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, 
+        podcast_metadata = schema.get_node_from_global_id(info, podcast_metadata_id, 
                 only_type=query.PodcastMetadata)
 
         assert_podcast_edit_permission(podcast_metadata)
@@ -252,7 +245,7 @@ class UpdatePodcastMetadata(ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id, cover=None, **kwargs):
-        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, 
+        podcast_metadata = schema.get_node_from_global_id(info, podcast_metadata_id, 
                 query.PodcastMetadata)
 
         assert_podcast_edit_permission(podcast_metadata)
@@ -295,7 +288,7 @@ class DeleteBookmark(ClientIDMutation):
     
     @classmethod
     def mutate_and_get_payload(cls, root, info, bookmarkId):
-        bookmark = get_node_from_global_id(info, bookmarkId, 
+        bookmark = schema.get_node_from_global_id(info, bookmarkId, 
                 only_type=query.Bookmark)
         bookmark.delete()
         return DeleteBookmark(success=True)
@@ -367,7 +360,7 @@ class MarkPodcastListened(ClientIDMutation):
     @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id):
         user = flask_jwt_extended.current_user
-        episode = get_node_from_global_id(info, podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
+        episode = schema.get_node_from_global_id(info, podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
         user.mark_podcast_listened(episode)
         return MarkPodcastListened(success=True, user=user.model())
 
@@ -405,7 +398,7 @@ class SubscribePodcast(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id):
         user = flask_jwt_extended.current_user
         print(user.to_json())
-        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
+        podcast_metadata = schema.get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         print(podcast_metadata.to_json())
         user.subscribe_podcast(podcast_metadata)
 
@@ -421,7 +414,7 @@ class UnsubscribePodcast(ClientIDMutation):
     @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, podcast_metadata_id):
         user = flask_jwt_extended.current_user
-        podcast_metadata = get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
+        podcast_metadata = schema.get_node_from_global_id(info, podcast_metadata_id, only_type=query.PodcastMetadata)
         user.remove_subscribed_podcast(podcast_metadata)
 
         return UnsubscribePodcast(success=True)
@@ -437,7 +430,7 @@ class FollowUser(ClientIDMutation):
     @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, follow_user_id):
         user = flask_jwt_extended.current_user
-        follow_user = get_node_from_global_id(info, follow_user_id, only_type=query.User)
+        follow_user = schema.get_node_from_global_id(info, follow_user_id, only_type=query.User)
         if follow_user == user.model():
             return FollowUser(success=False, message="User cannot follow themselves")
         user.follow_user(follow_user)
@@ -453,10 +446,67 @@ class UnfollowUser(ClientIDMutation):
     @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, unfollow_user_id):
         user = flask_jwt_extended.current_user
-        unfollow_user = get_node_from_global_id(info, unfollow_user_id, only_type=query.User)
+        unfollow_user = schema.get_node_from_global_id(info, unfollow_user_id, only_type=query.User)
         user.unfollow_user(unfollow_user)
         return UnfollowUser(success=True)
 
+class CreateStream(ClientIDMutation):
+    success = graphene.Boolean()
+    user = graphene.Field(query.User)
+    stream = graphene.Field(query.Stream)
+
+    class Input:
+        search = graphene.String(required=True)
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, search):
+        user = flask_jwt_extended.current_user
+        stream_model = user.add_stream(search)
+
+        return CreateStream(success=True, user=user.model(), stream=stream_model)
+
+class UpdateStream(ClientIDMutation):
+    success = graphene.Boolean()
+    user = graphene.Field(query.User)
+    stream = graphene.Field(query.Stream)
+
+    class Input:
+        stream_id = graphene.ID(required=True)
+        search = graphene.String()
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, stream_id, **kwargs):
+        user = flask_jwt_extended.current_user
+        stream_model = schema.get_node_from_global_id(info, stream_id, query.Stream)
+        if not user.can_edit_stream(stream_model):
+            raise werkzeug.exceptions.Forbidden("User {} cannot edit this stream"
+                    .format(user.get_email()))
+
+        stream_model = user.update_stream(stream_model, **kwargs)
+
+        return UpdateStream(success=True, user=user.model(), stream=stream_model)
+
+class DeleteStream(ClientIDMutation):
+    success = graphene.Boolean()
+    user = graphene.Field(query.User)
+
+    class Input:
+        stream_id = graphene.ID(required=True)
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, stream_id):
+        user = flask_jwt_extended.current_user
+        stream_model = schema.get_node_from_global_id(info, stream_id, query.Stream)
+        if not user.can_edit_stream(stream_model):
+            raise werkzeug.exceptions.Forbidden("User {} cannot edit this stream"
+                    .format(user.get_email()))
+
+        user.remove_stream(stream_model)
+
+        return DeleteStream(success=True, user=user.model())
 
 class Mutations(graphene.ObjectType):
     '''
@@ -472,6 +522,12 @@ class Mutations(graphene.ObjectType):
     Bookmark mutations
     '''
     create_bookmark = CreateBookmark.Field()
+    '''
+    Streams
+    '''
+    create_stream = CreateStream.Field()
+    update_stream = UpdateStream.Field()
+    delete_stream = DeleteStream.Field()
     '''
     User mutations
     '''

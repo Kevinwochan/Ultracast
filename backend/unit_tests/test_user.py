@@ -273,4 +273,151 @@ class APITestCast(snapshottest.TestCase):
             }
             ''')
         self.assertMatchSnapshot(result)
+
+    def createUser(self, email):
+        # Create a user
+        result = self.execute_with_jwt(''' 
+            mutation create_user($email: String!) {
+                createUser(input: {email: $email password: "password" name: "oli the tester"}) {
+                    success
+                    failWhy
+                    user {
+                        email
+                        name
+                    }
+                    token
+                }
+            }
+                ''', variables={"email": email})
+        self.jwt_token = result["data"]["createUser"].pop("token")
+        self.assertTrue(result["data"]["createUser"]["success"])
+
         
+    def test_save_stream(self):
+        self.createUser(email="danTheMan@test.com")
+        
+        save_stream_query = \
+            '''
+            mutation new_stream {
+                createStream(input: {search: "dan the man 2 - electric boogadan"}) {
+                    success
+                    stream {
+                        search
+                    }
+                    user {
+                        streams {
+                            edges {
+                                node {
+                                    search
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            '''
+        result = self.execute_with_jwt(save_stream_query)
+        self.assertMatchSnapshot(result, "Stream is saved")
+
+    def test_update_stream(self):
+        self.createUser(email="danTheMan@test.com")
+
+        save_stream_query = \
+            '''
+            mutation new_stream {
+                createStream(input: {search: "dan the man 2 - electric boogadan"}) {
+                    success
+                    stream {
+                        search
+                        id
+                    }
+                    user {
+                        streams {
+                            edges {
+                                node {
+                                    search
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            '''
+        result = self.execute_with_jwt(save_stream_query)
+        assert(result["data"]["createStream"]["success"])
+        stream_id = result["data"]["createStream"]["stream"]["id"]
+
+        update_stream_query = \
+            '''
+            mutation update_stream($stream_id: ID!) {
+                updateStream(input: {
+                    streamId: $stream_id 
+                    search: "dan the man 3 - 2 fast 2 dan-gerous"
+                }) {
+                    success
+                    stream {
+                        search
+                    }
+                    user {
+                        streams {
+                            edges {
+                                node {
+                                    search
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            '''
+        result = self.execute_with_jwt(update_stream_query, variables={"stream_id": stream_id})
+        self.assertMatchSnapshot(result, "Stream is updated")
+
+
+    def test_delete_stream(self):
+        self.createUser(email="danTheMan@test.com")
+
+        save_stream_query = \
+            '''
+            mutation new_stream {
+                createStream(input: {search: "dan the man 2 - electric boogadan"}) {
+                    success
+                    stream {
+                        search
+                        id
+                    }
+                    user {
+                        streams {
+                            edges {
+                                node {
+                                    search
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            '''
+        result = self.execute_with_jwt(save_stream_query)
+        assert(result["data"]["createStream"]["success"])
+        stream_id = result["data"]["createStream"]["stream"]["id"]
+
+        delete_stream_query = \
+            '''
+            mutation delete_stream($stream_id: ID!) {
+                deleteStream(input: {streamId: $stream_id}) {
+                    success
+                    user {
+                        streams {
+                            edges {
+                                node {
+                                    search
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            '''
+        result = self.execute_with_jwt(delete_stream_query, variables={"stream_id": stream_id})
+        self.assertMatchSnapshot(result, "Stream is deleted")

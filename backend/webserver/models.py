@@ -4,7 +4,10 @@ Schema for MongoDB
 
 import mongoengine
 import mongoengine.fields as mongofields
+import bson
+import bson.objectid
 import datetime
+
 
 class PodcastMetadata(mongoengine.Document):
     meta = {'collection': 'podcast_metadata'}
@@ -57,6 +60,13 @@ class ListenHistoryEntry(mongoengine.EmbeddedDocument):
     listen_time = mongofields.DateTimeField(default=datetime.datetime.now)
     num_listens = mongofields.IntField(min_value=1, default=1)
 
+class Stream(mongoengine.Document):
+    meta = {'collection': 'stream'}
+    # User owns the stream
+    # Cascade reverse delete rule (at bottom)
+    owner = mongoengine.ReferenceField("User", required=True)
+    search = mongoengine.StringField(unique_with="owner")
+
 class User(mongoengine.Document):
     meta = {
             'collection': 'user',
@@ -77,7 +87,6 @@ class User(mongoengine.Document):
             default=list, reverse_delete_rule=mongoengine.PULL)
 
     # Sorted with most recent entry first
-    #   See meta
     listen_history = mongofields.EmbeddedDocumentListField(ListenHistoryEntry)
 
     bookmarks = mongofields.EmbeddedDocumentListField(Bookmark)
@@ -93,6 +102,9 @@ class User(mongoengine.Document):
     published_podcasts = mongofields.ListField(
             mongofields.ReferenceField(PodcastMetadata, reverse_delete_rule=mongoengine.DENY), default=list)
 
+    # User owns the stream
+    streams = mongofields.ListField(mongoengine.ReferenceField(Stream, unique=True, reverse_delete_rule=mongoengine.PULL))
+
 # Register reverse delete rules
 User.register_delete_rule(PodcastMetadata, "author", mongoengine.CASCADE)
 PodcastEpisodeMetadata.register_delete_rule(PodcastMetadata, "episodes", mongoengine.PULL)
@@ -100,3 +112,5 @@ User.register_delete_rule(PodcastMetadata, "subscribers", mongoengine.PULL)
 
 # A little mean but this is the only reverse delete rule we can use in embedded documents...
 PodcastEpisodeMetadata.register_delete_rule(User, "listen_history__episode", mongoengine.DENY)
+
+User.register_delete_rule(Stream, "owner", mongoengine.CASCADE)

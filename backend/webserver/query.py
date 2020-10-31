@@ -87,9 +87,16 @@ class Bookmark(MongoengineObjectType):
         interfaces = (Node,)
         connection_class = EdgeCountedConnection
 
+
 class FollowingLastListenedEntry(MongoengineObjectType):
     class Meta:
         model = models.FollowingLastListenedEntry
+        interfaces = (Node,)
+        connection_class = EdgeCountedConnection
+
+class Stream(MongoengineObjectType):
+    class Meta:
+        model = models.Stream
         interfaces = (Node,)
         connection_class = EdgeCountedConnection
 
@@ -199,5 +206,5 @@ class Query(graphene.ObjectType):
             description="Get the last episode listened to by each user that the logged in user follows")
 
 
-types = [PodcastEpisodeMetadata, PodcastMetadata, ]
+types = [PodcastEpisodeMetadata, PodcastMetadata, Stream]
 middleware = []
