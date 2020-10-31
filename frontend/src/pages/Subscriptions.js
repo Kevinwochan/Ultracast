@@ -4,8 +4,8 @@ import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { getNotifications } from "../api/query";
-import EpisodePlaylist from "../components/EpisodeList";
+import { getSubscriptions } from "../api/query";
+import PodcastPlaylist from "../components/PodcastList";
 
 const useStyles = makeStyles((theme) => ({
   cardGrid: {
@@ -17,15 +17,18 @@ const useStyles = makeStyles((theme) => ({
 export default function Subscriptions({ state }) {
   const [sessionState, updateState] = state;
   const classes = useStyles();
-  const [episodes, setEpisodes] = useState("loader");
+  const [podcasts, setPodcasts] = useState("loader");
 
   useEffect(() => {
-    getNotifications(sessionState.cookies.token).then((data) => {
-      setEpisodes(data.episodes);
+    getSubscriptions(sessionState.cookies.token).then((podcasts) => {
+      podcasts.forEach(podcast => {
+        podcast.subscribed = true
+      });
+      setPodcasts(podcasts);
     });
-  }, []);
+  }, [sessionState]);
 
-  if (episodes === "loader") {
+  if (podcasts === "loader") {
     return <CircularProgress />;
   }
 
@@ -36,7 +39,7 @@ export default function Subscriptions({ state }) {
           <b>Subscriptions</b>
         </Typography>
       </Box>
-      <EpisodePlaylist episodes={episodes} state={state} />
+      <PodcastPlaylist podcasts={podcasts} state={state} />
     </>
   );
 }

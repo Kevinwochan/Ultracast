@@ -477,7 +477,42 @@ const getNotifications = async (token) => {
   };
 };
 
+const getSubscriptions = async (token) => {
+  const data = await graphql(
+    `
+      query {
+        currentUser {
+          subscribedPodcasts {
+            edges {
+              node {
+                id
+                name
+                description
+                coverUrl
+                episodes {
+                  totalCount
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.currentUser.subscribedPodcasts.edges.map((podcast) => ({
+    id: podcast.node.id,
+    title: podcast.node.name,
+    image: podcast.node.coverUrl,
+    description: podcast.node.description,
+    episodeCount: podcast.node.episodes.totalCount,
+  }));
+};
+
 export {
+  getSubscriptions,
   getNotifications,
   subscribe,
   unsubscribe,

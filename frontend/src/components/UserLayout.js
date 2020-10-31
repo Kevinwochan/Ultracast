@@ -21,7 +21,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import SearchIcon from "@material-ui/icons/Search";
 import ExploreIcon from "@material-ui/icons/Explore";
 import PublishIcon from "@material-ui/icons/Publish";
-import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
+import AlarmIcon from '@material-ui/icons/Alarm';
 import HistoryIcon from "@material-ui/icons/History";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
 import { Link, useHistory } from "react-router-dom";
@@ -161,7 +161,7 @@ export default function UserLayout({ handleCookie, state, children }) {
           }),
         }}
       >
-        <ListenerSideBar classes={classes} open={open} />
+        <ListenerSideBar classes={classes} open={open} state={state}/>
         <Divider />
         <CreatorSideBar classes={classes} open={open} />
         <Divider />
@@ -196,7 +196,8 @@ export default function UserLayout({ handleCookie, state, children }) {
   );
 }
 
-const ListenerSideBar = ({ classes, open }) => {
+const ListenerSideBar = ({ classes, open, state }) => {
+  const [sessionState, ] = state;
   const listenerItems = [
     {
       name: "Home",
@@ -214,9 +215,9 @@ const ListenerSideBar = ({ classes, open }) => {
       link: "/explore",
     },
     {
-      name: "Library",
-      icon: <LibraryMusicIcon />,
-      link: "/author/1",
+      name: "Subscriptions",
+      icon: <AlarmIcon />,
+      link: "/subscriptions",
     },
     {
       name: "Recently Listened",
