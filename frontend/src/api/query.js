@@ -492,6 +492,10 @@ const getSubscriptions = async (token) => {
                 episodes {
                   totalCount
                 }
+                author {
+                  id
+                  name
+                }
               }
             }
           }
@@ -508,6 +512,7 @@ const getSubscriptions = async (token) => {
     image: podcast.node.coverUrl,
     description: podcast.node.description,
     episodeCount: podcast.node.episodes.totalCount,
+    author: podcast.node.author
   }));
 };
 

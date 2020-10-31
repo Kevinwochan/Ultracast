@@ -16,8 +16,8 @@ const useStyles = makeStyles((theme) => ({
     height: 150,
   },
   podcast: {
-    padding: theme.spacing(5),
-  },
+    marginBottom: theme.spacing(5)
+  }
 }));
 
 export default function Playlist({ podcasts, state }) {
@@ -31,9 +31,10 @@ export default function Playlist({ podcasts, state }) {
           <Grid
             key={uid(podcast)}
             container
+            justify="center"
             alignItems="center"
+            spacing={2}
             className={classes.podcast}
-            spacing={1}
           >
             <Grid item>
               <Link to={`/podcast/${podcast.id}`}>
@@ -52,10 +53,13 @@ export default function Playlist({ podcasts, state }) {
                 <Typography paragraph variant="h6">
                   <b>{podcast.title}</b>
                 </Typography>
-                <Typography paragraph variant="subtitle2">
+                <Typography variant="subtitle2">
+                  {`By ${podcast.author.name}`}
+                </Typography>
+                <Typography variant="subtitle2">
                   {`${podcast.episodeCount} episodes`}
                 </Typography>
-                <Typography paragraph variant="body2">
+                <Typography variant="body2">
                   {podcast.description.length < 150 ? podcast.description : `${podcast.description.substr(0, 150)} ...`}
                 </Typography>
               </Link>
@@ -68,7 +72,6 @@ export default function Playlist({ podcasts, state }) {
               />
             </Grid>
           </Grid>
-          <Divider variant="fullWidth" />
         </>
       ))}
     </>
