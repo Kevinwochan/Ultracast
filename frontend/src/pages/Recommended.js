@@ -1,32 +1,11 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Playlist } from "../components/Podcast";
+import PodcastList from "../components/PodcastList";
 import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
-
-const podcasts = [
-  {
-    title: "Oli's True Crime Series",
-    length: "100",
-    description:
-      'Do "disgraced" lawyer Nicola Gobbo and "disgraced" former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?',
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oliver Productions", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-  {
-    title: "Oli's True Crime Series 2: Electric Boogaloo",
-    length: "20",
-    description:
-      "Captain Jack Sparrow seeks the heart of Davy Jones, a mythical pirate, in order to avoid being enslaved to him. However, others, including his friends Will and Elizabeth, want it for their own gain.",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oliver Productions", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-];
+import CircularProgress from "@material-ui/core/CircularProgress";
+import {getRecommended} from "../api/query";
 
 const useStyles = makeStyles((theme) => ({
   cardGrid: {
@@ -37,6 +16,19 @@ const useStyles = makeStyles((theme) => ({
 
 export default function History({ state }) {
   const classes = useStyles();
+  const [recommended, setRecommended] = useState('loader');
+
+  useEffect(() => {
+    getRecommended(state[0].cookies.token,).then((data) => {
+      setRecommended(data);
+    });
+  }, [state]);
+
+
+
+  if (recommended === "loader") {
+    return <CircularProgress />;
+  }
 
   return (
     <Container className={classes.cardGrid} maxWidth="lg">
@@ -46,7 +38,7 @@ export default function History({ state }) {
         </Typography>
       </Box>
 
-      <Playlist episodes={podcasts} state={state} variant="podcast" />
+      <PodcastList podcasts={recommended} state={state}/>
     </Container>
   );
 }

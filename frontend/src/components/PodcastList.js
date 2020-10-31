@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { uid } from "react-uid";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
-import { subscribe, unsubscribe } from "../api/query";
+import { getSubscriptions, subscribe, unsubscribe } from "../api/query";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
@@ -16,13 +15,24 @@ const useStyles = makeStyles((theme) => ({
     height: 150,
   },
   podcast: {
-    marginBottom: theme.spacing(5)
-  }
+    marginBottom: theme.spacing(5),
+  },
 }));
 
 export default function Playlist({ podcasts, state }) {
   const classes = useStyles();
+  const [subscriptions, setSubscriptions] = useState([]); // i apologise for this disgrace. Use this array of subscriptions to initalise the subscribe button
   const [sessionState, setSessionState] = state;
+
+  useEffect(() => {
+    getSubscriptions(sessionState.cookies.token).then((data) => {
+      setSubscriptions(data.map((podcast) => podcast.id));
+    });
+  }, [sessionState]);
+
+  podcasts.forEach((podcast) => {
+    podcast.subscribed = subscriptions.includes(podcast.id);
+  });
 
   return (
     <>
@@ -60,7 +70,9 @@ export default function Playlist({ podcasts, state }) {
                   {`${podcast.episodeCount} episodes`}
                 </Typography>
                 <Typography variant="body2">
-                  {podcast.description.length < 150 ? podcast.description : `${podcast.description.substr(0, 150)} ...`}
+                  {podcast.description.length < 150
+                    ? podcast.description
+                    : `${podcast.description.substr(0, 150)} ...`}
                 </Typography>
               </Link>
             </Grid>

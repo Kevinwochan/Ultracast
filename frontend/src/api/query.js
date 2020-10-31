@@ -78,7 +78,7 @@ const getRecommended = async (token) => {
         allPodcastMetadata(first: 10) {
           edges {
             node {
-              ${compactPodcast}
+              ${verbosePodcast}
             }
           }
         }
@@ -89,14 +89,14 @@ const getRecommended = async (token) => {
   );
 
   // TODO: put the mapping into another function similar to parseEpisode
-  // Maps the first  into episodes
   return data.allPodcastMetadata.edges.map((podcast) => ({
-    image: podcast.node.coverUrl,
     id: podcast.node.id,
     title: podcast.node.name,
+    image: podcast.node.coverUrl,
+    description: podcast.node.description,
     author: {
-      name: podcast.node.author.name,
       id: podcast.node.author.id,
+      name: podcast.node.author.name,
     },
   }));
 };
@@ -228,7 +228,16 @@ const parseEpisode = (episode, verbose = true) => {
   };
 };
 
-const verbosePodcast = ``;
+const verbosePodcast = `
+  id
+  name
+  coverUrl
+  description
+  author {
+    id
+    name
+  }
+`;
 const compactPodcast = `
   name
   id
@@ -236,15 +245,6 @@ const compactPodcast = `
   author {
     name
     id
-  }
-  episodes(first: 1) {
-    edges {
-      node {
-        id
-        name
-        audioUrl
-      }
-    }
   }
 `;
 
