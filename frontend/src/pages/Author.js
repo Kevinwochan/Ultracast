@@ -67,7 +67,7 @@ export default function Author({ state }) {
   }
   return (
     <>
-      <Grid container>
+      <Grid container spacing={0}>
         {/* Info section */}
         <Grid item className={classes.podcastHero}>
           <Typography variant="h3" paragraph style={{ fontWeight: "bold" }}>
@@ -75,7 +75,6 @@ export default function Author({ state }) {
           </Typography>
         </Grid>
       </Grid>
-      <Divider variant="fullWidth" />
       {/* List of podcasts */}
       <PodcastPlaylist podcasts={podcasts} state={state} />
     </>

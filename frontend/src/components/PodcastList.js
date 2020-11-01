@@ -10,10 +10,12 @@ const useStyles = makeStyles((theme) => ({
   podcastCover: {
     width: 150,
     height: 150,
+    border: "1px solid rgba(0,0,0,0.1)",
+    margin: theme.spacing(2),
   },
-  podcast: {
-    marginBottom: theme.spacing(5),
-  },
+  podcastInfo: {
+    padding: theme.spacing(2),
+  }
 }));
 
 /*
@@ -31,7 +33,6 @@ export default function Playlist({ podcasts, state }) {
           container
           justify="center"
           alignItems="center"
-          spacing={2}
           className={classes.podcast}
         >
           <Grid item>
@@ -46,7 +47,7 @@ export default function Playlist({ podcasts, state }) {
               ></img>
             </Link>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={6} className={classes.podcastInfo}>
             <Link to={`/podcast/${podcast.id}`}>
               <Typography paragraph variant="h6">
                 <b>{podcast.title}</b>
