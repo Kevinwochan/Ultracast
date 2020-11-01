@@ -60,6 +60,7 @@ export default function Podcast({ state }) {
 
   useEffect(() => {
     getEpisodes(podcastId).then((podcastInfo) => {
+      podcastInfo.podcast.id = podcastId;
       // initalise podcast.subscribed
       getSubscriptions(sessionState.cookies.token).then((data) => {
         const subscriptions = data.map((podcast) => podcast.id);
