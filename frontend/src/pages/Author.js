@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import { useParams } from "react-router-dom";
-import { getPodcasts } from "../api/query";
+import { getPodcasts, getSubscriptions } from "../api/query";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Divider from "@material-ui/core/Divider";
 import PodcastPlaylist from "../components/PodcastList";
@@ -45,15 +45,22 @@ const useStyles = makeStyles((theme) => ({
 export default function Author({ state }) {
   const classes = useStyles();
   const { id } = useParams();
-  const [author, setAuthor] = useState("loader");
-  const [podcasts, setPodcasts] = useState([]); // TODO: paginate the podcasts
+  const [author, setAuthor] = useState();
+  const [podcasts, setPodcasts] = useState("loader"); // TODO: paginate the podcasts
 
   useEffect(() => {
-    getPodcasts(id).then((data) => {
-      setPodcasts(data.podcasts);
-      setAuthor(data.author);
+    getPodcasts(id).then((authorInfo) => {
+      // initalise podcast.subscribed
+      getSubscriptions(state[0].cookies.token).then((data) => {
+        const subscriptions = data.map((podcast) => podcast.id);
+        authorInfo.podcasts.forEach((podcast) => {
+          podcast.subscribed = subscriptions.includes(podcast.id);
+        });
+        setPodcasts(authorInfo.podcasts);
+      });
+      setAuthor(authorInfo.author);
     });
-  }, [id]);
+  }, [id, state]);
 
   if (podcasts === "loader") {
     return <CircularProgress />;
@@ -63,14 +70,14 @@ export default function Author({ state }) {
       <Grid container>
         {/* Info section */}
         <Grid item className={classes.podcastHero}>
-          <Typography variant="h3" paragraph style={{fontWeight: "bold"}}>
+          <Typography variant="h3" paragraph style={{ fontWeight: "bold" }}>
             Podcasts by {author.name}
           </Typography>
         </Grid>
       </Grid>
       <Divider variant="fullWidth" />
       {/* List of podcasts */}
-      <PodcastPlaylist podcasts={podcasts} state={state}/>
+      <PodcastPlaylist podcasts={podcasts} state={state} />
     </>
   );
 }

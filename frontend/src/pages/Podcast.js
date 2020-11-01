@@ -2,17 +2,16 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { getEpisodes, subscribe, unsubscribe } from "../api/query";
+import { getEpisodes, getSubscriptions } from "../api/query";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import PlaylistAddCheckIcon from "@material-ui/icons/PlaylistAddCheck";
 import Divider from "@material-ui/core/Divider";
 import EpisodePlaylist from "../components/EpisodeList";
+import SubscribeButton from "../components/SubscribeButton";
 
 const useStyles = makeStyles((theme) => ({
   podcastTitle: {
@@ -55,28 +54,21 @@ export default function Podcast({ state }) {
   const classes = useStyles();
   const { podcastId } = useParams();
   const [sessionState, updateState] = state;
-  const [subscribed, setSubscription] = useState(false);
   const [addedToQueue, setAddedToQueue] = useState(false);
   const [podcast, setPodcast] = useState("loader"); // TODO: paginate the episodes
   const [episodes, setEpisodes] = useState([]);
 
   useEffect(() => {
-    getEpisodes(podcastId).then((data) => {
-      setPodcast(data.podcast);
-      setEpisodes(data.episodes);
+    getEpisodes(podcastId).then((podcastInfo) => {
+      // initalise podcast.subscribed
+      getSubscriptions(sessionState.cookies.token).then((data) => {
+        const subscriptions = data.map((podcast) => podcast.id);
+        podcastInfo.podcast.subscribed = subscriptions.includes(podcastId);
+        setPodcast(podcastInfo.podcast);
+      });
+      setEpisodes(podcastInfo.episodes);
     });
-  }, [podcastId]);
-
-  const toggleSubscription = () => {
-    if (subscribed){
-      console.log(`unsubscribing to ${podcastId}`);
-      unsubscribe(podcastId, sessionState.cookies.token);
-    }else{
-      subscribe(podcastId, sessionState.cookies.token);
-      console.log(`subscribing to ${podcastId}`);
-    }
-    setSubscription(!subscribed);
-  };
+  }, [podcastId, sessionState]);
 
   const addAll = () => {
     const episodePlaylist = episodes.map((episode) => ({
@@ -123,30 +115,10 @@ export default function Podcast({ state }) {
             </Typography>
           </Grid>
           <Grid item>
-            <Typography variant="body2">
-              {podcast.description}
-            </Typography>
+            <Typography variant="body2">{podcast.description}</Typography>
           </Grid>
           <Grid item>
-            {!subscribed ? (
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={toggleSubscription}
-              >
-                Subscribe
-              </Button>
-            ) : (
-              <Button
-                variant="contained"
-                color="secondary"
-                startIcon={<RemoveIcon />}
-                onClick={toggleSubscription}
-              >
-                Unsubscribe
-              </Button>
-            )}
+            <SubscribeButton podcast={podcast} sessionState={sessionState} />
           </Grid>
           <Grid item>
             {!addedToQueue ? (

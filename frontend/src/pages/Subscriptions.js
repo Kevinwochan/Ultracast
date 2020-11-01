@@ -7,22 +7,14 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { getSubscriptions } from "../api/query";
 import PodcastPlaylist from "../components/PodcastList";
 
-const useStyles = makeStyles((theme) => ({
-  cardGrid: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-  },
-}));
-
 export default function Subscriptions({ state }) {
   const [sessionState, updateState] = state;
-  const classes = useStyles();
   const [podcasts, setPodcasts] = useState("loader");
 
   useEffect(() => {
     getSubscriptions(sessionState.cookies.token).then((podcasts) => {
-      podcasts.forEach(podcast => {
-        podcast.subscribed = true
+      podcasts.forEach((podcast) => {
+        podcast.subscribed = true;
       });
       setPodcasts(podcasts);
     });
