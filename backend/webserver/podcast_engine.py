@@ -185,6 +185,10 @@ class User(BusinessLayerObject):
                 for entry in self._model.listen_history)
 
         listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)
+        
+        # Add view to podcast episode
+        podcast_episode_metadata_model.views.append(datetime.datetime.now)
+        podcast_episode_metadata_model.save()
 
         if (num_entries <= 0):
             # Create new entry
@@ -208,6 +212,24 @@ class User(BusinessLayerObject):
             logging.warning("User {} has duplicate listen history entries!".format(
                 self.get_email()))
         return True
+
+    def follow_user(self, user_model):
+        self._model.modify(add_to_set__following=user_model)
+
+    def unfollow_user(self, user_model):
+        self._model.modify(pull__following=user_model)
+
+    def bookmark(self, track_timestamp, episode, title=None, description=None):
+        # self._model.modify(add_to_set__bookmarks=bookmark_model)
+        # stream = models.Stream(search=search, owner=self._model)
+        # stream.save()
+        bookmark = models.Bookmark(title=title, track_timestamp=track_timestamp, episode=episode)
+        bookmark.save()
+        self._model.modify(push__bookmarks=bookmark)
+        return bookmark
+
+    def unbookmark(self, bookmark_model):
+        self._model.modify(pull__bookmarks=bookmark_model)
 
     @classmethod
     def from_email(cls, email):
