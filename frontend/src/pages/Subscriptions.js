@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
-import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 import { getSubscriptions } from "../api/query";
 import PodcastPlaylist from "../components/PodcastList";
 
@@ -20,11 +18,7 @@ export default function Subscriptions({ state }) {
     });
   }, [sessionState]);
 
-  if (podcasts === "loader") {
-    return <CircularProgress />;
-  }
-
-  return (
+  return podcasts.length > 0 ? (
     <>
       <Box m={2}>
         <Typography gutterBottom variant="h5">
@@ -33,5 +27,12 @@ export default function Subscriptions({ state }) {
       </Box>
       <PodcastPlaylist podcasts={podcasts} state={state} />
     </>
+  ) : (
+    <Box m={2}>
+      <SentimentVeryDissatisfiedIcon fontSize="large" />
+      <Typography paragraph variant="subtitle">
+        You have no subscriptions
+      </Typography>
+    </Box>
   );
 }

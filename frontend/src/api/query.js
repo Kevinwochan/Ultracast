@@ -513,6 +513,7 @@ const unsubscribe = async (podcastId, token) => {
 
 /*
 Fetches subscription notifications for the user
+returns an array of episodes
 */
 const getNotifications = async (token) => {
   const data = await graphql(
@@ -524,19 +525,35 @@ const getNotifications = async (token) => {
             ${verboseEpisode}
           }
         }
-        totalCount
       }
     }
     `,
     {},
     token
   );
-  return {
-    episodes: data.newSubscribedPodcasts.edges.map((edges) => {
-      return parseEpisode(edges.node);
-    }),
-    count: data.newSubscribedPodcasts.totalCount,
-  };
+  return data.newSubscribedPodcasts.edges.map((edges) => {
+    return parseEpisode(edges.node);
+  });
+};
+
+/*
+Fetches the number of notifications for the user
+use this for deciding whether or not to fetch more data
+returns a number
+*/
+const getNumNotifications = async (token) => {
+  const data = await graphql(
+    `
+      query {
+        newSubscribedPodcasts {
+          totalCount
+        }
+      }
+    `,
+    {},
+    token
+  );
+  return data.newSubscribedPodcasts.totalCount;
 };
 
 const getSubscriptions = async (token) => {
@@ -580,6 +597,7 @@ const getSubscriptions = async (token) => {
 
 export {
   getSubscriptions,
+  getNumNotifications,
   getNotifications,
   subscribe,
   unsubscribe,

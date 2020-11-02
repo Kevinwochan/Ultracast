@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { uid } from "react-uid";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles } from "@material-ui/core/styles";
 import SubscribeButton from "../components/SubscribeButton";
 
@@ -15,15 +16,19 @@ const useStyles = makeStyles((theme) => ({
   },
   podcastInfo: {
     padding: theme.spacing(2),
-  }
+  },
 }));
 
 /*
 this components expects podcast.subscribed, the parent component should evaluate this
 */
-export default function Playlist({ podcasts, state }) {
+export default function PodcastList({ podcasts, state }) {
   const classes = useStyles();
   const [sessionState, setSessionState] = state;
+
+  if (podcasts === "loader") {
+    return <CircularProgress />;
+  }
 
   return (
     <>

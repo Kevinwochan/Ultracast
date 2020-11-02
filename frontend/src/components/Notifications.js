@@ -4,50 +4,33 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import ListItem from "@material-ui/core/ListItem";
+import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import Badge from "@material-ui/core/Badge";
 import SettingsIcon from "@material-ui/icons/Settings";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { uid } from "react-uid";
 import { addAudio } from "./Player";
-import { getNotifications } from "../api/query";
-
-const testData = [
-  {
-    title: "Episode 1: Giving Lawyer X a Voice",
-    description:
-      "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    date: new Date(),
-    podcast: {
-      id: 1,
-      title: "Oli's True Crime Series",
-      image: "https://source.unsplash.com/random",
-      author: { name: "Oliver Productions", id: 1 },
-    },
-  },
-  {
-    title: "Episode 2: Dead man's chest",
-    description:
-      "Captain Jack Sparrow seeks the heart of Davy Jones, a mythical pirate, in order to avoid being enslaved to him. However, others, including his friends Will and Elizabeth, want it for their own gain.",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    date: new Date(),
-    podcast: {
-      id: 1,
-      title: "Oli's True Crime Series",
-      image: "https://source.unsplash.com/random",
-      author: { name: "Oliver Productions", id: 1 },
-    },
-  },
-];
+import { getNotifications, getNumNotifications } from "../api/query";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
     height: 100,
     width: 100,
   },
+  notification: {
+    overflowWrap: "break-word",
+  },
+  notificationTitle: {
+    "&:hover": {
+      background: "inherit",
+      cursor: "inherit",
+    },
+  },
+  dropdown: {},
 }));
 
 const timeSince = (timestamp) => {
@@ -67,8 +50,8 @@ const timeSince = (timestamp) => {
 };
 
 const Notifications = ({ state }) => {
-  const [episodes, setEpisodes] = useState(testData);
-  const [count, setCount] = useState(2);
+  const [count, setCount] = useState(0);
+  const [episodes, setEpisodes] = useState([]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -81,10 +64,14 @@ const Notifications = ({ state }) => {
   };
 
   useEffect(() => {
-    /*getNotifications(token).then((data) => {
-      setEpisodes(data.episodes);
-      setCount(data.count);
-    });*/
+    getNumNotifications(state[0].cookies.token).then((count) => {
+      if (count > 0) {
+        getNotifications(state[0].cookies.token).then((episodes) => {
+          setEpisodes(episodes);
+        });
+      }
+      setCount(count);
+    });
   }, [state]);
 
   const classes = useStyles();
@@ -121,36 +108,53 @@ const Notifications = ({ state }) => {
           vertical: "top",
           horizontal: "center",
         }}
+        className={classes.dropdown}
       >
-        <MenuItem>
-          Notifications
+        <ListItem className={classes.notificationTitle}>
+          <Typography variant="h5">Notifications</Typography>
           <Link to="/subscriptions">
             <IconButton color="primary">
               <SettingsIcon />
             </IconButton>
           </Link>
-        </MenuItem>
-        {episodes.map((episode, index) => (
-          <MenuItem onClick={playNow(index)} key={uid(episode)} id={index}>
-            <Grid container spacing={2}>
-              <Grid item>
-                <img
-                  className={classes.podcastCover}
-                  src={episode.podcast.image}
-                  alt={`${episode.podcast.title} cover`}
-                ></img>
-              </Grid>
-              <Grid item>
-                <Typography variant="body1">
-                  {episode.podcast.author.name} uploaded: {episode.title}
-                </Typography>
-                <Typography variant="subtitle2">
-                  {timeSince(episode.date.getTime())}
-                </Typography>
-              </Grid>
-            </Grid>
-          </MenuItem>
-        ))}
+        </ListItem>
+        <Divider />
+        {count > 0 ? (
+          episodes.length > 0 ? (
+            episodes.map((episode, index) => (
+              <MenuItem
+                onClick={playNow(index)}
+                key={uid(episode)}
+                id={index}
+                className={classes.notification}
+              >
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <img
+                      className={classes.podcastCover}
+                      src={episode.podcast.image}
+                      alt={`${episode.podcast.title} cover`}
+                    ></img>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography variant="body1">
+                      {episode.podcast.author.name} uploaded: {episode.title}
+                    </Typography>
+                    <Typography variant="subtitle2">
+                      {timeSince(episode.date.getTime())}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </MenuItem>
+            ))
+          ) : (
+            <CircularProgress />
+          )
+        ) : (
+          <ListItem>
+            <Typography>No new notifications</Typography>
+          </ListItem>
+        )}
       </Menu>
     </>
   );

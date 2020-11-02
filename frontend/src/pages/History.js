@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
-import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { getHistory } from "../api/query";
 import EpisodePlaylist from "../components/EpisodeList";
 
@@ -23,11 +21,7 @@ export default function History({ state }) {
     getHistory(sessionState.cookies.token).then((data) => {
       setHistory(data);
     });
-  }, []);
-
-  if (history === "loader") {
-    return <CircularProgress />;
-  }
+  }, [sessionState]);
 
   return (
     <>
