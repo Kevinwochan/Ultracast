@@ -1,14 +1,75 @@
+import graphene
+from . import query
+
 # Returns a list of recommended podcasts given the following details about a user:
 #  - A list of existing podcast subscriptions
 #  - A list of recently played episodes
 #  - A list of past podcast searches
 def calculateRecommendations(subscriptions, recentEpisodes, searches):
-    print(type(subscriptions[0]))
-    print(subscriptions[0].name)
-    print(type(recentEpisodes[0]))
-    print(recentEpisodes[0].episode.name)
-    print("Test")
+    debug = True
+
+    if len(subscriptions) == 0 or len(recentEpisodes) == 0:
+        debug = False
+
+    if debug:
+        print(f"\n{len(subscriptions)} podcast(s) of type:\t\t{type(subscriptions[0])}")
+        print(f"Example subscribed podcast:\t'{subscriptions[0].name}'")
+        print(f"\n{len(recentEpisodes)} recent episode(s) of type:\t{type(recentEpisodes[0])}")
+        print(f"Example episode:\t\t'{recentEpisodes[0].episode.name}'\n")
     
+    
+    # Elements to consider:
+    # Subscriptions
+    #  - Category + subcategory
+    #  - Description / summary
+    # Recent Episodes
+    #  - Keywords
+    #  - Description / summary
+    #  - Category
+    # Searches
+    #  - Text
+
+    # Current (simple) strategy:
+    # Take the podcasts that are the parent of the recently played episodes
+    # and combine them with the list of subscribed podcasts. Use this list
+    # to perform the search, retrieving podcasts of the same category and
+    # returning them.
+
+    # interestingPodcasts = subscriptions[:]
+    # for listenEntry in recentEpisodes:
+    #     parentPodcast = listenEntry.episode.podcast_metadata
+    #     if parentPodcast not in interestingPodcasts:
+    #         interestingPodcasts.append(parentPodcast)
+
+    interestingPodcasts = set(subscriptions)
+    for listenEntry in recentEpisodes:
+        parentPodcast = listenEntry.episode.podcast_metadata
+        interestingPodcasts.add(parentPodcast)
+
+    schema = graphene.Schema(query=query.Query)
+
+    result = schema.execute(
+        """
+        query{
+            allPodcastMetadata{
+                edges{
+                    node{
+                        name
+                        id
+                    }
+                }
+            }
+        }
+        """
+    )
+
+    print(len(result.data['allPodcastMetadata']['edges']))
+
+    # Extensions:
+    #  - Run some NLP (eg: TF-IDF) across all descriptions and pick podcasts 
+    #    with the highest similarity score
+    #      - Include the information from actual episodes in the search
+
     return None
 
 
