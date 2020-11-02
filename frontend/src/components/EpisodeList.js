@@ -51,7 +51,7 @@ export default function Playlist({ episodes, state }) {
             <TableCell variant="head">Cover</TableCell>
             <TableCell variant="head">Info</TableCell>
             <TableCell variant="head">Length</TableCell>
-            <TableCell variant="head">Published On</TableCell>
+            <TableCell variant="head">Uploaded</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -79,7 +79,7 @@ export default function Playlist({ episodes, state }) {
                 </TableCell>
                 <TableCell>{toHHMMSS(episode.length)}</TableCell>
                 <TableCell>
-                  {episode.date.toLocaleDateString("en-AU")}
+                  {episode.date.toDateString()}
                 </TableCell>
               </TableRow>
             ))

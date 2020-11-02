@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -23,30 +24,10 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
     minHeight: 150,
   },
-  podcastCover: {
-    minHeight: 150,
-    minWidth: 150,
-    backgroundPosition: "center",
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    zIndex: 2,
-  },
-  overlay: {
-    height: "100%",
-    width: "100%",
-    background: "black",
-    opacity: 0.7,
-  },
-  coverGlass: {
-    position: "relative",
-    minHeight: 150,
-    minWidth: 150,
-    backgroundPosition: "center",
-    backgroundSize: "cover",
+  podcastDescription: {
+    lineHeight: "1.5rem",
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(3),
   },
 }));
 
@@ -88,40 +69,37 @@ export default function Podcast({ state }) {
 
   return (
     <>
-      <Grid container>
-        {/* Info section */}
-        <Grid
-          item
-          xs={8}
-          className={classes.podcastHero}
-          container
-          direction="column"
-          spacing={2}
-        >
-          <Grid item>
-            <Typography variant="h4" paragraph className={classes.podcastTitle}>
+      <Box className={classes.podcastHero}>
+        <Grid container spacing={2} justify="center" marginBottom={2}>
+          <Grid item xs={12} md={6} lg={4}>
+            <Typography variant="subtitle2">PODCAST TITLE</Typography>
+            <Typography variant="h4" className={classes.podcastTitle}>
               {podcast.title}
             </Typography>
           </Grid>
-          <Grid item>
-            <Typography variant="subtitle2">
-              <Link to={`/author/${podcast.author.id}`}>
-                Author: {podcast.author.name}
-              </Link>
-            </Typography>
+          <Grid item xs>
+            <Link to={`/author/${podcast.author.id}`}>
+              <Typography variant="subtitle2">AUTHOR</Typography>
+              <Typography variant="subtitle2">
+                <Link to={`/author/${podcast.author.id}`}>
+                  {podcast.author.name}
+                </Link>
+              </Typography>
+            </Link>
           </Grid>
-          <Grid item>
-            <Typography variant="subtitle2">
-              Total Episodes: {podcast.episodeCount}
-            </Typography>
+          <Grid item xs>
+            <Typography variant="subtitle2">NO. EPISODES</Typography>
+            <Typography variant="subtitle2">{podcast.episodeCount}</Typography>
           </Grid>
-          <Grid item>
-            <Typography variant="body2">{podcast.description}</Typography>
-          </Grid>
-          <Grid item>
+        </Grid>
+        <Typography variant="body1" className={classes.podcastDescription}>
+          {podcast.description}
+        </Typography>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs>
             <SubscribeButton podcast={podcast} sessionState={sessionState} />
           </Grid>
-          <Grid item>
+          <Grid item xs>
             {!addedToQueue ? (
               <Button
                 variant="contained"
@@ -142,20 +120,7 @@ export default function Podcast({ state }) {
             )}
           </Grid>
         </Grid>
-        {/* Podcast Cover */}
-        <Grid
-          item
-          xs={4}
-          className={classes.coverGlass}
-          style={{ backgroundImage: `url(${podcast.image})` }}
-        >
-          <div className={classes.overlay}></div>
-          <div
-            className={classes.podcastCover}
-            style={{ backgroundImage: `url(${podcast.image})` }}
-          ></div>
-        </Grid>
-      </Grid>
+      </Box>
       <Divider variant="fullWidth" />
       <EpisodePlaylist episodes={episodes} state={state} />
     </>
