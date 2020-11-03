@@ -6,6 +6,7 @@ from . import podcast_engine
 from flask import Flask
 from flask_graphql import GraphQLView
 from flask_cors import CORS
+from flask_mongoengine import MongoEngine
 import flask_jwt_extended
 
 import json
@@ -15,14 +16,9 @@ from graphene_file_upload.flask import FileUploadGraphQLView
 
 # App config
 
-app = Flask(__name__)
-app.debug = True
+jwt = flask_jwt_extended.JWTManager()
 
-app.config["JWT_SECRET_KEY"] = "something"
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=60*60)
-app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(minutes=75)
-
-jwt = flask_jwt_extended.JWTManager(app)
+mongo = MongoEngine()
 
 '''
 A bit of JWT magic
@@ -41,16 +37,32 @@ def load_user_from_db(identity):
     user_id = json.loads(identity)["_id"]["$oid"]
     return podcast_engine.User.from_mongo_id(user_id)
 
-CORS(app, resources={r"/*": {"origins": "*"}})
+def create_app(config=None):
+    app = Flask(__name__)
+    app.config["JWT_SECRET_KEY"] = "something"
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=60*60)
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(minutes=75)
+    app.config['MONGODB_CONNECT'] = False
 
+    app.config['MONGODDB_SETTINGS'] = {
+            'host': db.MONGO_URI
+        }
 
-# Graphql rules
-app.add_url_rule(
-    '/graphql',
-    view_func=FileUploadGraphQLView.as_view('graphql', schema=schema, graphiql=True, middleware=middleware)
-    #view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
-)
+    mongo.init_app(app)
+
+    jwt = flask_jwt_extended.JWTManager(app)
+    jwt.init_app(app)
+
+    CORS(app, resources={r"/*": {"origins": "*"}})
+
+    # Graphql rules
+    app.add_url_rule(
+        '/graphql',
+        view_func=FileUploadGraphQLView.as_view('graphql', schema=schema, graphiql=True, middleware=middleware)
+        #view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
+    )
 
 if __name__ == '__main__':
     #init_db()
+    app = create_app()
     app.run(debug=True)

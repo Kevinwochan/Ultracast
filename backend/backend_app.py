@@ -7,6 +7,7 @@ from search import search_engine
 
 def number_of_workers():
     return (multiprocessing.cpu_count() * 2) + 1
+    #return 1
 
 class BackendApp(gunicorn.app.base.BaseApplication):
 
@@ -42,7 +43,7 @@ if __name__ == '__main__':
         'workers': number_of_workers(),
         'on_exit': server.on_exit
     }
-    standalone_app = BackendApp(app.app, options)
+    standalone_app = BackendApp(app.create_app(), options)
     server.app = standalone_app
     standalone_app.run()
     standalone_app.search_engine.shutdown()
