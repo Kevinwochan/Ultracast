@@ -74,6 +74,12 @@ class PodcastMetadata(MongoengineObjectType):
         filter_args = {"hackedy hack hack": graphene.String}
         connection_class = EdgeCountedConnection
 
+class EpisodeView(MongoengineObjectType):
+    class Meta:
+        model = models.EpisodeView
+        interfaces = (Node,)
+        connection_class = EdgeCountedConnection
+
 class ListenHistoryEntry(MongoengineObjectType):
     class Meta:
         model = models.ListenHistoryEntry

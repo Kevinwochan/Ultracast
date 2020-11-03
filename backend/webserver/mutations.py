@@ -364,7 +364,7 @@ class MarkPodcastListened(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id):
         user = flask_jwt_extended.current_user
         episode = schema.get_node_from_global_id(info, podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
-        user.mark_podcast_listened(episode)
+        user.mark_podcast_listened(info.context.environ, episode)
         return MarkPodcastListened(success=True, user=user.model())
 
 class Login(ClientIDMutation):
