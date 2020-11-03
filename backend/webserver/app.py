@@ -16,26 +16,8 @@ from graphene_file_upload.flask import FileUploadGraphQLView
 
 # App config
 
-jwt = flask_jwt_extended.JWTManager()
-
 mongo = MongoEngine()
 
-'''
-A bit of JWT magic
-We want to use our users from the DB as our current users
-To do this we need two callbacks that JWT will use
-user_identity_loader takes a User object and converts it to json
-user_loader_callback_loader then takes that json document and grabs the user object 
-so that flask_jwt_extended.current_user gets set for us
-'''
-@jwt.user_identity_loader
-def user_to_json(user):
-    return user.to_json()
-
-@jwt.user_loader_callback_loader
-def load_user_from_db(identity):
-    user_id = json.loads(identity)["_id"]["$oid"]
-    return podcast_engine.User.from_mongo_id(user_id)
 
 def create_app(config=None):
     app = Flask(__name__)
@@ -50,8 +32,25 @@ def create_app(config=None):
 
     mongo.init_app(app)
 
-    jwt = flask_jwt_extended.JWTManager(app)
+    jwt = flask_jwt_extended.JWTManager()
     jwt.init_app(app)
+
+    '''
+    A bit of JWT magic
+    We want to use our users from the DB as our current users
+    To do this we need two callbacks that JWT will use
+    user_identity_loader takes a User object and converts it to json
+    user_loader_callback_loader then takes that json document and grabs the user object 
+    so that flask_jwt_extended.current_user gets set for us
+    '''
+    @jwt.user_identity_loader
+    def user_to_json(user):
+        return user.to_json()
+
+    @jwt.user_loader_callback_loader
+    def load_user_from_db(identity):
+        user_id = json.loads(identity)["_id"]["$oid"]
+        return podcast_engine.User.from_mongo_id(user_id)
 
     CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -61,6 +60,7 @@ def create_app(config=None):
         view_func=FileUploadGraphQLView.as_view('graphql', schema=schema, graphiql=True, middleware=middleware)
         #view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
     )
+    return app
 
 if __name__ == '__main__':
     #init_db()
