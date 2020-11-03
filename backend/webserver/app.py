@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.debug = True
 
 app.config["JWT_SECRET_KEY"] = "something"
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=60)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=60*60)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(minutes=75)
 
 jwt = flask_jwt_extended.JWTManager(app)

@@ -37,24 +37,31 @@ client = session.client('s3',
 BUCKET = 'ultracast-files'
 FILE_ACCESS = 'public-read'
 
+
 class IllegalMimeException(Exception):
     pass
+
 
 def get_bucket_url():
     return re.sub(r"^https://", f"https://{BUCKET}.", STATIC_FILE_BASE_URL)
 
+
 def get_file_url(filename):
     return get_bucket_url() + f"/{filename}"
+
 
 def get_key_from_url(url):
     return re.sub(get_bucket_url() + "/", "", url)
 
+
 def get_key_from_binary_data(data, ext=""):
     return urlsafe_b64encode(hashlib.sha256(data).digest()).decode('UTF-8') + ext
+
 
 def check_status(resp, ok_statuses, op):
     if resp['ResponseMetadata']['HTTPStatusCode'] not in ok_statuses:
         raise Exception(f"Error for operation [{op}] - Response: {resp}")
+
 
 def file_exists(key):
     try:
@@ -63,14 +70,17 @@ def file_exists(key):
     except:
         return False
 
+
 def url_exists(url):
     return file_exists(get_key_from_url(url))
+
 
 def get_key(data, key=None, ext=""):
     if key is None:
         return get_key_from_binary_data(data, ext)
     else:
         return key
+
 
 def check_mime(data, valid_mimes):
     try:
@@ -82,22 +92,24 @@ def check_mime(data, valid_mimes):
         raise IllegalMimeException(f"MIME type {mime_type} not allowed")
     return mime_type
 
+
 def add_file(data, key=None, valid_mimes=[], override=False):
     mime_type = check_mime(data, valid_mimes)
     extension = mimetypes.guess_extension(mime_type)
     key = get_key(data, key, extension)
-    
+
     if not override and file_exists(key):
         return get_file_url(key)
 
     resp = client.put_object(
-        Body=data, 
-        Bucket=BUCKET, 
-        Key=key, 
-        ACL=FILE_ACCESS, 
+        Body=data,
+        Bucket=BUCKET,
+        Key=key,
+        ACL=FILE_ACCESS,
         ContentType=mime_type)
     check_status(resp, [200], 'Add File')
     return get_file_url(key)
+
 
 def remove_file(url, key=None):
     if key is None:
@@ -105,6 +117,7 @@ def remove_file(url, key=None):
     else:
         resp = client.delete_object(Bucket=BUCKET, Key=key)
     check_status(resp, [200, 204], 'Remove File')
+
 
 def update_file(old_url, data, new_key=None, valid_mimes=[]):
     if url_exists(old_url):
