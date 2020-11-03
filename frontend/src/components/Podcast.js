@@ -270,7 +270,7 @@ const coverStyles = makeStyles((theme) => ({
 }));
 
 // Image for the podcast
-function PodcastCover({ episode, state }) {
+function PodcastCover({ episode, state, creator }) {
   const classes = coverStyles();
   const [play, updatePlay] = useState(false);
 
@@ -282,19 +282,21 @@ function PodcastCover({ episode, state }) {
     updatePlay(false);
   }
 
+  const updateAudioList = () => {
+    addAudio(state, {
+      name: episode.title,
+      musicSrc: episode.url,
+      cover: episode.podcast.image,
+      id: episode.id,
+    });
+  };
+
   return (
     <div
       className={classes.podcastItem}
-      onMouseEnter={showPlay}
-      onMouseLeave={hidePlay}
-      onClick={() => {
-        addAudio(state, {
-          name: episode.title,
-          musicSrc: episode.url,
-          cover: episode.podcast.image,
-          id: episode.id,
-        });
-      }}
+      onMouseEnter={creator ? null : showPlay}
+      onMouseLeave={creator ? null : hidePlay}
+      onClick={creator ? null : updateAudioList}
     >
       <img
         src={episode.podcast.image}

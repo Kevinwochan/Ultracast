@@ -15,7 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { updatePodcast, deletePodcast } from "../api/mutation";
 import { getEpisodes } from "../api/query";
-import EpisodePlaylist from "../components/EpisodeList";
+import EditEpisodeList from "../components/EditEpisodeList";
 import { PodcastLoader } from "../components/Podcast";
 import Spinner from "../components/Spinner";
 import theme from "../theme";
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditPodcast({ userToken, state }) {
+export default function EditPodcast({ userToken }) {
   const classes = useStyles();
   const { podcastId } = useParams();
   const history = useHistory();
@@ -275,11 +275,16 @@ export default function EditPodcast({ userToken, state }) {
             {newInfo.sending ? (
               <Spinner />
             ) : (
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs>
+              <Grid
+                container
+                spacing={2}
+                alignItems="center"
+                justify="space-evenly"
+              >
+                <Grid item>
                   <EditButton editing={editing} onClick={editPodcast} />
                 </Grid>
-                <Grid item xs>
+                <Grid item>
                   <Button
                     variant="contained"
                     color="primary"
@@ -296,9 +301,7 @@ export default function EditPodcast({ userToken, state }) {
         </Grid>
       </Box>
       <Divider variant="fullWidth" />
-      <EpisodePlaylist episodes={episodes} state={state} />
-      {/* TODO */}
-      {/* <EditPlaylist podcastId={podcastId} /> */}
+      <EditEpisodeList episodes={episodes} podcastId={podcastId} />
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
