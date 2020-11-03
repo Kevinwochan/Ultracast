@@ -21,12 +21,14 @@ import HomeIcon from "@material-ui/icons/Home";
 import SearchIcon from "@material-ui/icons/Search";
 import ExploreIcon from "@material-ui/icons/Explore";
 import PublishIcon from "@material-ui/icons/Publish";
-import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
+import AlarmIcon from '@material-ui/icons/Alarm';
 import HistoryIcon from "@material-ui/icons/History";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
+import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
 import { Link, useHistory } from "react-router-dom";
 import ucTheme from "../theme";
 import Logo from "./Logo";
+import Notifications from "./Notifications";
 
 const drawerWidth = 240;
 
@@ -133,6 +135,11 @@ export default function UserLayout({ handleCookie, state, children }) {
     updateState("open", false);
   };
 
+  const SideBar =
+    sessionState.isCreator && sessionState.creatorView
+      ? () => <CreatorSideBar classes={classes} open={open} />
+      : () => <ListenerSideBar classes={classes} open={open} />;
+
   return (
     <div className={classes.root}>
       <AppBar
@@ -143,7 +150,8 @@ export default function UserLayout({ handleCookie, state, children }) {
       >
         <Toolbar className={classes.toolbar}>
           <Logo />
-          <AccountOptions classes={classes} handleCookie={handleCookie} />
+          <Notifications state={state} />
+          <AccountOptions state={state} handleCookie={handleCookie} />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -159,38 +167,41 @@ export default function UserLayout({ handleCookie, state, children }) {
           }),
         }}
       >
-        <ListenerSideBar classes={classes} open={open} />
+        <SideBar />
         <Divider />
-        <CreatorSideBar classes={classes} open={open} />
-        <Divider />
-        <IconButton
-          aria-label="open drawer"
-          onClick={handleDrawerOpen}
-          edge="start"
-          className={clsx(classes.menuButton, {
-            [classes.hide]: open,
-          })}
-        >
-          <ChevronRightIcon />
-        </IconButton>
-        <IconButton
-          color="primary"
-          aria-label="close drawer"
-          onClick={handleDrawerClose}
-          edge="start"
-          className={clsx(classes.menuButton, {
-            [classes.hide]: !open,
-          })}
-        >
-          <ChevronLeftIcon />
-        </IconButton>
+
+        <List>
+          <Tooltip title={open ? "" : "Open sidebar"} placement="right">
+            <ListItem
+              button
+              onClick={handleDrawerOpen}
+              className={open ? classes.hide : ""}
+            >
+              <ListItemIcon>
+                <ChevronRightIcon />
+              </ListItemIcon>
+            </ListItem>
+          </Tooltip>
+
+          <ListItem
+            button
+            onClick={handleDrawerClose}
+            className={!open ? classes.hide : ""}
+          >
+            <ListItemIcon>
+              <ChevronLeftIcon />
+            </ListItemIcon>
+            <ListItemText primary="Collapse sidebar" />
+          </ListItem>
+        </List>
       </Drawer>
       {children}
     </div>
   );
 }
 
-const ListenerSideBar = ({ classes, open }) => {
+const ListenerSideBar = ({ open }) => {
+  const classes = useStyles();
   const listenerItems = [
     {
       name: "Home",
@@ -208,17 +219,20 @@ const ListenerSideBar = ({ classes, open }) => {
       link: "/explore",
     },
     {
-      name: "Library",
-      icon: <LibraryMusicIcon />,
-      link: "/author/1",
+      name: "Subscriptions",
+      icon: <AlarmIcon />,
+      link: "/subscriptions",
     },
     {
-      name: "History",
-      icon: <HistoryIcon />,
-      link: "/History",
+      name: "Library",
+      icon: <LibraryMusicIcon />,
+      link: "/library",
     },
-
-    // TODO add recommended, history, friends and subscribed
+    {
+      name: "Recently Listened",
+      icon: <HistoryIcon />,
+      link: "/history",
+    },
   ];
 
   return (
@@ -237,17 +251,23 @@ const ListenerSideBar = ({ classes, open }) => {
   );
 };
 
-const CreatorSideBar = ({ classes, open }) => {
+const CreatorSideBar = ({ open }) => {
+  const classes = useStyles();
   const creatorItems = [
+    {
+      name: "My Podcasts",
+      icon: <LibraryMusicIcon />,
+      link: "/creators/podcasts",
+    },
     {
       name: "Upload",
       icon: <PublishIcon />,
-      link: "/upload",
+      link: "/creators/upload",
     },
     {
       name: "Analytics",
       icon: <ShowChartIcon />,
-      link: "/analytics",
+      link: "/creators/analytics",
     },
   ];
 
@@ -267,7 +287,9 @@ const CreatorSideBar = ({ classes, open }) => {
   );
 };
 
-const AccountOptions = ({ classes, handleCookie }) => {
+const AccountOptions = ({ state, handleCookie }) => {
+  const classes = useStyles();
+  const [sessionState, updateState] = state;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const history = useHistory();
 
@@ -281,12 +303,17 @@ const AccountOptions = ({ classes, handleCookie }) => {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    handleCookie("loggedin", null);
+    handleCookie("token", null);
     history.push("/");
   };
 
+  const creatorTitle = sessionState.creatorView
+    ? "For listeners"
+    : "For creators";
+  const creatorLink = sessionState.creatorView ? "/" : "/creators/podcasts";
+
   return (
-    <div>
+    <>
       <IconButton
         aria-label="account of current user"
         aria-controls="menu-appbar"
@@ -314,6 +341,15 @@ const AccountOptions = ({ classes, handleCookie }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
+        {sessionState.isCreator ? (
+          <MenuItem>
+            <Link to={creatorLink} className={classes.link}>
+              {creatorTitle}
+            </Link>
+          </MenuItem>
+        ) : (
+          ""
+        )}
         <MenuItem onClick={handleClose}>
           <Link to="/profile" className={classes.link}>
             Profile
@@ -326,6 +362,6 @@ const AccountOptions = ({ classes, handleCookie }) => {
         </MenuItem>
         <MenuItem onClick={handleLogout}>Log Out</MenuItem>
       </Menu>
-    </div>
+    </>
   );
 };
