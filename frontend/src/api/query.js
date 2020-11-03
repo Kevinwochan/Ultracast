@@ -90,29 +90,11 @@ const getRecommended = async (token) => {
 
   return data.recommendations.edges.map((n) => {
     const podcast = n.node;
-    // Deal with podcasts that have no episodes
-    const e = podcast.episodes.edges[0] ?? {
-      node: {
-        audioUrl: "",
-        id: "",
-        name: "",
-      },
-    };
-    const episode = e.node;
-
     return {
-      url: episode.audioUrl,
-      id: episode.id,
-      title: episode.name,
-      podcast: {
-        image: podcast.coverUrl,
-        id: podcast.id,
-        title: podcast.name,
-      },
-      author: {
-        name: podcast.author.name,
-        id: podcast.author.id,
-      },
+      image: podcast.coverUrl,
+      id: podcast.id,
+      title: podcast.name,
+      author: podcast.author
     };
   });
 };
