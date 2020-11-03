@@ -32,10 +32,17 @@ const login = async (email, password) => {
 /*
 Registers a email password combination as user account
 */
-const register = async (email, password) => {
+const register = async (name, email, password) => {
   const data = await graphql(
-    "mutation($email: String!, $password: String!) {createUser(input: {email: $email, password: $password}) {success token failWhy}}",
+    `mutation($name: String, $email: String!, $password: String!) {
+      createUser(input: {name: $name, email: $email, password: $password}) {
+        success
+        token
+        failWhy
+      }
+    }`,
     {
+      name: name,
       email: `${email}`,
       password: `${password}`,
     }
