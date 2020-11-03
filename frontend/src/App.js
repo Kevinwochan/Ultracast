@@ -139,7 +139,10 @@ export default function App() {
         <Route path="/creators/podcast/:podcastId">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state}>
-              <EditPodcast userToken={sessionState.cookies.token} />
+              <EditPodcast
+                userToken={sessionState.cookies.token}
+                state={state}
+              />
             </Page>
           </PrivateRoute>
         </Route>
