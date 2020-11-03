@@ -190,7 +190,11 @@ export default function EditPodcast({ userToken, state }) {
   }, [podcastId, newInfo, editing]);
 
   if (podcast === "loader") {
-    return <PodcastLoader />;
+    return (
+      <Grid container className={classes.podcastHero}>
+        <PodcastLoader />
+      </Grid>
+    );
   }
 
   return (

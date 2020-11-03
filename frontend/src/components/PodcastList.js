@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 /*
 this components expects podcast.subscribed, the parent component should evaluate this
 */
-export default function PodcastList({ podcasts, state }) {
+export default function PodcastList({ podcasts, state, creator }) {
   const classes = useStyles();
   const [sessionState, setSessionState] = state;
 
@@ -41,7 +41,7 @@ export default function PodcastList({ podcasts, state }) {
           className={classes.podcast}
         >
           <Grid item>
-            <Link to={`/podcast/${podcast.id}`}>
+            {creator ? (
               <img
                 src={podcast.image}
                 alt={`${podcast.title} cover`}
@@ -50,16 +50,37 @@ export default function PodcastList({ podcasts, state }) {
                   e.target.src = `/branding/square.svg`;
                 }}
               ></img>
-            </Link>
+            ) : (
+              <Link to={`/podcast/${podcast.id}`}>
+                <img
+                  src={podcast.image}
+                  alt={`${podcast.title} cover`}
+                  className={classes.podcastCover}
+                  onError={(e) => {
+                    e.target.src = `/branding/square.svg`;
+                  }}
+                ></img>
+              </Link>
+            )}
           </Grid>
           <Grid item xs={6} className={classes.podcastInfo}>
-            <Link to={`/podcast/${podcast.id}`}>
+            <Link
+              to={
+                creator
+                  ? `/creators/podcast/${podcast.id}`
+                  : `/podcast/${podcast.id}`
+              }
+            >
               <Typography paragraph variant="h6">
                 <b>{podcast.title}</b>
               </Typography>
-              <Typography variant="subtitle2">
-                {`By ${podcast.author.name}`}
-              </Typography>
+              {creator ? (
+                ""
+              ) : (
+                <Typography variant="subtitle2">
+                  {`By ${podcast.author.name}`}
+                </Typography>
+              )}
               <Typography variant="subtitle2">
                 {`${podcast.episodeCount} episodes`}
               </Typography>
@@ -71,7 +92,11 @@ export default function PodcastList({ podcasts, state }) {
             </Link>
           </Grid>
           <Grid item>
-            <SubscribeButton podcast={podcast} sessionState={sessionState} />
+            {creator ? (
+              ""
+            ) : (
+              <SubscribeButton podcast={podcast} sessionState={sessionState} />
+            )}
           </Grid>
         </Grid>
       ))}
