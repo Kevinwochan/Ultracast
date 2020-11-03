@@ -38,7 +38,7 @@ class Server:
 if __name__ == '__main__':
     server = Server()
     options = {
-        'bind': '%s:%s' % ('127.0.0.1', '8080'),
+        'bind': '%s:%s' % ('127.0.0.1', '5000'),
         'workers': number_of_workers(),
         'on_exit': server.on_exit
     }
