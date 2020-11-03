@@ -36,3 +36,4 @@ flask-jwt-extended
 python-magic==0.4.18
 blinker==1.4
 algoliasearch==2.4.0
+gunicorn==20.0.4
