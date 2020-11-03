@@ -5,7 +5,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { Link } from "react-router-dom";
-import { getHistory, getRecommended } from "../api/query";
+import { getMyHistory, getMyRecommended } from "../api/query";
 
 const useStyles = makeStyles((theme) => ({
   titleBar: {
@@ -28,10 +28,10 @@ export default function Dashboard({ state }) {
 
   // Need to update recommended and history like this, otherwise it won't work for larger/longer queries
   useEffect(() => {
-    /*getRecommended(sessionState.cookies.token).then((data) => {
+    /*getMyRecommended(sessionState.cookies.token).then((data) => {
       setRecommended(data);
     });*/
-    getHistory(sessionState.cookies.token,).then((data) => {
+    getMyHistory(sessionState.cookies.token,).then((data) => {
       setHistory(data);
     });
   }, [sessionState]);

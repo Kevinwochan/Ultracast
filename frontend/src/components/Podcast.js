@@ -288,12 +288,7 @@ function PodcastCover({ episode, state }) {
       onMouseEnter={showPlay}
       onMouseLeave={hidePlay}
       onClick={() => {
-        addAudio(state, {
-          name: episode.title,
-          musicSrc: episode.url,
-          cover: episode.podcast.image,
-          id: episode.id,
-        });
+        addAudio(state, episode);
       }}
     >
       <img

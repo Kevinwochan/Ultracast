@@ -14,7 +14,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { uid } from "react-uid";
 import { addAudio } from "./Player";
-import { getNotifications, getNumNotifications } from "../api/query";
+import { getMyNotifications, getNumNotifications } from "../api/query";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
@@ -66,7 +66,7 @@ const Notifications = ({ state }) => {
   useEffect(() => {
     getNumNotifications(state[0].cookies.token).then((count) => {
       if (count > 0) {
-        getNotifications(state[0].cookies.token).then((episodes) => {
+        getMyNotifications(state[0].cookies.token).then((episodes) => {
           setEpisodes(episodes);
         });
       }
@@ -78,13 +78,7 @@ const Notifications = ({ state }) => {
 
   const playNow = (index) => {
     return () => {
-      const episode = {
-        name: episodes[index].title,
-        musicSrc: episodes[index].url,
-        cover: episodes[index].podcast.image,
-        id: episodes[index].id,
-      };
-      addAudio(state, episode);
+      addAudio(state, episodes[index]);
     };
   };
 

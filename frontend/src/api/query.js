@@ -71,7 +71,7 @@ const getUserId = async (token) => {
 /*
 Retrieves an array of podcast episodes recommended for the user
 */
-const getRecommended = async (token) => {
+const getMyRecommended = async (token) => {
   const data = await graphql(
     `
       query recommended {
@@ -117,13 +117,80 @@ const getRecommended = async (token) => {
   });
 };
 
+const getMyFollowing = async (token) => {
+  const data = await graphql(
+    `
+    query{
+      allUser(first: 10){
+        edges {
+          node {
+            name
+            listenHistory(first:1) {
+              edges {
+                node {
+                  episode {
+                    ${verboseEpisode}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    `,
+    {},
+    token
+  );
+
+  return data.allUser.edges.filter((user) => user.node.listenHistory.edges.length > 0).map((user) => ({
+    name: user.node.name,
+    episode: parseEpisode(user.node.listenHistory.edges[0].node, true),
+  }));
+};
+
+const getHistory = async (userId, token) => {
+  const data = await graphql(
+    `
+    query ($userId: ID!){
+      allUser(id: $userId){
+        edges {
+          node {
+            name
+            listenHistory {
+              edges {
+                node {
+                  episode {
+                    ${verboseEpisode}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    `,
+    { userId: userId },
+    token
+  );
+  return {
+    user: {
+      name: data.allUser.edges[0].node.name,
+    },
+    history: data.allUser.edges[0].node.listenHistory.edges.map((episode) =>
+      parseEpisode(episode, true)
+    ),
+  };
+};
+
 /**
  * Gets the listening history of the user
  *
  * @param {boolean} verbose get the verbose episode output
  * @param {string} token JWT token of the user
  */
-const getHistory = async (token, verbose = true) => {
+const getMyHistory = async (token, verbose = true) => {
   const data = await graphql(
     `query{
       currentUser {
@@ -155,10 +222,10 @@ const getHistory = async (token, verbose = true) => {
  *
  * @param {string} token the JWT token of the usr
  */
-const getUserPodcasts = async (token) => {
+const getMyPodcasts = async (token) => {
   const data = await graphql(
     `
-      query getUserPodcasts {
+      query {
         currentUser {
           publishedPodcasts {
             edges {
@@ -515,7 +582,7 @@ const unsubscribe = async (podcastId, token) => {
 Fetches subscription notifications for the user
 returns an array of episodes
 */
-const getNotifications = async (token) => {
+const getMyNotifications = async (token) => {
   const data = await graphql(
     `
     query {
@@ -556,7 +623,7 @@ const getNumNotifications = async (token) => {
   return data.newSubscribedPodcasts.totalCount;
 };
 
-const getSubscriptions = async (token) => {
+const getMySubscriptions = async (token) => {
   const data = await graphql(
     `
       query {
@@ -595,21 +662,33 @@ const getSubscriptions = async (token) => {
   }));
 };
 
+const follow = () => {
+
+}
+
+const unfollow = () => {
+  
+}
+
 export {
-  getSubscriptions,
+  follow,
+  unfollow,
+  getMyFollowing,
+  getMyHistory,
+  getMyRecommended,
+  getMySubscriptions,
   getNumNotifications,
-  getNotifications,
+  getMyNotifications,
+  getMyPodcasts,
+  getHistory,
   subscribe,
   unsubscribe,
   getPodcasts,
   getEpisodes,
   markAsPlayed,
   newPodcast,
-  getRecommended,
   login,
   register,
   getUserId,
-  getUserPodcasts,
   getPodcastInfo,
-  getHistory,
 };

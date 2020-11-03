@@ -17,7 +17,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import MenuItem from "@material-ui/core/MenuItem";
 import CheckIcon from "@material-ui/icons/Check";
 import theme from "../theme";
-import { getUserPodcasts } from "../api/query";
+import { getMyPodcasts } from "../api/query";
 import { newPodcast, updatePodcast, newEpisode } from "../api/mutation";
 import getDominantColour from "../common/dominantColor";
 import Spinner from "../components/Spinner";
@@ -213,7 +213,7 @@ export default function Upload({ userToken }) {
 
   // Add all the podcasts the user has created already
   useEffect(() => {
-    getUserPodcasts(user.token).then((podcasts) => {
+    getMyPodcasts(user.token).then((podcasts) => {
       setFields((prevState) => ({
         ...prevState,
         allPodcasts: prevState.allPodcasts.concat(podcasts),

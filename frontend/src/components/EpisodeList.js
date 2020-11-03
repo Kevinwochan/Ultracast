@@ -62,6 +62,8 @@ export default function Playlist({ episodes, state }) {
                 <CircularProgress />
               </TableCell>
             </TableRow>
+          ) : episodes.length === 0 ? (
+            <Typography variant="subtitle1">No episodes to display</Typography>
           ) : (
             episodes.map((episode, index) => (
               <TableRow key={episode.id}>
@@ -78,9 +80,7 @@ export default function Playlist({ episodes, state }) {
                   </Typography>
                 </TableCell>
                 <TableCell>{toHHMMSS(episode.length)}</TableCell>
-                <TableCell>
-                  {episode.date.toDateString()}
-                </TableCell>
+                <TableCell>{episode.date.toDateString()}</TableCell>
               </TableRow>
             ))
           )}
