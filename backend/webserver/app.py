@@ -6,7 +6,6 @@ from . import podcast_engine
 from flask import Flask
 from flask_graphql import GraphQLView
 from flask_cors import CORS
-from flask_mongoengine import MongoEngine
 import flask_jwt_extended
 
 import json
@@ -14,25 +13,17 @@ import datetime
 
 from graphene_file_upload.flask import FileUploadGraphQLView
 
+jwt = flask_jwt_extended.JWTManager()
 # App config
-
-mongo = MongoEngine()
-
 
 def create_app(config=None):
     app = Flask(__name__)
     app.config["JWT_SECRET_KEY"] = "something"
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=60*60)
     app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(minutes=75)
-    app.config['MONGODB_CONNECT'] = False
 
-    app.config['MONGODDB_SETTINGS'] = {
-            'host': db.MONGO_URI
-        }
+    db.connect_mongo()
 
-    mongo.init_app(app)
-
-    jwt = flask_jwt_extended.JWTManager()
     jwt.init_app(app)
 
     '''
@@ -60,6 +51,7 @@ def create_app(config=None):
         view_func=FileUploadGraphQLView.as_view('graphql', schema=schema, graphiql=True, middleware=middleware)
         #view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True)
     )
+
     return app
 
 if __name__ == '__main__':
