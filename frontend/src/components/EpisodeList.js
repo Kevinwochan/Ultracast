@@ -1,4 +1,5 @@
 import React from "react";
+import { uid } from "react-uid";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -64,7 +65,7 @@ export default function Playlist({ episodes, state }) {
             </TableRow>
           ) : (
             episodes.map((episode, index) => (
-              <TableRow key={episode.id}>
+              <TableRow key={uid(episode)}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
                   <PodcastCover episode={episode} state={state} />
@@ -78,9 +79,7 @@ export default function Playlist({ episodes, state }) {
                   </Typography>
                 </TableCell>
                 <TableCell>{toHHMMSS(episode.length)}</TableCell>
-                <TableCell>
-                  {episode.date.toDateString()}
-                </TableCell>
+                <TableCell>{episode.date.toDateString()}</TableCell>
               </TableRow>
             ))
           )}
