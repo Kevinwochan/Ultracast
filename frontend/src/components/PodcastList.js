@@ -36,7 +36,7 @@ export default function PodcastList({ podcasts, state, creator }) {
         <Grid
           key={uid(podcast)}
           container
-          justify="center"
+          justify={creator ? "space-around" : "center"}
           alignItems="center"
           className={classes.podcast}
         >

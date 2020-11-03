@@ -40,11 +40,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Edit({ userToken }) {
   const classes = useStyles();
-  const [podcasts, setPodcasts] = useState("loader"); // TODO: paginate the podcasts
+  const [podcasts, setPodcasts] = useState("loader");
 
   useEffect(() => {
     getUserPodcastsInfo(userToken).then((data) => {
-      console.log(data);
       setPodcasts(data);
     });
   }, []);
