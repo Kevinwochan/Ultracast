@@ -25,12 +25,24 @@ class BackendApp(gunicorn.app.base.BaseApplication):
     def load(self):
         return self.application
 
+    def on_exit(self, server):
+        self.search_engine.shutdown()
+
+class Server:
+    def __init__(self):
+        self.app = None
+
+    def on_exit(self, server):
+        self.app.on_exit(server)
 
 if __name__ == '__main__':
+    server = Server()
     options = {
         'bind': '%s:%s' % ('127.0.0.1', '8080'),
         'workers': number_of_workers(),
+        'on_exit': server.on_exit
     }
     standalone_app = BackendApp(app.app, options)
+    server.app = standalone_app
     standalone_app.run()
     standalone_app.search_engine.shutdown()
