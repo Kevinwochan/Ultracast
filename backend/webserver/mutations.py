@@ -252,10 +252,16 @@ class UpdatePodcastMetadata(ClientIDMutation):
 
         if cover is not None:
             cover = cover.read()
-            podcast_metadata.cover_url = db.update_file(
-                    podcast_metadata.cover_url, cover, valid_mimes=VALID_IMAGE_FORMATS)
+            if podcast_metadata.cover_url is not None:
+                cover_url = db.update_file(
+                        podcast_metadata.cover_url, cover, valid_mimes=VALID_IMAGE_FORMATS)
+            else:
+                cover_url = db.add_file(data=cover, valid_mimes=VALID_IMAGE_FORMATS)
 
-        podcast_metadata.modify(**kwargs)
+            podcast_metadata.modify(cover_url=cover_url)
+
+        if len(kwargs) > 0:
+            podcast_metadata.modify(**kwargs)
 
         return UpdatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
