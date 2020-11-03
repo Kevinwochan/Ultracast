@@ -18,6 +18,7 @@ export function addAudio(state, { name, musicSrc, cover, id }) {
       musicSrc: musicSrc,
       cover: cover,
       id: id,
+      lyric: "hello"
     },
   ];
 
@@ -60,7 +61,7 @@ export default function Player({ state }) {
     showDownload: false,
     showPlayMode: true,
     showThemeSwitch: false,
-    showLyric: false,
+    showLyric: true,
     showDestroy: false,
     preload: false,
     remove: true,
