@@ -12,6 +12,7 @@ import queue
 from queue import Empty
 import threading
 import logging
+import asyncio
 
 API_KEY = "548eb1d95df6a4ac461e7a656230a1f9"
 ALGOLIA_ID = "DLUH4B7HCZ"
@@ -36,12 +37,9 @@ class SearchEngine:
     Then in another thread, when the queue is larger than BATCH_SIZE, triggers an upload
     '''
     def __init__(self):
-        self.algolia_client = SearchClient.create(ALGOLIA_ID, API_KEY)
         self.podcast_metadata_to_upload = queue.Queue() # thread safe queue
         self.is_shutdown = threading.Event()
         self.should_upload = threading.Event()
-        self.upload_thread = threading.Thread(target=self.upload_thread_cb)
-        self.upload_thread.start()
 
         # Register myself with mongo events
         mongoengine.signals.post_save.connect(self.podcast_episode_metadata_save_cb, 
@@ -55,6 +53,9 @@ class SearchEngine:
         self.podcast_metadata_to_upload.put(podcast_metadata.id)
         if self.podcast_metadata_to_upload.qsize() >= BATCH_SIZE:
             self.should_upload.set()
+            # trigger upload in new thread
+            asyncio.run(self.upload_thread)
+            
 
     def podcast_episode_metadata_save_cb(self, sender, document, created=None):
         assert(sender == models.PodcastEpisodeMetadata)
@@ -62,13 +63,13 @@ class SearchEngine:
         self.podcast_metadata_to_upload.put(podcast_episode_metadata.podcast_metadata.id)
         if self.podcast_metadata_to_upload.qsize() >= BATCH_SIZE:
             self.should_upload.set()
+            asyncio.run(self.upload_thread)
     
     def shutdown(self):
         self.is_shutdown.set()
 
-    def upload_thread_cb(self):
-        while not self.is_shutdown.is_set():
-            self.should_upload.wait(timeout=3) # run every 3s or when indicated
+    async def upload_thread(self):
+        async with SearchClient.create(ALGOLIA_ID, API_KEY) as algolia_client:
             self.should_upload.clear()
             if self.podcast_metadata_to_upload.qsize() >= BATCH_SIZE:
                 # Trigger an upload
@@ -82,15 +83,15 @@ class SearchEngine:
 
                 print("Uploading {} documents to algolia".format(len(to_upload)))
                 logging.info("Uploading {} documents to algolia".format(len(to_upload)))
-                self.upload_to_algolia("podcasts", 
+                self.upload_to_algolia(algolia_client, "podcasts", 
                         models.PodcastMetadata.objects(id__in=to_upload).only(*PODCAST_METADATA_FILEDS), 
                         query.PodcastMetadata)
 
-    def upload_podcasts(self):
+    async def upload_podcasts(self):
         return self.upload_to_algolia("podcasts", 
             models.PodcastMetadata.objects.only(*PODCAST_METADATA_FILEDS), query.PodcastMetadata)
 
-    def upload_to_algolia(self, index_name, mongo_objects, query_class):
+    async def upload_to_algolia(self, algolia_client, index_name, mongo_objects, query_class):
         index = self.algolia_client.init_index(index_name)
         records = []
         
@@ -104,9 +105,9 @@ class SearchEngine:
             if (len(records) % BATCH_SIZE == 0):
                 # Trigger an upload
                 logging.info("index: {} uploading {} documents".format(index_name, len(records)))
-                index.save_objects(records)
+                results = await index.save_objects_async(records)
                 records = []
 
         logging.info("index: {} uploading {} documents".format(index_name, len(records)))
-        index.save_objects(records)
+        results = await index.save_objects_async(records)
 
