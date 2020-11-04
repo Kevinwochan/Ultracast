@@ -20,7 +20,7 @@ ALGOLIA_ID = "DLUH4B7HCZ"
 Fields that will be forwarded to algolia
 Note you can use __ to go into embedded doc's
 '''
-PODCAST_METADATA_FILEDS = ["description", "keywords", "name", "publish_date", "episodes__description", 
+PODCAST_METADATA_FILEDS = ["description", "keywords", "name", "publish_date", "episodes__description", "cover_url",
         "episodes__keywords", "episodes__name", "episodes__publish_date"]
 
 USER_FIELDS = ["name", "published_podcasts"]
