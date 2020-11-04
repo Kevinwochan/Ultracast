@@ -168,6 +168,7 @@ export default function EditPodcast({ userToken }) {
           severity: "success",
           open: true,
         });
+        history.push(`/creators/podcasts/`);
       } else {
         setSnackbar({
           message: "Could not delete episode.",

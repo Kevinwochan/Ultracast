@@ -165,9 +165,6 @@ const updateEpisode = async (episode, token) => {
     episode.audio ? true : false
   );
 
-  console.log(episode);
-  console.log(data);
-
   return data.updatePodcastEpisode;
 };
 
@@ -186,7 +183,7 @@ const deleteEpisode = async (podcastId, token) => {
     token
   );
 
-  return data.deletePodcastMetadata;
+  return data.deletePodcastEpisode;
 };
 
 export {
