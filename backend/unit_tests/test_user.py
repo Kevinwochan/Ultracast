@@ -1,7 +1,7 @@
 import webserver
 from webserver.schema import schema
 import webserver.db
-from webserver.app import app
+from webserver.app import create_app
 
 import graphene
 import graphene.test
@@ -14,16 +14,18 @@ import dateutil
 
 class APITestCast(snapshottest.TestCase):
     jwt_token = None
+    app = create_app()
 
     def tearDown(self):
         # cleanup - delete user
-        query = '''
-        mutation delete_user {
-            deleteUser (input: {}){
-                success
-            }
-        }'''
-        self.execute_with_jwt(query)
+        if self.jwt_token is not None:
+            query = '''
+            mutation delete_user {
+                deleteUser (input: {}){
+                    success
+                }
+            }'''
+            self.execute_with_jwt(query)
 
     def execute_with_jwt(self, query, context={}, variables={}, **kwargs):
         json_request = {
@@ -31,7 +33,7 @@ class APITestCast(snapshottest.TestCase):
                 "variables": variables
                 }
 
-        with app.test_client() as c:
+        with self.app.test_client() as c:
             context["Authorization"] = "Bearer " + str(self.jwt_token)
             rv = c.post("/graphql", json=json_request, headers=context)
             result = rv.get_json()

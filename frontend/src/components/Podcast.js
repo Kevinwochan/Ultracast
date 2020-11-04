@@ -79,9 +79,9 @@ export function Playlist({ episodes, state, variant = "episode" }) {
                         <PodcastTitle episode={episode} />
                       )}
                       <Grid item lg={4}>
-                        <Link to={`/author/${episode.author.id}`}>
+                        <Link to={`/author/${episode.podcast.author.id}`}>
                           <Typography gutterBottom variant="subtitle1">
-                            {episode.author.name}
+                            {episode.podcast.author.name}
                           </Typography>
                         </Link>
                       </Grid>
@@ -242,9 +242,9 @@ export function LargePodcast({ state, episode }) {
             <b>{episode.podcast.title}</b>
           </Typography>
         </Link>
-        <Link to={`/author/${episode.author.id}`}>
+        <Link to={`/author/${episode.podcast.author.id}`}>
           <Typography variant="caption" className={classes.podcastDetails}>
-            {episode.author.name}
+            {episode.podcast.author.name}
           </Typography>
         </Link>
       </CardContent>
@@ -258,6 +258,10 @@ const coverStyles = makeStyles((theme) => ({
     position: "relative",
     cursor: "pointer",
   },
+  editItem: {
+    display: "inline-block",
+    position: "relative",
+  },
   podcastCover: {
     width: 150,
     height: 150,
@@ -270,7 +274,7 @@ const coverStyles = makeStyles((theme) => ({
 }));
 
 // Image for the podcast
-function PodcastCover({ episode, state }) {
+function PodcastCover({ episode, state, creator }) {
   const classes = coverStyles();
   const [play, updatePlay] = useState(false);
 
@@ -282,19 +286,21 @@ function PodcastCover({ episode, state }) {
     updatePlay(false);
   }
 
+  const updateAudioList = () => {
+    addAudio(state, {
+      name: episode.title,
+      musicSrc: episode.url,
+      cover: episode.podcast.image,
+      id: episode.id,
+    });
+  };
+
   return (
     <div
-      className={classes.podcastItem}
-      onMouseEnter={showPlay}
-      onMouseLeave={hidePlay}
-      onClick={() => {
-        addAudio(state, {
-          name: episode.title,
-          musicSrc: episode.url,
-          cover: episode.podcast.image,
-          id: episode.id,
-        });
-      }}
+      className={creator ? classes.editItem : classes.podcastItem}
+      onMouseEnter={creator ? null : showPlay}
+      onMouseLeave={creator ? null : hidePlay}
+      onClick={creator ? null : updateAudioList}
     >
       <img
         src={episode.podcast.image}
@@ -397,4 +403,4 @@ const SearchResult = ({ podcast }) => {
   );
 };
 
-export { PodcastCover, SearchResult };
+export { PodcastCover, SearchResult, PodcastLoader };

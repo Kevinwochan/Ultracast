@@ -186,15 +186,16 @@ class User(BusinessLayerObject):
         is_subscribed = podcast_episode_metadata_model.podcast_metadata in self._model.subscribed_podcasts
 
         episode_view = models.EpisodeView(country=country, browser=browser, is_subscribed=is_subscribed)
-        episode_view.save()
+        #episode_view.save()
 
         podcast_episode_metadata_model.views.append(episode_view)
         podcast_episode_metadata_model.save()
 
     def mark_podcast_listened(self, request_env, podcast_episode_metadata_model):
         # See if the user has already listened to this episode
-        num_entries =  0 #sum(entry.episode == podcast_episode_metadata_model 
-                #for entry in self._model.listen_history)
+        # @Connor not sure why this was being forced to 0
+        # Was breaking unit tests so I removed
+        num_entries = sum(entry.episode == podcast_episode_metadata_model for entry in self._model.listen_history)
 
         listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)    
 
