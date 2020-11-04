@@ -29,7 +29,7 @@ class PodcastMetadata(mongoengine.Document):
     subscribers = mongofields.ListField(mongofields.ReferenceField("User"))
 
 class EpisodeView(mongoengine.EmbeddedDocument):
-    country = mongofields.StringField()
+    lat_lon = mongofields.StringField()
     browser = mongofields.StringField()
     timestamp = mongofields.DateTimeField(default=datetime.datetime.now)
     is_subscribed = mongofields.BooleanField()
@@ -55,7 +55,7 @@ class Bookmark(mongoengine.Document):
     title = mongofields.StringField()
     description = mongofields.StringField()
     last_updated = mongofields.DateTimeField(default=datetime.datetime.now)
-    track_timestamp = mongofields.DateTimeField(required=True)
+    track_timestamp = mongofields.LongField(required=True)
     episode = mongofields.ReferenceField("PodcastEpisodeMetadata", required=True)
 
 class FollowingLastListenedEntry(mongoengine.Document):
