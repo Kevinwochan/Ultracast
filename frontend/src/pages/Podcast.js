@@ -70,7 +70,7 @@ export default function Podcast({ state }) {
   return (
     <>
       <Box className={classes.podcastHero}>
-        <Grid container spacing={2} justify="center" marginBottom={2}>
+        <Grid container spacing={2} justify="center">
           <Grid item xs={12} md={6} lg={4}>
             <Typography variant="subtitle2">PODCAST TITLE</Typography>
             <Typography variant="h4" className={classes.podcastTitle}>
@@ -81,9 +81,7 @@ export default function Podcast({ state }) {
             <Link to={`/author/${podcast.author.id}`}>
               <Typography variant="subtitle2">AUTHOR</Typography>
               <Typography variant="subtitle2">
-                <Link to={`/author/${podcast.author.id}`}>
                   {podcast.author.name}
-                </Link>
               </Typography>
             </Link>
           </Grid>
