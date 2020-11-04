@@ -281,7 +281,7 @@ class CreateBookmark(ClientIDMutation):
     class Input:
         title = graphene.String()
         description = graphene.String()
-        track_timestamp = graphene.Date(required=True)
+        track_timestamp = graphene.Int(required=True)
         episode = graphene.ID(required=True)
     
     @classmethod
