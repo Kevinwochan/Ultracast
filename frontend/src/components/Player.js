@@ -14,7 +14,7 @@ import IconButton from "@material-ui/core/IconButton";
 import ReactJkMusicPlayer from "react-jinke-music-player";
 import "react-jinke-music-player/assets/index.css";
 import "./player.css"; // "Override" the default jinke-music-player styles
-import { markAsPlayed } from "../api/query";
+import { markAsPlayed, saveBookmark } from "../api/query";
 import { toHHMMSS } from "../common/utils";
 
 // Add an audio to the sessionState audioList
@@ -72,7 +72,6 @@ export default function Player({ state }) {
   const bookmarkField = useRef(null);
 
   const openBookmarkMenu = (event) => {
-    console.log(audioInstance.current);
     setOpen(true);
   };
 
@@ -80,8 +79,9 @@ export default function Player({ state }) {
     setOpen(false);
   };
 
-  const saveBookmark = () => {
-    /* TODO send query */
+  const saveBookmarkHandler = () => {
+    console.log(sessionState.audioList);
+    //saveBookmark(sessionState.audioList[0].id,state[0].cookies.token);
     closeBookmarkMenu();
   };
 
@@ -91,10 +91,8 @@ export default function Player({ state }) {
   };
 
   const setPlaybackRate = (e) => {
-    // Brute force HTML way but it is what it is
     const rate = e.target.value;
-    const audio = document.querySelector("audio.music-player-audio");
-    audio.playbackRate = rate;
+    audioInstance.current.playbackRate = rate;
     updateState("playbackRate", rate);
   };
 
@@ -168,7 +166,7 @@ export default function Player({ state }) {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={saveBookmark}
+                    onClick={saveBookmarkHandler}
                     className={classes.bookmarkSave}
                     aria-label="save"
                     endIcon={<SaveIcon />}

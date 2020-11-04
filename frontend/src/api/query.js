@@ -706,8 +706,57 @@ const searchUser = async (email) => {
   return data.allUser.totalCount === 1 ? data.allUser.edges[0].node.id : null;
 };
 
+const getBookmarks = async (episodeId, token) => {
+  const data = await graphql(
+    `
+      query($episodeId: ID) {
+        currentUser {
+          bookmarks(episode: $episodeId) {
+            edges {
+              node {
+                id
+                description
+                trackTimestamp
+              }
+            }
+          }
+        }
+      }
+    `,
+    { episodeId: episodeId },
+    token
+  );
+
+  return data.currentUser.bookmarks.edges.map((bookmark) => bookmark.node);
+};
+
+const saveBookmark = async (episodeId, note, time, token) => {
+  const data = await graphql(
+    `
+      mutation($episodeId: ID, $title: String, $note: String, $time: Int) {
+        createBookmark(
+          input: {
+            episode: $episodeId
+            title: $title
+            note: $note
+            time: $time
+          }
+        ) {
+          success
+        }
+      }
+    `,
+    { episodeId: episodeId, title: "", note: note, time: time },
+    token
+  );
+
+  return data.createBookmark.success;
+};
+
 export {
   searchUser,
+  saveBookmark,
+  getBookmarks,
   getMyFollowing,
   getMyHistory,
   getMyRecommended,

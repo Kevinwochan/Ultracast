@@ -44,6 +44,7 @@ const graphql = async (query, variables, token = "", upload = false) => {
     }
   } catch (error) {
     if (error.response) {
+      console.log(error.response);
       const errors = error.response.data.errors;
       // Show the error
       console.error(

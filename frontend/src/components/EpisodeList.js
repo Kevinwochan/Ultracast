@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { uid } from "react-uid";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -12,6 +12,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Bookmarks from "../components/Bookmarks";
 import { PodcastCover } from "./Podcast";
 import { toHHMMSS } from "../common/utils";
+import { getBookmarks } from "../api/query";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
@@ -30,7 +31,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Playlist({ episodes, state }) {
   const classes = useStyles();
+  const [episodeBookmarks, setEpisodeBookmarks] = useState({});
 
+  useEffect(() => {
+    if (episodes === "loader") return;
+    episodes.forEach((episode) => {
+      const episodeId = episode.id;
+      getBookmarks(episode.id, state[0].cookies.token).then((bookmarks) => {
+        setEpisodeBookmarks((prevState) => ({
+          ...prevState,
+          episodeId: bookmarks,
+        }));
+      });
+    });
+  }, [state, episodes]);
+
+  console.log(episodeBookmarks);
   return (
     <TableContainer>
       <Table className={classes.table} aria-label="simple table">
@@ -67,7 +83,7 @@ export default function Playlist({ episodes, state }) {
                   <Typography variant="body2" gutterBottom>
                     {episode.description}
                   </Typography>
-                  </Bookmarks>
+                  {episode.bookmarks && <Bookmarks />}
                 </TableCell>
                 <TableCell>{toHHMMSS(episode.length)}</TableCell>
                 <TableCell>{episode.date.toDateString()}</TableCell>
