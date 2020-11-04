@@ -684,7 +684,30 @@ const getMySubscriptions = async (token) => {
   }));
 };
 
+/*
+looks for a user registered with the email address
+*/
+const searchUser = async (email) => {
+  const data = await graphql(
+    `
+      query($email: String!) {
+        allUser(email: $email, first: 1) {
+          totalCount
+          edges {
+            node {
+              id
+            }
+          }
+        }
+      }
+    `,
+    { email: email }
+  );
+  return data.allUser.totalCount === 1 ? data.allUser.edges[0].node.id : null;
+};
+
 export {
+  searchUser,
   getMyFollowing,
   getMyHistory,
   getMyRecommended,

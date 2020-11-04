@@ -10,6 +10,7 @@ import { makeStyles } from "@material-ui/core";
 import { addAudio } from "../components/Player";
 import Tooltip from "@material-ui/core/Tooltip";
 import { getMyFollowing } from "../api/query";
+import UserSearch from "../components/UserSearch";
 
 const useStyles = makeStyles((theme) => ({
   user: {
@@ -50,6 +51,7 @@ export default function Following({ state }) {
   return users.length > 0 ? (
     <>
       <Box m={5}>
+        <UserSearch />
         <Typography gutterBottom paragraph variant="h5">
           <b>Following</b>
         </Typography>
@@ -74,13 +76,20 @@ export default function Following({ state }) {
                   <Link to={`/user/${user.id}`}>
                     <Typography variant="subtitle1">{user.name}</Typography>
                   </Link>
-                  <Tooltip title="add to playlist">
+                  {user.episode ? (
+                    <Tooltip title="add to playlist">
+                      <Typography
+                        variant="subtitle2"
+                        onClick={playNow(user.episode)}
+                        className={classes.listenTo}
+                      >{`Listening to ${user.episode.title}`}</Typography>
+                    </Tooltip>
+                  ) : (
                     <Typography
                       variant="subtitle2"
-                      onClick={playNow(user.episode)}
                       className={classes.listenTo}
-                    >{`Listening to ${user.episode.title}`}</Typography>
-                  </Tooltip>
+                    >{`hasn't listened to a podcast yet`}</Typography>
+                  )}
                 </Grid>
               </Grid>
             </Grid>
@@ -89,7 +98,8 @@ export default function Following({ state }) {
       </Box>
     </>
   ) : (
-    <Box m={2}>
+    <Box m={5}>
+      <UserSearch />
       <SentimentVeryDissatisfiedIcon fontSize="large" />
       <Typography paragraph variant="subtitle1">
         Get connected and follow users
