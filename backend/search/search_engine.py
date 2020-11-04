@@ -20,7 +20,7 @@ ALGOLIA_ID = "DLUH4B7HCZ"
 Fields that will be forwarded to algolia
 Note you can use __ to go into embedded doc's
 '''
-PODCAST_METADATA_FILEDS = ["description", "keywords", "name", "publish_date", "episodes__description", 
+PODCAST_METADATA_FILEDS = ["description", "keywords", "name", "publish_date", "episodes__description", "cover_url",
         "episodes__keywords", "episodes__name", "episodes__publish_date"]
 
 USER_FIELDS = ["name", "published_podcasts"]
@@ -65,6 +65,11 @@ class SearchEngine:
     
     def shutdown(self):
         self.is_shutdown.set()
+
+    def clear_algolia(self):
+        for index_name in ["podcasts", "publishers"]:
+            index = self.algolia_client.init_index(index_name)
+            index.clear_objects()
 
     def upload_thread_cb(self):
         while not self.is_shutdown.is_set():
