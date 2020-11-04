@@ -21,7 +21,10 @@ MONGO_DB = 'ultracast_sandbox_static_files'
 
 MONGO_URI = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_DB}?authSource={MONGO_AUTH_DB}'
 
-connect(host=MONGO_URI)
+
+def connect_mongo():
+    connect(host=MONGO_URI)
+#connect(host=MONGO_URI)
 
 # Digital Ocean Space (Static-Files)
 

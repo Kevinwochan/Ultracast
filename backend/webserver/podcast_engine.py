@@ -7,8 +7,9 @@ import graphene
 import graphene.relay
 import werkzeug.security
 import logging
-
+import requests
 import datetime
+import json
 
 '''
 Business Logic Layer
@@ -179,16 +180,27 @@ class User(BusinessLayerObject):
         self._model.modify(last_login=self._model.login_time)
         self._model.modify(login_time=datetime.datetime.now())
 
-    def mark_podcast_listened(self, podcast_episode_metadata_model):
-        # See if the user has already listened to this episode
-        num_entries = sum(entry.episode == podcast_episode_metadata_model 
-                for entry in self._model.listen_history)
+    def add_view(self, request_env, podcast_episode_metadata_model):
+        response = requests.get("http://ipinfo.io/json")
+        lat_lon_list = response.json()['loc'].split(",")
+        lat_lon = json.dumps({'lat': lat_lon_list[0], 'lon': lat_lon_list[1]})
+        browser = request_env.get("HTTP_USER_AGENT", None)
+        is_subscribed = podcast_episode_metadata_model.podcast_metadata in self._model.subscribed_podcasts
 
-        listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)
-        
-        # Add view to podcast episode
-        podcast_episode_metadata_model.views.append(datetime.datetime.now)
+        episode_view = models.EpisodeView(lat_lon=lat_lon, browser=browser, is_subscribed=is_subscribed)
+
+        podcast_episode_metadata_model.views.append(episode_view)
         podcast_episode_metadata_model.save()
+
+    def mark_podcast_listened(self, request_env, podcast_episode_metadata_model):
+        # See if the user has already listened to this episode
+        # @Connor not sure why this was being forced to 0
+        # Was breaking unit tests so I removed
+        num_entries = sum(entry.episode == podcast_episode_metadata_model for entry in self._model.listen_history)
+
+        listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)    
+
+        self.add_view(request_env, podcast_episode_metadata_model)
 
         if (num_entries <= 0):
             # Create new entry
@@ -220,9 +232,9 @@ class User(BusinessLayerObject):
         self._model.modify(pull__following=user_model)
 
     def bookmark(self, track_timestamp, episode, title=None, description=None):
-        # self._model.modify(add_to_set__bookmarks=bookmark_model)
-        # stream = models.Stream(search=search, owner=self._model)
-        # stream.save()
+        if (track_timestamp < 0):
+            raise Exception("Track timestamp should be >= 0")
+
         bookmark = models.Bookmark(title=title, track_timestamp=track_timestamp, episode=episode)
         bookmark.save()
         self._model.modify(push__bookmarks=bookmark)

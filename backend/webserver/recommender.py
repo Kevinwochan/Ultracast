@@ -1,5 +1,6 @@
 import graphene
 from . import query
+from . import models
 
 # Returns a list of recommended podcasts given the following details about a user:
 #  - A list of existing podcast subscriptions
@@ -46,29 +47,37 @@ def calculateRecommendations(subscriptions, recentEpisodes, searches):
         parentPodcast = listenEntry.episode.podcast_metadata
         interestingPodcasts.add(parentPodcast)
 
-    schema = graphene.Schema(query=query.Query)
+    # schema = graphene.Schema(query=query.Query)
 
-    result = schema.execute(
-        """
-        query{
-            allPodcastMetadata{
-                edges{
-                    node{
-                        name
-                        id
-                    }
-                }
-            }
-        }
-        """
-    )
+    # result = schema.execute(
+    #     """
+    #     query{
+    #         allPodcastMetadata{
+    #             edges{
+    #                 node{
+    #                     name
+    #                     id
+    #                 }
+    #             }
+    #         }
+    #     }
+    #     """
+    # )
 
-    print(len(result.data['allPodcastMetadata']['edges']))
+    # print(len(result.data['allPodcastMetadata']['edges']))
+
+
+    # result = models.PodcastMetadata.objects().get()
+
+    # print(result)
 
     # Extensions:
     #  - Run some NLP (eg: TF-IDF) across all descriptions and pick podcasts 
     #    with the highest similarity score
     #      - Include the information from actual episodes in the search
+    #  - Cache the podcasts on startup or first run
+    #  - Using Mongo, filter the documents by asking to only retreive podcasts with relevant  categories/subcats
+    #      - https://docs.mongoengine.org/guide/querying.html
 
     return None
 
