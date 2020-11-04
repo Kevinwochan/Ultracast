@@ -17,13 +17,14 @@ class APITestCast(snapshottest.TestCase):
 
     def tearDown(self):
         # cleanup - delete user
-        query = '''
-        mutation delete_user {
-            deleteUser (input: {}){
-                success
-            }
-        }'''
-        self.execute_with_jwt(query)
+        if self.jwt_token is not None:
+            query = '''
+            mutation delete_user {
+                deleteUser (input: {}){
+                    success
+                }
+            }'''
+            self.execute_with_jwt(query)
 
     def execute_with_jwt(self, query, context={}, variables={}, **kwargs):
         json_request = {

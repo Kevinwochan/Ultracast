@@ -28,6 +28,12 @@ class PodcastMetadata(mongoengine.Document):
     # Nullify on delete
     subscribers = mongofields.ListField(mongofields.ReferenceField("User"))
 
+class EpisodeView(mongoengine.EmbeddedDocument):
+    country = mongofields.StringField()
+    browser = mongofields.StringField()
+    timestamp = mongofields.DateTimeField(default=datetime.datetime.now)
+    is_subscribed = mongofields.BooleanField()
+
 class PodcastEpisodeMetadata(mongoengine.Document):
     meta = {'collection': 'podcast_episode_metadata'}
 
@@ -42,13 +48,8 @@ class PodcastEpisodeMetadata(mongoengine.Document):
     podcast_metadata = mongofields.ReferenceField("PodcastMetadata", 
             reverse_delete_rule=mongoengine.CASCADE, required=True)
     
-    views = mongofields.ListField(mongofields.ReferenceField("EpisodeView"))
+    views = mongofields.EmbeddedDocumentListField(EpisodeView)
     
-class EpisodeView(mongoengine.Document):
-    country = mongofields.StringField()
-    browser = mongofields.StringField()
-    timestamp = mongofields.DateTimeField(default=datetime.datetime.now)
-    is_subscribed = mongofields.BooleanField()
 
 class Bookmark(mongoengine.Document):
     title = mongofields.StringField()
@@ -117,7 +118,7 @@ class User(mongoengine.Document):
 User.register_delete_rule(PodcastMetadata, "author", mongoengine.CASCADE)
 PodcastEpisodeMetadata.register_delete_rule(PodcastMetadata, "episodes", mongoengine.PULL)
 User.register_delete_rule(PodcastMetadata, "subscribers", mongoengine.PULL)
-PodcastEpisodeMetadata.register_delete_rule(EpisodeView, "views", mongoengine.CASCADE)
+#PodcastEpisodeMetadata.register_delete_rule(EpisodeView, "views", mongoengine.CASCADE)
 
 # A little mean but this is the only reverse delete rule we can use in embedded documents...
 PodcastEpisodeMetadata.register_delete_rule(User, "listen_history__episode", mongoengine.DENY)

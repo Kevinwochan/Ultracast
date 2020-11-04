@@ -212,5 +212,5 @@ class Query(graphene.ObjectType):
             description="Get the last episode listened to by each user that the logged in user follows")
 
 
-types = [PodcastEpisodeMetadata, PodcastMetadata, Stream]
+types = [PodcastEpisodeMetadata, PodcastMetadata, Stream, User]
 middleware = []
