@@ -181,12 +181,11 @@ class User(BusinessLayerObject):
 
     def add_view(self, request_env, podcast_episode_metadata_model):
         response = requests.get("http://ipinfo.io/json")
-        country = response.json()['country']
+        lat_lon = response.json()['loc']
         browser = request_env.get("HTTP_USER_AGENT", None)
         is_subscribed = podcast_episode_metadata_model.podcast_metadata in self._model.subscribed_podcasts
 
-        episode_view = models.EpisodeView(country=country, browser=browser, is_subscribed=is_subscribed)
-        #episode_view.save()
+        episode_view = models.EpisodeView(lat_lon=lat_lon, browser=browser, is_subscribed=is_subscribed)
 
         podcast_episode_metadata_model.views.append(episode_view)
         podcast_episode_metadata_model.save()
@@ -231,9 +230,9 @@ class User(BusinessLayerObject):
         self._model.modify(pull__following=user_model)
 
     def bookmark(self, track_timestamp, episode, title=None, description=None):
-        # self._model.modify(add_to_set__bookmarks=bookmark_model)
-        # stream = models.Stream(search=search, owner=self._model)
-        # stream.save()
+        if (track_timestamp < 0):
+            raise Exception("Track timestamp should be >= 0")
+
         bookmark = models.Bookmark(title=title, track_timestamp=track_timestamp, episode=episode)
         bookmark.save()
         self._model.modify(push__bookmarks=bookmark)
