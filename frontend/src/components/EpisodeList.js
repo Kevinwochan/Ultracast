@@ -9,7 +9,9 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Bookmarks from "../components/Bookmarks";
 import { PodcastCover } from "./Podcast";
+import { toHHMMSS } from "../common/utils";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
@@ -25,20 +27,6 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(5),
   },
 }));
-
-// https://stackoverflow.com/questions/1322732/convert-seconds-to-hh-mm-ss-with-javascript
-// probably a better way but ceebs
-const toHHMMSS = (secs) => {
-  var sec_num = parseInt(secs, 10);
-  var hours = Math.floor(sec_num / 3600);
-  var minutes = Math.floor(sec_num / 60) % 60;
-  var seconds = sec_num % 60;
-
-  return [hours, minutes, seconds]
-    .map((v) => (v < 10 ? "0" + v : v))
-    .filter((v, i) => v !== "00" || i > 0)
-    .join(":");
-};
 
 export default function Playlist({ episodes, state }) {
   const classes = useStyles();
@@ -77,6 +65,7 @@ export default function Playlist({ episodes, state }) {
                   <Typography variant="body2" gutterBottom>
                     {episode.description}
                   </Typography>
+                  </Bookmarks>
                 </TableCell>
                 <TableCell>{toHHMMSS(episode.length)}</TableCell>
                 <TableCell>{episode.date.toDateString()}</TableCell>

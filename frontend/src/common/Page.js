@@ -17,7 +17,6 @@ const useStyles = makeStyles(() => ({
     overflow: "auto",
     background: ucTheme.palette.background.default,
     minHeight: `calc(100vh - ${ucTheme.navBar.height}px)`,
-    marginBottom: ucTheme.player.height,
   },
   contentLoggedIn: {
     marginTop: 70,
