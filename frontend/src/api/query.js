@@ -101,7 +101,7 @@ const getRecommended = async (token) => {
       image: podcast.coverUrl,
       id: podcast.id,
       title: podcast.name,
-      author: podcast.author
+      author: podcast.author,
     };
   });
 };
@@ -177,6 +177,47 @@ const getUserPodcasts = async (token) => {
   });
 };
 
+const getUserPodcastsInfo = async (token) => {
+  const data = await graphql(
+    `
+      query getUserPodcasts {
+        currentUser {
+          publishedPodcasts {
+            edges {
+              node {
+                name
+                id
+                description
+                coverUrl
+                author {
+                  id
+                  name
+                }
+                episodes {
+                  totalCount
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.currentUser.publishedPodcasts.edges.map((n) => {
+    const podcast = n.node;
+    return {
+      id: podcast.id,
+      image: podcast.coverUrl,
+      title: podcast.name,
+      description: podcast.description,
+      episodeCount: podcast.episodes.totalCount,
+    };
+  });
+};
+
 const getPodcastInfo = async (podcastId, userToken, episodes = true) => {
   const data = await graphql(
     `
@@ -218,22 +259,6 @@ const verboseEpisode = `
   }
 `;
 
-// Query for not a lot of info on an episode (like for the Dashboard)
-const compactEpisode = `
-  id
-  name
-  audioUrl
-  podcastMetadata {
-    name
-    id
-    coverUrl
-    author {
-      name
-      id
-    }
-  }
-`;
-
 // Turns the received data into episode data used in the FE
 const parseEpisode = (episode, verbose = true) => {
   const verboseInfo = {
@@ -245,11 +270,11 @@ const parseEpisode = (episode, verbose = true) => {
   return {
     title: episode.name,
     url: episode.audioUrl,
-    author: episode.podcastMetadata.author,
     podcast: {
       title: episode.podcastMetadata.name,
       id: episode.podcastMetadata.id,
       image: episode.podcastMetadata.coverUrl,
+      author: episode.podcastMetadata.author,
     },
     ...(verbose ? verboseInfo : null),
   };
@@ -599,6 +624,7 @@ export {
   register,
   getUserId,
   getUserPodcasts,
+  getUserPodcastsInfo,
   getPodcastInfo,
   getHistory,
 };
