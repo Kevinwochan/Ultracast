@@ -57,6 +57,7 @@ def main():
     # Keep only mapped urls
     df = df[df['id'].isin(list(episode_id_to_data.keys()))]
     # Write documents to mongodb
+    db.connect_mongo()
     write_to_db(df, podcasts_df, episode_id_to_data, podcast_id_to_cover_url)
     print(f"{OKGREEN}Finished Successfully{ENDCOL}")
 
@@ -232,7 +233,8 @@ def write_to_db(df, podcasts_df, episode_id_to_data, podcast_id_to_data):
     # Link users to podcasts
     print(f"{OKGREEN}Linking users to podcasts...{ENDCOL}")
     for podcast_id, user in podcast_id_to_user.items():
-        user.update(published_podcasts=podcast_id_to_podcast.get(podcast_id, []))
+        if podcast_id in podcast_id_to_podcast:
+            user.modify(push__published_podcasts=podcast_id_to_podcast.get(podcast_id))
 
 def write_users_to_db(podcasts_df):
     print(f"{OKGREEN}Creating users...{ENDCOL}")

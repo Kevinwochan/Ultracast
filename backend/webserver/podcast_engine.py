@@ -9,6 +9,7 @@ import werkzeug.security
 import logging
 import requests
 import datetime
+import json
 
 '''
 Business Logic Layer
@@ -181,7 +182,8 @@ class User(BusinessLayerObject):
 
     def add_view(self, request_env, podcast_episode_metadata_model):
         response = requests.get("http://ipinfo.io/json")
-        lat_lon = response.json()['loc']
+        lat_lon_list = response.json()['loc'].split(",")
+        lat_lon = json.dumps({'lat': lat_lon_list[0], 'lon': lat_lon_list[1]})
         browser = request_env.get("HTTP_USER_AGENT", None)
         is_subscribed = podcast_episode_metadata_model.podcast_metadata in self._model.subscribed_podcasts
 
