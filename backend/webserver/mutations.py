@@ -79,6 +79,7 @@ class CreatePodcastEpisodeMutation(ClientIDMutation):
 
 class DeletePodcastEpisode(ClientIDMutation):
     success = graphene.Boolean()
+    podcast_metadata = graphene.Field(query.PodcastMetadata)
 
     class Input:
         # Can provide either id
@@ -90,21 +91,24 @@ class DeletePodcastEpisode(ClientIDMutation):
         
         # Lookup the mongodb object from the relay Node ID
         podcast_episode = schema.get_node_from_global_id(info=info, global_id=podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
-        podcast_metadata = podcast_episode.podcast_metadata.get()
+        podcast_metadata = podcast_episode.podcast_metadata
         
         assert_podcast_edit_permission(podcast_metadata)
 
-        podcast_metadata.episodes.filter(episode=podcast_episode).delete()
+        podcast_metadata.modify(pull__episodes=podcast_episode)
         podcast_metadata.save()
 
         # Remove episode from any subscribers listen history 
         # This may be a little slow...
         models.User.objects.update(pull__listen_history__episode=podcast_episode)
+
+        # Finally delete the episode
+        podcast_episode.delete()
         
         if podcast_episode.audio_url is not None:
             db.remove_file(podcast_episode.audio_url)
 
-        return DeletePodcastEpisode(success=True)
+        return DeletePodcastEpisode(success=True, podcast_metadata=podcast_metadata)
 
 class UpdatePodcastEpisode(ClientIDMutation):
     podcast_metadata = graphene.Field(query.PodcastMetadata)

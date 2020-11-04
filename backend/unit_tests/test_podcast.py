@@ -396,6 +396,35 @@ class CreatePodcastTest(snapshottest.TestCase):
 
         self.assertMatchSnapshot(result, "Updating podcast episode changes episode")
 
+    def test_delete_podcast_episode(self):
+        podcast_metadata_id = self.createPodcast()
+        podcast_episode_id = self.createPodcastEpisode(podcast_metadata_id)
+
+        delete_query = '''
+            mutation delete($id: ID!) {
+                deletePodcastEpisode(
+                    input: {
+                        podcastEpisodeMetadataId: $id
+                    }) {
+                        success
+                        podcastMetadata {
+                            name
+                            episodes {
+                                edges {
+                                    node {
+                                        name
+                                    }
+                                }
+                                totalCount
+                            }
+                        }
+                    }
+                }'''
+        result = self.execute_with_jwt(delete_query, 
+                variables={"id": podcast_episode_id})
+        self.assertMatchSnapshot(result, "Podcast episode is deleted")
+
+
     def test_subscribe(self):
         podcast_metadata_id = self.createPodcast()
 

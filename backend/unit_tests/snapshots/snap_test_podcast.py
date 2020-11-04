@@ -119,6 +119,22 @@ snapshots['CreatePodcastTest::test_delete_podcast_1_episode_1_listener Podcast e
     }
 }
 
+snapshots['CreatePodcastTest::test_delete_podcast_episode Podcast episode is deleted'] = {
+    'data': {
+        'deletePodcastEpisode': {
+            'podcastMetadata': {
+                'episodes': {
+                    'edges': [
+                    ],
+                    'totalCount': 0
+                },
+                'name': 'testy_podcast'
+            },
+            'success': True
+        }
+    }
+}
+
 snapshots['CreatePodcastTest::test_delete_podcast_no_episode 1'] = {
     'data': {
         'deletePodcastMetadata': {
