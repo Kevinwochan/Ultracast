@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import { useParams } from "react-router-dom";
-import { getPodcasts, getSubscriptions } from "../api/query";
+import { getPodcasts, getMySubscriptions } from "../api/query";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Divider from "@material-ui/core/Divider";
 import PodcastPlaylist from "../components/PodcastList";
@@ -51,7 +51,7 @@ export default function Author({ state }) {
   useEffect(() => {
     getPodcasts(id).then((authorInfo) => {
       // initalise podcast.subscribed
-      getSubscriptions(state[0].cookies.token).then((data) => {
+      getMySubscriptions(state[0].cookies.token).then((data) => {
         const subscriptions = data.map((podcast) => podcast.id);
         authorInfo.podcasts.forEach((podcast) => {
           podcast.subscribed = subscriptions.includes(podcast.id);

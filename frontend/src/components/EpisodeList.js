@@ -51,6 +51,8 @@ export default function Playlist({ episodes, state }) {
                 <CircularProgress />
               </TableCell>
             </TableRow>
+          ) : episodes.length === 0 ? (
+            <Typography variant="subtitle1">No episodes to display</Typography>
           ) : (
             episodes.map((episode, index) => (
               <TableRow key={uid(episode)}>

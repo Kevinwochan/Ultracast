@@ -1,13 +1,15 @@
 import webserver
 from webserver.schema import schema
 import webserver.db
-from webserver.app import app
+from webserver.app import create_app
 
 import graphene
 import graphene.test
 import unittest
 import snapshottest
 import json
+
+app = create_app()
 
 class CreatePodcastTest(snapshottest.TestCase):
     user_id = None
@@ -359,6 +361,69 @@ class CreatePodcastTest(snapshottest.TestCase):
             '''
         variables = {"podcast_id": podcast_metadata_id}
         self.assertMatchSnapshot(self.execute_with_jwt(update_query, variables=variables))
+
+    def test_update_podcast_episode(self):
+        podcast_metadata_id = self.createPodcast()
+        podcast_episode_id = self.createPodcastEpisode(podcast_metadata_id)
+
+        update_query = '''
+            mutation updatePodcastEpisode(
+                $id: ID!
+                $name: String
+                $description: String
+                $keywords: [String]
+                ) {
+                  updatePodcastEpisode(
+                    input: {
+                      podcastEpisodeMetadataId: $id
+                      name: $name
+                      description: $description
+                      keywords: $keywords
+                    }
+                  ) {
+                    success
+                    podcastEpisodeMetadata {
+                        name
+                        description
+                        keywords
+                    }
+                  }
+                }
+                '''
+        result = self.execute_with_jwt(update_query, 
+                variables={"id": podcast_episode_id, "name": "an updated episode name", 
+                    "description": "please work for me bby", "keywords": ["one", "two?", "new!"]})
+
+        self.assertMatchSnapshot(result, "Updating podcast episode changes episode")
+
+    def test_delete_podcast_episode(self):
+        podcast_metadata_id = self.createPodcast()
+        podcast_episode_id = self.createPodcastEpisode(podcast_metadata_id)
+
+        delete_query = '''
+            mutation delete($id: ID!) {
+                deletePodcastEpisode(
+                    input: {
+                        podcastEpisodeMetadataId: $id
+                    }) {
+                        success
+                        podcastMetadata {
+                            name
+                            episodes {
+                                edges {
+                                    node {
+                                        name
+                                    }
+                                }
+                                totalCount
+                            }
+                        }
+                    }
+                }'''
+        result = self.execute_with_jwt(delete_query, 
+                variables={"id": podcast_episode_id})
+        self.assertMatchSnapshot(result, "Podcast episode is deleted")
+
 
     def test_subscribe(self):
         podcast_metadata_id = self.createPodcast()
