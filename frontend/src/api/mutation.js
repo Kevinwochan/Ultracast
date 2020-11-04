@@ -138,4 +138,62 @@ const newEpisode = async (podcastEpisode, token) => {
   return data.createPodcastEpisode !== null;
 };
 
-export { newPodcast, updatePodcast, deletePodcast, newEpisode };
+const updateEpisode = async (episode, token) => {
+  const data = await graphql(
+    `mutation updatePodcastEpisode(
+      $id: ID!
+      ${episode.name ? "$name: String" : ""}
+      ${episode.description ? "$description: String" : ""}
+      ${episode.audio ? "$audio: Upload" : ""}
+      $keywords: [String]
+    ) {
+      updatePodcastEpisode(
+        input: {
+          podcastEpisodeMetadataId: $id
+          ${episode.name ? "name: $name" : ""}
+          ${episode.description ? "description: $description" : ""}
+          ${episode.audio ? "audio: $audio" : ""}
+          keywords: $keywords
+        }
+      ) {
+        success
+      }
+    }
+    `,
+    episode,
+    token,
+    episode.audio ? true : false
+  );
+
+  console.log(episode);
+  console.log(data);
+
+  return data.updatePodcastEpisode;
+};
+
+const deleteEpisode = async (podcastId, token) => {
+  const data = await graphql(
+    `
+      mutation delete($id: ID!) {
+        deletePodcastEpisode(input: { podcastEpisodeMetadataId: $id }) {
+          success
+        }
+      }
+    `,
+    {
+      id: podcastId,
+    },
+    token
+  );
+
+  return data.deletePodcastMetadata;
+};
+
+export {
+  newPodcast,
+  updatePodcast,
+  deletePodcast,
+  newEpisode,
+  updateEpisode,
+  deleteEpisode,
+};

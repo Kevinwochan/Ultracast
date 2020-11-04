@@ -258,6 +258,10 @@ const coverStyles = makeStyles((theme) => ({
     position: "relative",
     cursor: "pointer",
   },
+  editItem: {
+    display: "inline-block",
+    position: "relative",
+  },
   podcastCover: {
     width: 150,
     height: 150,
@@ -293,7 +297,7 @@ function PodcastCover({ episode, state, creator }) {
 
   return (
     <div
-      className={classes.podcastItem}
+      className={creator ? classes.editItem : classes.podcastItem}
       onMouseEnter={creator ? null : showPlay}
       onMouseLeave={creator ? null : hidePlay}
       onClick={creator ? null : updateAudioList}

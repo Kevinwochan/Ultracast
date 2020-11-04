@@ -13,7 +13,12 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import MuiAlert from "@material-ui/lab/Alert";
 import React, { useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import { updatePodcast, deletePodcast } from "../api/mutation";
+import {
+  updatePodcast,
+  deletePodcast,
+  updateEpisode,
+  deleteEpisode,
+} from "../api/mutation";
 import { getEpisodes } from "../api/query";
 import EditEpisodeList from "../components/EditEpisodeList";
 import { PodcastLoader } from "../components/Podcast";
@@ -141,6 +146,38 @@ export default function EditPodcast({ userToken }) {
     }));
   };
 
+  const updateEp = (epInfo, onSuccess) => {
+    updateEpisode(epInfo, userToken).then((data) => {
+      if (data.success) {
+        onSuccess();
+      } else {
+        setSnackbar({
+          message: "Could not update episode.",
+          severity: "error",
+          open: true,
+        });
+      }
+    });
+  };
+
+  const deleteEp = (id) => {
+    deleteEpisode(id, userToken).then((data) => {
+      if (data.success) {
+        setSnackbar({
+          message: "Deleted episode.",
+          severity: "success",
+          open: true,
+        });
+      } else {
+        setSnackbar({
+          message: "Could not delete episode.",
+          severity: "error",
+          open: true,
+        });
+      }
+    });
+  };
+
   // Get the podcast and episode info
   useEffect(() => {
     getEpisodes(podcastId).then((podcastInfo) => {
@@ -241,7 +278,6 @@ export default function EditPodcast({ userToken }) {
             {podcast.description}
           </Typography>
         )}
-        {/* TODO add in cover image field */}
         {editing ? (
           <Grid container spacing={2} alignItems="center">
             <Grid item xs style={{ flexGrow: 0.3 }}>
@@ -301,7 +337,12 @@ export default function EditPodcast({ userToken }) {
         </Grid>
       </Box>
       <Divider variant="fullWidth" />
-      <EditEpisodeList episodes={episodes} podcastId={podcastId} />
+      <EditEpisodeList
+        episodes={episodes}
+        updateEp={updateEp}
+        deleteEp={deleteEp}
+        setSnackbar={setSnackbar}
+      />
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
