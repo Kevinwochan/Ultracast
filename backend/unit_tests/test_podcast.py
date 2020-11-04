@@ -1,13 +1,15 @@
 import webserver
 from webserver.schema import schema
 import webserver.db
-from webserver.app import app
+from webserver.app import create_app
 
 import graphene
 import graphene.test
 import unittest
 import snapshottest
 import json
+
+app = create_app()
 
 class CreatePodcastTest(snapshottest.TestCase):
     user_id = None

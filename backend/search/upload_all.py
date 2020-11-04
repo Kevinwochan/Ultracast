@@ -94,6 +94,7 @@ def upload_to_algolia(algolia_client, index_name, mongo_objects, query_class):
 
 
 if __name__ == "__main__":
+    db.connect_mongo()
     algolia_client = SearchClient.create(ALGOLIA_ID, API_KEY)
 
     # Creates two indexes - one for podcasts and another for publishers

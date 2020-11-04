@@ -66,6 +66,11 @@ class SearchEngine:
     def shutdown(self):
         self.is_shutdown.set()
 
+    def clear_algolia(self):
+        for index_name in ["podcasts", "publishers"]:
+            index = self.algolia_client.init_index(index_name)
+            index.clear_objects()
+
     def upload_thread_cb(self):
         while not self.is_shutdown.is_set():
             self.should_upload.wait(timeout=3) # run every 3s or when indicated
