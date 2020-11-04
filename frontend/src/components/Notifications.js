@@ -85,7 +85,7 @@ const Notifications = ({ state }) => {
   return (
     <>
       <IconButton color="secondary" onClick={handleClick}>
-        <Badge badgeContent={count}>
+        <Badge badgeContent={count} color="error">
           <NotificationsIcon />
         </Badge>
       </IconButton>

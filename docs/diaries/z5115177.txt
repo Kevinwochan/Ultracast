@@ -51,3 +51,20 @@ I also realised that each download of an episode (often >50MB) can take a notici
 amount of time and graphql doesn't support streaming. For the next sprint I am
 going to look into how we can stream our audio to the frontend so the user can have a
 low latency experience.
+
+Week 6
+
+The issue of streaming was resolved by creating a remote service which hosts static files 
+(Ocean Digitals "Spaces" - like AWS's S3 buckets). The audio tag in html was found to stream 
+from files hosted fine. For the next sprint I'm looking at verifying uploads by MIME type
+and well as creating a duration field for the podcast episode to record it's length in
+seconds.
+
+Week 7
+
+The duration field and verification of uploaded media was successful. We were fortunate 
+that the library for checking the file check had the required C library installed on CSE 
+as this would have been a difficult challenge otherwise.
+I also added the inital backend logic for podcast bookmarks. For the next sprint 
+I am going to create the backend logic to do with statistics about views for podcast 
+episodes and following other users.

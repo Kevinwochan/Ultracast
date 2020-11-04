@@ -1,4 +1,5 @@
 import React from "react";
+import { uid } from "react-uid";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -66,7 +67,7 @@ export default function Playlist({ episodes, state }) {
             <Typography variant="subtitle1">No episodes to display</Typography>
           ) : (
             episodes.map((episode, index) => (
-              <TableRow key={episode.id}>
+              <TableRow key={uid(episode)}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
                   <PodcastCover episode={episode} state={state} />

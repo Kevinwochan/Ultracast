@@ -74,6 +74,12 @@ class PodcastMetadata(MongoengineObjectType):
         filter_args = {"hackedy hack hack": graphene.String}
         connection_class = EdgeCountedConnection
 
+class EpisodeView(MongoengineObjectType):
+    class Meta:
+        model = models.EpisodeView
+        interfaces = (Node,)
+        connection_class = EdgeCountedConnection
+
 class ListenHistoryEntry(MongoengineObjectType):
     class Meta:
         model = models.ListenHistoryEntry
@@ -206,5 +212,5 @@ class Query(graphene.ObjectType):
             description="Get the last episode listened to by each user that the logged in user follows")
 
 
-types = [PodcastEpisodeMetadata, PodcastMetadata, Stream]
+types = [PodcastEpisodeMetadata, PodcastMetadata, Stream, User]
 middleware = []

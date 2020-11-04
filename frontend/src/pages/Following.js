@@ -8,7 +8,7 @@ import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissa
 import { makeStyles } from "@material-ui/core";
 import { addAudio } from "../components/Player";
 import Tooltip from "@material-ui/core/Tooltip";
-import { getFollowing } from "../api/query";
+import { getMyFollowing } from "../api/query";
 
 let usersList = [
   {
@@ -79,9 +79,9 @@ export default function Social({ state }) {
   const classes = useStyles();
 
   useEffect(() => {
-    /*getFollowing(state[0].cookies.token).then((users) => {
+    getMyFollowing(state[0].cookies.token).then((users) => {
       setFollowing(users);
-    });*/
+    });
   }, [state]);
 
   const playNow = (episode) => {

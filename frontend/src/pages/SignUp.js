@@ -43,12 +43,13 @@ export default function SignUp({ handleCookie }) {
 
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
+  const nameRef = React.useRef();
   const history = useHistory();
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    register(emailRef.current.value, passwordRef.current.value).then((data) => {
+    register(nameRef.current.value, emailRef.current.value, passwordRef.current.value).then((data) => {
       console.log(data);
       if (data.success) {
         handleCookie("token", data.token);
@@ -72,6 +73,18 @@ export default function SignUp({ handleCookie }) {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               {message && <Alert severity="error">{message}</Alert>}
+            </Grid>
+              <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="name"
+                label="Name"
+                name="name"
+                autoComplete="given-name"
+                inputRef={nameRef}
+              />
             </Grid>
             <Grid item xs={12}>
               <TextField

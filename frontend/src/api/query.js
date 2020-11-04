@@ -32,10 +32,17 @@ const login = async (email, password) => {
 /*
 Registers a email password combination as user account
 */
-const register = async (email, password) => {
+const register = async (name, email, password) => {
   const data = await graphql(
-    "mutation($email: String!, $password: String!) {createUser(input: {email: $email, password: $password}) {success token failWhy}}",
+    `mutation($name: String, $email: String!, $password: String!) {
+      createUser(input: {name: $name, email: $email, password: $password}) {
+        success
+        token
+        failWhy
+      }
+    }`,
     {
+      name: name,
       email: `${email}`,
       password: `${password}`,
     }
@@ -90,29 +97,11 @@ const getMyRecommended = async (token) => {
 
   return data.recommendations.edges.map((n) => {
     const podcast = n.node;
-    // Deal with podcasts that have no episodes
-    const e = podcast.episodes.edges[0] ?? {
-      node: {
-        audioUrl: "",
-        id: "",
-        name: "",
-      },
-    };
-    const episode = e.node;
-
     return {
-      url: episode.audioUrl,
-      id: episode.id,
-      title: episode.name,
-      podcast: {
-        image: podcast.coverUrl,
-        id: podcast.id,
-        title: podcast.name,
-      },
-      author: {
-        name: podcast.author.name,
-        id: podcast.author.id,
-      },
+      image: podcast.coverUrl,
+      id: podcast.id,
+      title: podcast.name,
+      author: podcast.author,
     };
   });
 };
@@ -222,7 +211,7 @@ const getMyHistory = async (token, verbose = true) => {
  *
  * @param {string} token the JWT token of the usr
  */
-const getMyPodcasts = async (token) => {
+const getUserPodcasts = async (token) => {
   const data = await graphql(
     `
       query {
@@ -251,6 +240,47 @@ const getMyPodcasts = async (token) => {
       title: podcast.name,
       description: podcast.description,
       cover: podcast.coverUrl,
+    };
+  });
+};
+
+const getUserPodcastsInfo = async (token) => {
+  const data = await graphql(
+    `
+      query getUserPodcasts {
+        currentUser {
+          publishedPodcasts {
+            edges {
+              node {
+                name
+                id
+                description
+                coverUrl
+                author {
+                  id
+                  name
+                }
+                episodes {
+                  totalCount
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.currentUser.publishedPodcasts.edges.map((n) => {
+    const podcast = n.node;
+    return {
+      id: podcast.id,
+      image: podcast.coverUrl,
+      title: podcast.name,
+      description: podcast.description,
+      episodeCount: podcast.episodes.totalCount,
     };
   });
 };
@@ -296,22 +326,6 @@ const verboseEpisode = `
   }
 `;
 
-// Query for not a lot of info on an episode (like for the Dashboard)
-const compactEpisode = `
-  id
-  name
-  audioUrl
-  podcastMetadata {
-    name
-    id
-    coverUrl
-    author {
-      name
-      id
-    }
-  }
-`;
-
 // Turns the received data into episode data used in the FE
 const parseEpisode = (episode, verbose = true) => {
   const verboseInfo = {
@@ -323,11 +337,11 @@ const parseEpisode = (episode, verbose = true) => {
   return {
     title: episode.name,
     url: episode.audioUrl,
-    author: episode.podcastMetadata.author,
     podcast: {
       title: episode.podcastMetadata.name,
       id: episode.podcastMetadata.id,
       image: episode.podcastMetadata.coverUrl,
+      author: episode.podcastMetadata.author,
     },
     ...(verbose ? verboseInfo : null),
   };
@@ -679,7 +693,6 @@ export {
   getMySubscriptions,
   getNumNotifications,
   getMyNotifications,
-  getMyPodcasts,
   getHistory,
   subscribe,
   unsubscribe,
@@ -690,5 +703,7 @@ export {
   login,
   register,
   getUserId,
+  getUserPodcasts,
+  getUserPodcastsInfo,
   getPodcastInfo,
 };
