@@ -263,11 +263,11 @@ const parseEpisode = (episode, verbose = true) => {
   return {
     title: episode.name,
     url: episode.audioUrl,
-    author: episode.podcastMetadata.author,
     podcast: {
       title: episode.podcastMetadata.name,
       id: episode.podcastMetadata.id,
       image: episode.podcastMetadata.coverUrl,
+      author: episode.podcastMetadata.author,
     },
     ...(verbose ? verboseInfo : null),
   };
