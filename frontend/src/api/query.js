@@ -34,13 +34,15 @@ Registers a email password combination as user account
 */
 const register = async (name, email, password) => {
   const data = await graphql(
-    `mutation($name: String, $email: String!, $password: String!) {
-      createUser(input: {name: $name, email: $email, password: $password}) {
-        success
-        token
-        failWhy
+    `
+      mutation($name: String, $email: String!, $password: String!) {
+        createUser(input: { name: $name, email: $email, password: $password }) {
+          success
+          token
+          failWhy
+        }
       }
-    }`,
+    `,
     {
       name: name,
       email: `${email}`,
@@ -109,16 +111,19 @@ const getMyRecommended = async (token) => {
 const getMyFollowing = async (token) => {
   const data = await graphql(
     `
-    query{
-      allUser(first: 10){
-        edges {
-          node {
-            name
-            listenHistory(first:1) {
-              edges {
-                node {
-                  episode {
-                    ${verboseEpisode}
+    query {
+      currentUser {
+        following {
+          edges {
+            node {
+              id
+              name
+              listenHistory {
+                edges {
+                  node {
+                    episode {
+                      ${verboseEpisode}
+                    }
                   }
                 }
               }
@@ -131,10 +136,13 @@ const getMyFollowing = async (token) => {
     {},
     token
   );
-
-  return data.allUser.edges.filter((user) => user.node.listenHistory.edges.length > 0).map((user) => ({
+  return data.currentUser.following.edges.map((user) => ({
+    id: user.node.id,
     name: user.node.name,
-    episode: parseEpisode(user.node.listenHistory.edges[0].node, true),
+    episode:
+      user.node.listenHistory.edges.length > 0
+        ? parseEpisode(user.node.listenHistory.edges[0].node.episode, true)
+        : null,
   }));
 };
 
@@ -168,7 +176,7 @@ const getHistory = async (userId, token) => {
       name: data.allUser.edges[0].node.name,
     },
     history: data.allUser.edges[0].node.listenHistory.edges.map((episode) =>
-      parseEpisode(episode, true)
+      parseEpisode(episode.node.episode, true)
     ),
   };
 };
@@ -676,17 +684,7 @@ const getMySubscriptions = async (token) => {
   }));
 };
 
-const follow = () => {
-
-}
-
-const unfollow = () => {
-  
-}
-
 export {
-  follow,
-  unfollow,
   getMyFollowing,
   getMyHistory,
   getMyRecommended,

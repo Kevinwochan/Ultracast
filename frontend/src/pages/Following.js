@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { uid } from "react-uid";
 import { Link } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
@@ -9,48 +10,6 @@ import { makeStyles } from "@material-ui/core";
 import { addAudio } from "../components/Player";
 import Tooltip from "@material-ui/core/Tooltip";
 import { getMyFollowing } from "../api/query";
-
-let usersList = [
-  {
-    name: "Kevin",
-    id: "VXNlcjo1Zjk1NGZjMGZiNzFmZmFjZGZmMDA4MmQ=",
-    episode: {
-      title: "Episode 1: Giving Lawyer X a Voice",
-      description:
-        "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
-      image: "https://source.unsplash.com/random",
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-      author: { name: "Oliver Productions", id: 1 },
-      podcast: { id: 1, title: "Oli's True Crime Series" },
-    },
-  },
-  {
-    name: "John",
-    id: "VXNlcjo1Zjk1NGZjMGZiNzFmZmFjZGZmMDA4MmQ=",
-    episode: {
-      title: "Episode 1: Giving Lawyer X a Voice",
-      description:
-        "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
-      image: "https://source.unsplash.com/random",
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-      author: { name: "Oliver Productions", id: 1 },
-      podcast: { id: 1, title: "Oli's True Crime Series" },
-    },
-  },
-  {
-    name: "asdfasdf",
-    id: "VXNlcjo1Zjk1NGZjMGZiNzFmZmFjZGZmMDA4MmQ=",
-    episode: {
-      title: "Episode 1: Giving Lawyer X a Voice",
-      description:
-        "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
-      image: "https://source.unsplash.com/random",
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-      author: { name: "Oliver Productions", id: 1 },
-      podcast: { id: 1, title: "Oli's True Crime Series" },
-    },
-  },
-];
 
 const useStyles = makeStyles((theme) => ({
   user: {
@@ -72,10 +31,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-usersList = usersList.concat(usersList);
-
-export default function Social({ state }) {
-  const [users, setFollowing] = useState(usersList);
+export default function Following({ state }) {
+  const [users, setFollowing] = useState([]);
   const classes = useStyles();
 
   useEffect(() => {
@@ -92,17 +49,18 @@ export default function Social({ state }) {
 
   return users.length > 0 ? (
     <>
-      <Box m={2}>
-        <Typography gutterBottom variant="h5">
+      <Box m={5}>
+        <Typography gutterBottom paragraph variant="h5">
           <b>Following</b>
         </Typography>
         <Grid container spacing={3}>
           {users.map((user) => (
-            <Grid item xs={6}>
+            <Grid item xs={6} key={uid(user)}>
               <Grid
                 container
                 spacing={1}
                 alignItems="center"
+                wrap="nowrap"
                 className={classes.user}
               >
                 <Grid item>

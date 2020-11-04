@@ -186,7 +186,43 @@ const deleteEpisode = async (podcastId, token) => {
   return data.deletePodcastEpisode;
 };
 
+
+const follow = async (userId, token) => {
+  const data = await graphql(
+    `
+    mutation($userId: ID!){
+      followUser(input: {followUserId: $userId}){
+        success
+        message
+      }
+    }
+    `,
+    { userId: userId },
+    token
+  );
+  return data.followUser.success;
+};
+
+const unfollow = async (userId, token) => {
+  const data = await graphql(
+    `
+    mutation($userId: ID!){
+      unfollowUser(input: {unfollowUserId: $userId}){
+        success
+        message
+      }
+    }
+    `,
+    { userId: userId },
+    token
+  );
+  return data.unfollowUser.success;
+};
+
+
 export {
+  follow,
+  unfollow,
   newPodcast,
   updatePodcast,
   deletePodcast,

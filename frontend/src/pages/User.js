@@ -9,8 +9,8 @@ import FollowButton from "../components/FollowButton";
 
 const useStyles = makeStyles((theme) => ({
   hero: {
-    padding: theme.spacing(5)
-  }
+    padding: theme.spacing(5),
+  },
 }));
 
 export default function User({ state }) {
@@ -18,16 +18,17 @@ export default function User({ state }) {
   const [sessionState, updateState] = state;
   const [user, setUser] = useState("loader");
   const [history, setHistory] = useState("loader");
-  
+
   useEffect(() => {
-    getHistory(id, sessionState.cookies.token).then((data) => {
-      console.log(data);
-      let {user, history} = data
-      getMyFollowing(sessionState.cookies.token).then((users)=> {
-        user.following = users.map((user) => user.id).includes(id);
+    getMyFollowing(sessionState.cookies.token).then((users) => {
+      const following = users.map((user) => user.id).includes(id);
+      getHistory(id, sessionState.cookies.token).then((data) => {
+        let { user, history } = data;
+        user.id = id;
+        user.following = following;
+        setUser(user);
+        setHistory(history);
       });
-      setUser(user);
-      setHistory(history);
     });
   }, [id, sessionState]);
 
@@ -36,12 +37,16 @@ export default function User({ state }) {
   return (
     <>
       <Grid container className={classes.hero}>
-        <Grid item xs >
-        <Typography gutterBottom variant="h5">
-        <b>{user.name} listened to</b>
-        </Typography>
+        <Grid item xs>
+          <Typography gutterBottom variant="h5">
+            <b>{user.name} listened to</b>
+          </Typography>
         </Grid>
-        <Grid item xs><FollowButton user={user}/></Grid>
+        <Grid item xs>
+          {user.following !== undefined && (
+            <FollowButton state={state} user={user} />
+          )}
+        </Grid>
       </Grid>
       <EpisodePlaylist episodes={history} state={state} />
     </>

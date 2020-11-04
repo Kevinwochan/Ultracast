@@ -1,18 +1,16 @@
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
 import React, { useState } from "react";
-import { follow, unfollow } from "../api/query";
+import Button from "@material-ui/core/Button";
+import { follow, unfollow } from "../api/mutation";
 
-const FollowButton = ({ user, sessionState }) => {
+const FollowButton = ({ user, state }) => {
   const [following, setFollowing] = useState(user.following);
   const toggle = () => {
     if (following) {
       console.log(`unfollowing ${user.id}`);
-      unfollow(user.id, sessionState.cookies.token);
+      unfollow(user.id, state[0].cookies.token);
     } else {
-      follow(user.id, sessionState.cookies.token);
-      console.log(`following to ${user.id}`);
+      follow(user.id, state[0].cookies.token);
+      console.log(`following ${user.id}`);
     }
     setFollowing(!following);
   };
