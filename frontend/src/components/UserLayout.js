@@ -215,11 +215,6 @@ const ListenerSideBar = ({ open }) => {
       link: "/search",
     },
     {
-      name: "Explore",
-      icon: <ExploreIcon />,
-      link: "/explore",
-    },
-    {
       name: "Subscriptions",
       icon: <AlarmIcon />,
       link: "/subscriptions",
@@ -228,11 +223,6 @@ const ListenerSideBar = ({ open }) => {
       name: "Following",
       icon: <PeopleIcon />,
       link: "/following",
-    },
-    {
-      name: "Library",
-      icon: <LibraryMusicIcon />,
-      link: "/library",
     },
     {
       name: "Recently Listened",
