@@ -362,6 +362,40 @@ class CreatePodcastTest(snapshottest.TestCase):
         variables = {"podcast_id": podcast_metadata_id}
         self.assertMatchSnapshot(self.execute_with_jwt(update_query, variables=variables))
 
+    def test_update_podcast_episode(self):
+        podcast_metadata_id = self.createPodcast()
+        podcast_episode_id = self.createPodcastEpisode(podcast_metadata_id)
+
+        update_query = '''
+            mutation updatePodcastEpisode(
+                $id: ID!
+                $name: String
+                $description: String
+                $keywords: [String]
+                ) {
+                  updatePodcastEpisode(
+                    input: {
+                      podcastEpisodeMetadataId: $id
+                      name: $name
+                      description: $description
+                      keywords: $keywords
+                    }
+                  ) {
+                    success
+                    podcastEpisodeMetadata {
+                        name
+                        description
+                        keywords
+                    }
+                  }
+                }
+                '''
+        result = self.execute_with_jwt(update_query, 
+                variables={"id": podcast_episode_id, "name": "an updated episode name", 
+                    "description": "please work for me bby", "keywords": ["one", "two?", "new!"]})
+
+        self.assertMatchSnapshot(result, "Updating podcast episode changes episode")
+
     def test_subscribe(self):
         podcast_metadata_id = self.createPodcast()
 

@@ -125,7 +125,7 @@ class UpdatePodcastEpisode(ClientIDMutation):
         # Retrieve the episode
         podcast_episode_metadata = schema.get_node_from_global_id(info, 
                 podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
-        podcast_metadata = podcast_episode_metadata.podcast_metadata.get()
+        podcast_metadata = podcast_episode_metadata.podcast_metadata
 
         assert_podcast_edit_permission(podcast_metadata)
         

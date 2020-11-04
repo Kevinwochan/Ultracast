@@ -291,3 +291,20 @@ snapshots['CreatePodcastTest::test_update_podcast 1'] = {
         }
     }
 }
+
+snapshots['CreatePodcastTest::test_update_podcast_episode Updating podcast episode changes episode'] = {
+    'data': {
+        'updatePodcastEpisode': {
+            'podcastEpisodeMetadata': {
+                'description': 'please work for me bby',
+                'keywords': [
+                    'one',
+                    'two?',
+                    'new!'
+                ],
+                'name': 'an updated episode name'
+            },
+            'success': True
+        }
+    }
+}
