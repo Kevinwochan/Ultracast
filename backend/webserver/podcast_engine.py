@@ -7,7 +7,7 @@ import graphene
 import graphene.relay
 import werkzeug.security
 import logging
-
+import requests
 import datetime
 
 '''
@@ -179,16 +179,26 @@ class User(BusinessLayerObject):
         self._model.modify(last_login=self._model.login_time)
         self._model.modify(login_time=datetime.datetime.now())
 
-    def mark_podcast_listened(self, podcast_episode_metadata_model):
-        # See if the user has already listened to this episode
-        num_entries = sum(entry.episode == podcast_episode_metadata_model 
-                for entry in self._model.listen_history)
+    def add_view(self, request_env, podcast_episode_metadata_model):
+        response = requests.get("http://ipinfo.io/json")
+        country = response.json()['country']
+        browser = request_env.get("HTTP_USER_AGENT", None)
+        is_subscribed = podcast_episode_metadata_model.podcast_metadata in self._model.subscribed_podcasts
 
-        listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)
-        
-        # Add view to podcast episode
-        podcast_episode_metadata_model.views.append(datetime.datetime.now)
+        episode_view = models.EpisodeView(country=country, browser=browser, is_subscribed=is_subscribed)
+        episode_view.save()
+
+        podcast_episode_metadata_model.views.append(episode_view)
         podcast_episode_metadata_model.save()
+
+    def mark_podcast_listened(self, request_env, podcast_episode_metadata_model):
+        # See if the user has already listened to this episode
+        num_entries =  0 #sum(entry.episode == podcast_episode_metadata_model 
+                #for entry in self._model.listen_history)
+
+        listen_entry = models.ListenHistoryEntry(episode=podcast_episode_metadata_model)    
+
+        self.add_view(request_env, podcast_episode_metadata_model)
 
         if (num_entries <= 0):
             # Create new entry

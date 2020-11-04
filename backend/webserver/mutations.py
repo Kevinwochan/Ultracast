@@ -252,10 +252,16 @@ class UpdatePodcastMetadata(ClientIDMutation):
 
         if cover is not None:
             cover = cover.read()
-            podcast_metadata.cover_url = db.update_file(
-                    podcast_metadata.cover_url, cover, valid_mimes=VALID_IMAGE_FORMATS)
+            if podcast_metadata.cover_url is not None:
+                cover_url = db.update_file(
+                        podcast_metadata.cover_url, cover, valid_mimes=VALID_IMAGE_FORMATS)
+            else:
+                cover_url = db.add_file(data=cover, valid_mimes=VALID_IMAGE_FORMATS)
 
-        podcast_metadata.modify(**kwargs)
+            podcast_metadata.modify(cover_url=cover_url)
+
+        if len(kwargs) > 0:
+            podcast_metadata.modify(**kwargs)
 
         return UpdatePodcastMetadata(success=True, podcast_metadata=podcast_metadata)
 
@@ -364,7 +370,7 @@ class MarkPodcastListened(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, podcast_episode_metadata_id):
         user = flask_jwt_extended.current_user
         episode = schema.get_node_from_global_id(info, podcast_episode_metadata_id, only_type=query.PodcastEpisodeMetadata)
-        user.mark_podcast_listened(episode)
+        user.mark_podcast_listened(info.context.environ, episode)
         return MarkPodcastListened(success=True, user=user.model())
 
 class Login(ClientIDMutation):
