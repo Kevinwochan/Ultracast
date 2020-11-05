@@ -151,14 +151,16 @@ export function PodcastSlider({ state, podcasts }) {
     <Grid container spacing={4} className={classes.podcastContainer}>
       {podcasts.map((podcast) => (
         <Grid item key={uid(podcast)} xs={2} className={classes.podcast}>
-          <img
-            src={podcast.image}
-            alt={`${podcast.title} cover`}
-            className={classes.podcastCover}
-            onError={(e) => {
-              e.target.src = `/branding/square.svg`;
-            }}
-          ></img>
+          <Link to={`/podcast/${podcast.id}`}>
+            <img
+              src={podcast.image}
+              alt={`${podcast.title} cover`}
+              className={classes.podcastCover}
+              onError={(e) => {
+                e.target.src = `/branding/square.svg`;
+              }}
+            ></img>
+          </Link>
           <CardContent className={classes.podcastDetailsContainer}>
             <Link to={`/podcast/${podcast.id}`}>
               <Typography
