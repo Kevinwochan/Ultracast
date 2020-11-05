@@ -18,7 +18,7 @@ def calculateRecommendations(subscriptions, recentEpisodes, searches):
         print(f"\n{len(recentEpisodes)} recent episode(s) of type:\t{type(recentEpisodes[0])}")
         print(f"Example episode:\t\t'{recentEpisodes[0].episode.name}'\n")
     
-    
+
     # Elements to consider:
     # Subscriptions
     #  - Category + subcategory
@@ -30,46 +30,32 @@ def calculateRecommendations(subscriptions, recentEpisodes, searches):
     # Searches
     #  - Text
 
+
     # Current (simple) strategy:
     # Take the podcasts that are the parent of the recently played episodes
     # and combine them with the list of subscribed podcasts. Use this list
     # to perform the search, retrieving podcasts of the same category and
     # returning them.
 
-    # interestingPodcasts = subscriptions[:]
-    # for listenEntry in recentEpisodes:
-    #     parentPodcast = listenEntry.episode.podcast_metadata
-    #     if parentPodcast not in interestingPodcasts:
-    #         interestingPodcasts.append(parentPodcast)
-
+    # Combine subbed podcasts and parents of listened eps together
     interestingPodcasts = set(subscriptions)
     for listenEntry in recentEpisodes:
         parentPodcast = listenEntry.episode.podcast_metadata
         interestingPodcasts.add(parentPodcast)
 
-    # schema = graphene.Schema(query=query.Query)
+    # Make a set containing the Categories of each of the interestingPodcasts
+    interestingCategories = {podcast.category for podcast in interestingPodcasts}
+    # eg: {'Technology', 'Music', 'Business', 'Arts/Literature'}
 
-    # result = schema.execute(
-    #     """
-    #     query{
-    #         allPodcastMetadata{
-    #             edges{
-    #                 node{
-    #                     name
-    #                     id
-    #                 }
-    #             }
-    #         }
-    #     }
-    #     """
-    # )
+    # Grab all podcasts of the same category as interestingCategories
+    # Unfortunately 'recommendations = models.PodcastMetadata.objects(category=interestingCategories)' didn't work
+    recommendations = []
+    for category in interestingCategories:
+        recommendations.extend(models.PodcastMetadata.objects(category=category))
 
-    # print(len(result.data['allPodcastMetadata']['edges']))
-
-
-    # result = models.PodcastMetadata.objects().get()
-
-    # print(result)
+    # Ensure we aren't recommending a podcast they're already subbed to
+    # (For some reason 'recommendations.remove(subscriptions)' didn't work)
+    recommendations = [pod for pod in recommendations if pod not in subscriptions]
 
     # Extensions:
     #  - Run some NLP (eg: TF-IDF) across all descriptions and pick podcasts 
@@ -79,7 +65,7 @@ def calculateRecommendations(subscriptions, recentEpisodes, searches):
     #  - Using Mongo, filter the documents by asking to only retreive podcasts with relevant  categories/subcats
     #      - https://docs.mongoengine.org/guide/querying.html
 
-    return None
+    return recommendations
 
 
 # Grab the ids of the things that you're recommending, then return the query set. Eg:
@@ -112,3 +98,34 @@ def calculateRecommendations(subscriptions, recentEpisodes, searches):
 # Initially, make them all required - then think about how you might handle one or two being missing.
 # If all 3 are missing, you can just return a random selection of popular podcasts.
 
+
+
+
+# -=Depreciated Code=-
+# Combining subbed podcasts and parents of listened eps together
+# (less efficient than using a set on large datasets)
+    # interestingPodcasts = subscriptions[:]
+    # for listenEntry in recentEpisodes:
+    #     parentPodcast = listenEntry.episode.podcast_metadata
+    #     if parentPodcast not in interestingPodcasts:
+    #         interestingPodcasts.append(parentPodcast)
+
+# Retrieving all podcasts:
+    # schema = graphene.Schema(query=query.Query)
+
+    # result = schema.execute(
+    #     """
+    #     query{
+    #         allPodcastMetadata{
+    #             edges{
+    #                 node{
+    #                     name
+    #                     id
+    #                 }
+    #             }
+    #         }
+    #     }
+    #     """
+    # )
+
+    # print(len(result.data['allPodcastMetadata']['edges']))
