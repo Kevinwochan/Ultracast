@@ -79,6 +79,7 @@ const getUserId = async (token) => {
 
 /*
 Retrieves an array of podcast episodes recommended for the user
+TODO: add authors if possible
 */
 const getMyRecommended = async (token) => {
   const data = await graphql(
@@ -87,7 +88,9 @@ const getMyRecommended = async (token) => {
         recommendations {
           edges {
             node  {
-              ${compactPodcast}
+              name
+              id
+              coverUrl
             }
           }
         }
@@ -103,7 +106,10 @@ const getMyRecommended = async (token) => {
       image: podcast.coverUrl,
       id: podcast.id,
       title: podcast.name,
-      author: podcast.author,
+      author: {
+        name: '',
+        id: ''
+      },
     };
   });
 };
