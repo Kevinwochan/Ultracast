@@ -235,7 +235,7 @@ class User(BusinessLayerObject):
         if (track_timestamp < 0):
             raise Exception("Track timestamp should be >= 0")
 
-        bookmark = models.Bookmark(title=title, track_timestamp=track_timestamp, episode=episode)
+        bookmark = models.Bookmark(title=title, description=description, track_timestamp=track_timestamp, episode=episode)
         bookmark.save()
         self._model.modify(push__bookmarks=bookmark)
         return bookmark

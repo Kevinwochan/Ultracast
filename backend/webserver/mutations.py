@@ -288,20 +288,21 @@ class CreateBookmark(ClientIDMutation):
     @flask_jwt_extended.jwt_required
     def mutate_and_get_payload(cls, root, info, track_timestamp, episode, title=None, description=None):
         user = flask_jwt_extended.current_user
-        bookmark = user.bookmark(track_timestamp, episode, title, description)
+        episode_metadata = schema.get_node_from_global_id(info, episode, only_type=query.PodcastEpisodeMetadata)
+        bookmark = user.bookmark(track_timestamp, episode_metadata, title, description)
         return CreateBookmark(success=True, bookmark=bookmark)
 
 class DeleteBookmark(ClientIDMutation):
     success = graphene.Boolean()
 
     class Input:
-        bookmarkId = graphene.ID(required=True)
+        bookmark_id = graphene.ID(required=True)
     
     @classmethod
     @flask_jwt_extended.jwt_required
-    def mutate_and_get_payload(cls, root, info, bookmarkId):
+    def mutate_and_get_payload(cls, root, info, bookmark_id):
         user = flask_jwt_extended.current_user
-        bookmark = schema.get_node_from_global_id(info, bookmarkId, only_type=query.Bookmark)
+        bookmark = schema.get_node_from_global_id(info, bookmark_id, only_type=query.Bookmark)
         user.unbookmark(bookmark)
         bookmark.delete()
         return DeleteBookmark(success=True)
@@ -535,6 +536,7 @@ class Mutations(graphene.ObjectType):
     Bookmark mutations
     '''
     create_bookmark = CreateBookmark.Field()
+    delete_bookmark = DeleteBookmark.Field()
     '''
     Streams
     '''
