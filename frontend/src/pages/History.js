@@ -1,39 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Playlist from "../components/Playlist";
-import Page from "../common/Page";
-import Container from "@material-ui/core/Container";
+import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
+import { getMyHistory } from "../api/query";
+import EpisodePlaylist from "../components/EpisodeList";
 
-const episodes = [
-  {
-    title: "Episode 1: Giving Lawyer X a Voice",
-    description:
-      "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oliver Productions", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
+const useStyles = makeStyles((theme) => ({
+  cardGrid: {
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
   },
-  {
-    title: "Episode 2: Dead man's chest",
-    description:
-      "Captain Jack Sparrow seeks the heart of Davy Jones, a mythical pirate, in order to avoid being enslaved to him. However, others, including his friends Will and Elizabeth, want it for their own gain.",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oliver Productions", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-];
+}));
 
-const useStyles = makeStyles((theme) => ({}));
-
-export default function History() {
+export default function History({ state }) {
+  const [sessionState, updateState] = state;
   const classes = useStyles();
 
+  const [history, setHistory] = useState("loader");
+  useEffect(() => {
+    getMyHistory(sessionState.cookies.token).then((data) => {
+      setHistory(data);
+    });
+  }, [sessionState]);
+
   return (
-    <Container maxWidth="lg">
-      <Playlist episodes={episodes} />
-    </Container>
+    <>
+      <Box m={2}>
+        <Typography gutterBottom variant="h5">
+          <b>Recently Listened</b>
+        </Typography>
+      </Box>
+      <EpisodePlaylist episodes={history} state={state} />
+    </>
   );
 }

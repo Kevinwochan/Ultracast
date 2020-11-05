@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
+  useLocation,
 } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import Page from "./common/Page";
@@ -11,18 +12,25 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Landing from "./pages/Landing";
 import Upload from "./pages/Upload";
+import Edit from "./pages/Edit";
+import EditPodcast from "./pages/EditPodcast";
 import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
 import History from "./pages/History";
+import Explore from "./pages/Recommended";
 import Author from "./pages/Author";
 import Analytics from "./pages/Analytics";
+import Subscriptions from "./pages/Subscriptions";
+import Search from "./pages/Search";
+import Following from "./pages/Following";
+import User from "./pages/User";
 
 function PrivateRoute({ cookies, children, ...rest }) {
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        cookies.loggedin ? (
+        cookies.token ? (
           children
         ) : (
           <Redirect
@@ -41,8 +49,12 @@ export default function App() {
   //Top level state (variables that are stored between pages)
   const [cookies, setCookie, removeCookie] = useCookies();
   const [sessionState, setState] = useState({
-    open: false,
+    open: true,
+    userID: "",
     audioList: [],
+    playbackRate: 1,
+    isCreator: true, // TODO change this on sign-in/sign-up
+    creatorView: false,
     cookies: cookies,
   });
 
@@ -67,8 +79,31 @@ export default function App() {
     }
   }
 
+  // Change the user's view based on the URL
+  const RoleHandler = () => {
+    const location = useLocation();
+    useEffect(() => {
+      if (!sessionState.isCreator) {
+        // Only concerned with users that are creators
+        return;
+      }
+
+      const creatorPath = location.pathname.includes("creators");
+      if (creatorPath && !sessionState.creatorView) {
+        // Change to creator view if they've navigated away from the listener view
+        updateState("creatorView", true);
+      } else if (!creatorPath && sessionState.creatorView) {
+        // Change to listener view if they've navigated away from the creator view
+        updateState("creatorView", false);
+      }
+    }, [location.pathname]);
+
+    return null;
+  };
+
   return (
     <Router>
+      <RoleHandler />
       <Switch>
         {/* Public Routes */}
         <Route path="/landing">
@@ -88,38 +123,90 @@ export default function App() {
         </Route>
 
         {/* Logged In Routes */}
-        <Route path="/upload">
+        {/* Creator Paths */}
+        <Route path="/creators/upload">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state}>
-              <Upload />
+              <Upload userToken={sessionState.cookies.token} />
             </Page>
           </PrivateRoute>
         </Route>
-        <Route path="/podcast">
+        <Route path="/creators/podcasts">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state}>
+              <Edit userToken={sessionState.cookies.token} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/creators/podcast/:podcastId">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state}>
+              <EditPodcast userToken={sessionState.cookies.token} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/creators/analytics">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state}>
+              <Analytics />
+            </Page>
+          </PrivateRoute>
+        </Route>
+
+        {/* Listener Paths */}
+        <Route path="/podcast/:podcastId">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
-              <Podcast />
+              <Podcast state={state} />
             </Page>
           </PrivateRoute>
         </Route>
         <Route path="/history">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
-              <History />
+              <History state={state} />
             </Page>
           </PrivateRoute>
         </Route>
-        <Route path="/author">
+        <Route path="/search">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
-              <Author />
+              <Search />
             </Page>
           </PrivateRoute>
         </Route>
-        <Route path="/analytics">
+        <Route path="/explore">
           <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state}>
-              <Analytics />
+            <Page handleCookie={handleCookie} state={state} player>
+              <Explore state={state} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/author/:id">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state} player>
+              <Author state={state} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/subscriptions">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state} player>
+              <Subscriptions state={state} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/following">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state} player>
+              <Following state={state} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/user/:id">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state} player>
+              <User state={state} />
             </Page>
           </PrivateRoute>
         </Route>

@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
@@ -11,11 +10,10 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
-import axios from "axios";
-import configuration from "../api/configuration";
 import { useHistory } from "react-router-dom";
-import Page from "../common/Page";
 import ucTheme from "../theme";
+import Alert from "@material-ui/lab/Alert";
+import { register } from "../api/query";
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -45,39 +43,21 @@ export default function SignUp({ handleCookie }) {
 
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
+  const nameRef = React.useRef();
   const history = useHistory();
+  const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
-    e.preventDefault(); /*
-    axios
-      .post(
-        configuration.BACKEND_ENDPOINT,
-        JSON.stringify({
-          query:
-            "mutation($email: String!, $password: String!) {createUser(input: {email: $email, password: $password}) {success}}",
-          variables: {
-            email: `${emailRef.current.value}`,
-            password: `${passwordRef.current.value}`,
-          },
-        }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        console.log(response.data.data.createUser.success);
-        if (response.data.data.createUser.success){
-          handleCookie("loggedin", true);
-          history.push("/");
-        }
-      })
-      .catch((err) => {console.log(err)});*/
-    handleCookie("loggedin", true);
-    history.push("/in");
+    e.preventDefault();
+    register(nameRef.current.value, emailRef.current.value, passwordRef.current.value).then((data) => {
+      console.log(data);
+      if (data.success) {
+        handleCookie("token", data.token);
+        history.push("/");
+      } else {
+        setMessage(data.message);
+      }
+    });
   };
 
   return (
@@ -91,6 +71,21 @@ export default function SignUp({ handleCookie }) {
         </Typography>
         <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <Grid container spacing={2}>
+            <Grid item xs={12}>
+              {message && <Alert severity="error">{message}</Alert>}
+            </Grid>
+              <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="name"
+                label="Name"
+                name="name"
+                autoComplete="given-name"
+                inputRef={nameRef}
+              />
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 variant="outlined"

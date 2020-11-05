@@ -1,143 +1,126 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import EpisodePlaylist from "../components/EpisodePlaylist";
-import Page from "../common/Page";
-import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
+import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
-
-const podcast = {
-  id: 1,
-  title: "Oliver's True Crime Series",
-  description:
-    "In this innovative podcast, retired cold case investigator Paul Holes and true crime journalist Billy Jensen team up to tackle unsolved crimes and missing person cases each week. They invite listeners to contribute their own research and theories, so you can put on your own Sherlock hat.",
-  author: { name: "Oliver Productions", id: 1 },
-};
-
-const episodes = [
-  {
-    title: "Episode 1: Giving Lawyer X a Voice",
-    description:
-      "Do “disgraced” lawyer Nicola Gobbo and “disgraced” former drug squad detective Paul Dale deserve to be given a platform to tell their sides of their stories?",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-  {
-    title: "Episode 2: Dead Man's Chest",
-    description:
-      "Captain Jack Sparrow seeks the heart of Davy Jones, a mythical pirate, in order to avoid being enslaved to him. However, others, including his friends Will and Elizabeth, want it for their own gain.",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oliver Productions", id: 1},
-    podcast: { id: 1, title: "Oli's True Crime Series"},
-  },
-  {
-    title: "Episode 3: A Locked Door",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-  {
-    title: "Episode 4",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-  {
-    title: "Episode 5",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    image: "https://source.unsplash.com/random",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    author: { name: "Oli", id: 1 },
-    podcast: { id: 1, title: "Oli's True Crime Series" },
-  },
-];
+import { useParams } from "react-router-dom";
+import { getEpisodes, getMySubscriptions } from "../api/query";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
+import PlaylistAddCheckIcon from "@material-ui/icons/PlaylistAddCheck";
+import Divider from "@material-ui/core/Divider";
+import EpisodePlaylist from "../components/EpisodeList";
+import SubscribeButton from "../components/SubscribeButton";
 
 const useStyles = makeStyles((theme) => ({
+  podcastTitle: {
+    fontWeight: "bold",
+  },
   podcastHero: {
     background: "white",
-    paddingLeft: theme.spacing(8),
-    paddingTop: theme.spacing(8),
+    padding: theme.spacing(5),
     marginBottom: theme.spacing(3),
-    minHeight: 300,
+    minHeight: 150,
   },
-  podcastCover: {
-    width: 300,
-    height: 300,
+  podcastDescription: {
+    lineHeight: "1.5rem",
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(3),
   },
 }));
 
-export default function Podcast() {
+export default function Podcast({ state }) {
   const classes = useStyles();
-  const [subscribed, setSubscription] = useState(false);
+  const { podcastId } = useParams();
+  const [sessionState, updateState] = state;
+  const [addedToQueue, setAddedToQueue] = useState(false);
+  const [podcast, setPodcast] = useState("loader"); // TODO: paginate the episodes
+  const [episodes, setEpisodes] = useState([]);
 
-  const toggleSubscription = () => {
-    setSubscription(!subscribed);
+  useEffect(() => {
+    getEpisodes(podcastId).then((podcastInfo) => {
+      podcastInfo.podcast.id = podcastId;
+      // initalise podcast.subscribed
+      getMySubscriptions(sessionState.cookies.token).then((data) => {
+        const subscriptions = data.map((podcast) => podcast.id);
+        podcastInfo.podcast.subscribed = subscriptions.includes(podcastId);
+        setPodcast(podcastInfo.podcast);
+      });
+      setEpisodes(podcastInfo.episodes);
+    });
+  }, [podcastId, sessionState]);
+
+  const addAll = () => {
+    const episodePlaylist = episodes.map((episode) => ({
+      id: episode.id,
+      name: episode.title,
+      musicSrc: episode.audioUrl,
+      cover: podcast.image,
+    }));
+    updateState("audioList", sessionState.audioList.concat(episodePlaylist));
+    setAddedToQueue(true);
   };
+
+  if (podcast === "loader") {
+    return <CircularProgress />;
+  }
 
   return (
     <>
-      <Grid container>
-        <Grid item xs className={classes.podcastHero}>
-          <Typography variant="h4" paragraph>
-            {podcast.title}
-          </Typography>
-          <Typography variant="subtitle2" paragraph>
+      <Box className={classes.podcastHero}>
+        <Grid container spacing={2} justify="center">
+          <Grid item xs={12} md={6} lg={4}>
+            <Typography variant="subtitle2">PODCAST TITLE</Typography>
+            <Typography variant="h4" className={classes.podcastTitle}>
+              {podcast.title}
+            </Typography>
+          </Grid>
+          <Grid item xs>
             <Link to={`/author/${podcast.author.id}`}>
-              By: {podcast.author.name}
+              <Typography variant="subtitle2">AUTHOR</Typography>
+              <Typography variant="subtitle2">
+                  {podcast.author.name}
+              </Typography>
             </Link>
-          </Typography>
-          <Typography variant="body2" paragraph>
-            {podcast.description}
-          </Typography>
-          {subscribed ? (
-            <Button
-              variant="contained"
-              color="secondary"
-              startIcon={<AddIcon />}
-              onClick={toggleSubscription}
-            >
-              Subscribe
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<RemoveIcon />}
-              onClick={toggleSubscription}
-            >
-              Unsubscribe
-            </Button>
-          )}
+          </Grid>
+          <Grid item xs>
+            <Typography variant="subtitle2">NO. EPISODES</Typography>
+            <Typography variant="subtitle2">{podcast.episodeCount}</Typography>
+          </Grid>
         </Grid>
-        <Grid item>
-          <img
-            src={
-              podcast.cover
-                ? podcast.cover
-                : "https://source.unsplash.com/random"
-            }
-            alt="podcast cover"
-            className={classes.podcastCover}
-          ></img>
+        <Typography variant="body1" className={classes.podcastDescription}>
+          {podcast.description}
+        </Typography>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs>
+            <SubscribeButton podcast={podcast} sessionState={sessionState} />
+          </Grid>
+          <Grid item xs>
+            {!addedToQueue ? (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<PlaylistAddIcon />}
+                onClick={addAll}
+              >
+                Add all to Queue
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<PlaylistAddCheckIcon />}
+              >
+                Added
+              </Button>
+            )}
+          </Grid>
         </Grid>
-      </Grid>
-      <Container maxWidth="lg">
-        <EpisodePlaylist episodes={episodes} />
-      </Container>
+      </Box>
+      <Divider variant="fullWidth" />
+      <EpisodePlaylist episodes={episodes} state={state} />
     </>
   );
 }
