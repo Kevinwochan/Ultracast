@@ -28,9 +28,9 @@ export default function Dashboard({ state }) {
 
   // Need to update recommended and history like this, otherwise it won't work for larger/longer queries
   useEffect(() => {
-    /*getMyRecommended(sessionState.cookies.token).then((data) => {
+    getMyRecommended(sessionState.cookies.token).then((data) => {
       setRecommended(data);
-    });*/
+    });
     getMyHistory(sessionState.cookies.token,).then((data) => {
       setHistory(data);
     });
