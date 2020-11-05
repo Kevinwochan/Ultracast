@@ -29,3 +29,15 @@ This week, we setup our application architecture and GraphQL API. We managed to 
 Week 5
 
 This sprint, I completed the dashboard and audio player functionality. I also managed to get Canva Pro (via GitHub Student) so that I could download our branding as SVGs. I updated the website with the new branding (and softer colours) and it looks a lot better! Next week, I hope to have completed more operations for the podcast, as well as improve the 'recent podcast' page.
+
+Week 6
+
+This sprint, I added to the audio player functionality and revamped the upload page. Now, users are able to upload covers to and create podcast episodes. Next week, I hope to have completed the edit/updating podcast and episode pages as well as the search page.
+
+Week 7
+
+This week I finished the search podcast page and the update podcast page. I also moved all creator pages into its own separate seciton to make it clear what role the user should have when on one page (i.e. if they should be a listener or a creator). Next week, I want to finish the podcast editing page and work on more testing for the frontend.1
+
+Week 8
+
+This sprint, I finished all podcast operations accessible to the creator - creating/viewing/uploading/deleting. It took a lot longer than I thought it would because it was involved with many moving parts (especially with the backend). We had our Demonstration B and Retrospective B today (Thursday) as well and are hoping to implement the actionables from both meetings over the next sprint. Next week, I want to have made a start on my sections of the report and demo, as well as finialised the frontend side of the project.
