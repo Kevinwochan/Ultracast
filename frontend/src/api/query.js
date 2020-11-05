@@ -147,7 +147,7 @@ const getMyFollowing = async (token) => {
     name: user.node.name,
     episode:
       user.node.listenHistory.edges.length > 0
-        ? parseEpisode(user.node.listenHistory.edges[0].node.episode, true)
+        ? parseEpisode(user.node.listenHistory.edges[user.node.listenHistory.edges.length-1].node.episode, true)
         : null,
   }));
 };
