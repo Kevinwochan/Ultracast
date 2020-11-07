@@ -9,6 +9,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+import Grow from "@material-ui/core/Grow";
 import Copyright from "../components/Copyright";
 import { useHistory } from "react-router-dom";
 import ucTheme from "../theme";
@@ -49,7 +50,14 @@ export default function SignUp({ handleCookie }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    register(nameRef.current.value, emailRef.current.value, passwordRef.current.value).then((data) => {
+    if (!validate()) {
+      return;
+    }
+    register(
+      nameRef.current.value,
+      emailRef.current.value,
+      passwordRef.current.value
+    ).then((data) => {
       console.log(data);
       if (data.success) {
         handleCookie("token", data.token);
@@ -58,6 +66,24 @@ export default function SignUp({ handleCookie }) {
         setMessage(data.message);
       }
     });
+  };
+
+  const validate = (e) => {
+    console.log("validating");
+    if (!emailRef.current.value.includes("@")) {
+      setMessage("Invalid Email Address");
+      return false;
+    }
+    if (
+      emailRef.current.value.charAt(emailRef.current.value.length - 4) !==
+        "." &&
+      emailRef.current.value.charAt(emailRef.current.value.length - 3) !== "."
+    ) {
+      setMessage("Invalid Email Address");
+      return false;
+    }
+    setMessage("");
+    return true;
   };
 
   return (
@@ -71,10 +97,16 @@ export default function SignUp({ handleCookie }) {
         </Typography>
         <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
-              {message && <Alert severity="error">{message}</Alert>}
-            </Grid>
+            <Grow
+              in={message !== ""}
+              style={{ transformOrigin: "0 0 0" }}
+              {...(message !== "" ? { timeout: 1000 } : {})}
+            >
               <Grid item xs={12}>
+                {message && <Alert severity="error">{message}</Alert>}
+              </Grid>
+            </Grow>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
@@ -96,6 +128,7 @@ export default function SignUp({ handleCookie }) {
                 name="email"
                 autoComplete="email"
                 inputRef={emailRef}
+                onBlur={validate}
               />
             </Grid>
             <Grid item xs={12}>
