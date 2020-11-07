@@ -77,6 +77,24 @@ const getUserId = async (token) => {
   return data.currentUser.id;
 };
 
+const getUser = async (token) => {
+  const data = await graphql(
+    `
+      query {
+        currentUser {
+          id
+          name
+          email
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.currentUser;
+};
+
 /*
 Retrieves an array of podcast episodes recommended for the user
 TODO: add authors if possible
@@ -729,6 +747,7 @@ export {
   newPodcast,
   login,
   register,
+  getUser,
   getUserId,
   getUserPodcasts,
   getUserPodcastsInfo,
