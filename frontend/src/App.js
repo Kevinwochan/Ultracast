@@ -10,7 +10,6 @@ import { useCookies } from "react-cookie";
 import Page from "./common/Page";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import Landing from "./pages/Landing";
 import Upload from "./pages/Upload";
 import Edit from "./pages/Edit";
 import EditPodcast from "./pages/EditPodcast";
@@ -106,11 +105,6 @@ export default function App() {
       <RoleHandler />
       <Switch>
         {/* Public Routes */}
-        <Route path="/landing">
-          <Page handleCookie={handleCookie} state={state}>
-            <Landing />
-          </Page>
-        </Route>
         <Route path="/signin">
           <Page handleCookie={handleCookie} state={state}>
             <SignIn handleCookie={handleCookie} />
@@ -122,7 +116,6 @@ export default function App() {
           </Page>
         </Route>
 
-        {/* Logged In Routes */}
         {/* Creator Paths */}
         <Route path="/creators/upload">
           <PrivateRoute cookies={cookies}>
