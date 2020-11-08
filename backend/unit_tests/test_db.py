@@ -50,10 +50,10 @@ class TestStringMethods(unittest.TestCase):
                 db.check_mime(data=data, valid_mimes=['audio/mp4'])
 
     def test_valid_mime(self):
-        data = open('unit_tests/resources/sample.mp3', 'rb').read()
-        db.check_mime(data=data, valid_mimes=['audio/mpeg'])
-        data = open('unit_tests/resources/nice_flowers2.png', 'rb').read()
-        db.check_mime(data=data, valid_mimes=['image/png'])
+        with open('unit_tests/resources/sample.mp3', 'rb') as fh:
+            db.check_mime(data=fh.read(), valid_mimes=['audio/mpeg'])
+        with open('unit_tests/resources/nice_flowers2.png', 'rb') as fh:
+            db.check_mime(data=fh.read(), valid_mimes=['image/png'])
 
     def test_add_file_data_file_then_remove(self):
         url = db.add_file(data=b'data', valid_mimes=['text/plain'])
@@ -86,4 +86,9 @@ class TestStringMethods(unittest.TestCase):
             data = fh.read()
             audio = AudioSegment.from_file(io.BytesIO(data), format="mp3")
             self.assertEqual(db.audio_file_duration_secs(data), 1709)
+
+        with open('unit_tests/resources/cM3ZLd_4Msa1rs2IQSX6884A9XyVzhB6VbPxm2wHDxE=.mp3', 'rb') as fh:
+            data = fh.read()
+            audio = AudioSegment.from_file(io.BytesIO(data), format="mp3")
+            self.assertEqual(db.audio_file_duration_secs(data), 1834)
     

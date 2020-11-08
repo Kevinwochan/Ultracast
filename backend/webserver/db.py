@@ -24,7 +24,6 @@ MONGO_URI = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_DB}?
 
 def connect_mongo():
     connect(host=MONGO_URI)
-#connect(host=MONGO_URI)
 
 # Digital Ocean Space (Static-Files)
 
