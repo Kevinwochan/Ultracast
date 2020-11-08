@@ -392,7 +392,7 @@ class Login(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, email, password):
         user = podcast_engine.User.from_email(email)
         if user is None:
-            return Login(success=False, message="Invalid username")
+            return Login(success=False, message="Invalid email")
 
         if not user.check_password(password):
             return Login(success=False, message="Invalid password")
