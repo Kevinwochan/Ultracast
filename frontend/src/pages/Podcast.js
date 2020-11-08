@@ -6,7 +6,7 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { getEpisodes, getSubscriptions } from "../api/query";
+import { getEpisodes, getMySubscriptions } from "../api/query";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import PlaylistAddCheckIcon from "@material-ui/icons/PlaylistAddCheck";
@@ -43,7 +43,7 @@ export default function Podcast({ state }) {
     getEpisodes(podcastId).then((podcastInfo) => {
       podcastInfo.podcast.id = podcastId;
       // initalise podcast.subscribed
-      getSubscriptions(sessionState.cookies.token).then((data) => {
+      getMySubscriptions(sessionState.cookies.token).then((data) => {
         const subscriptions = data.map((podcast) => podcast.id);
         podcastInfo.podcast.subscribed = subscriptions.includes(podcastId);
         setPodcast(podcastInfo.podcast);
@@ -70,7 +70,7 @@ export default function Podcast({ state }) {
   return (
     <>
       <Box className={classes.podcastHero}>
-        <Grid container spacing={2} justify="center" marginBottom={2}>
+        <Grid container spacing={2} justify="center">
           <Grid item xs={12} md={6} lg={4}>
             <Typography variant="subtitle2">PODCAST TITLE</Typography>
             <Typography variant="h4" className={classes.podcastTitle}>
@@ -81,9 +81,7 @@ export default function Podcast({ state }) {
             <Link to={`/author/${podcast.author.id}`}>
               <Typography variant="subtitle2">AUTHOR</Typography>
               <Typography variant="subtitle2">
-                <Link to={`/author/${podcast.author.id}`}>
                   {podcast.author.name}
-                </Link>
               </Typography>
             </Link>
           </Grid>

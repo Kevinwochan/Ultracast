@@ -10,7 +10,6 @@ import { useCookies } from "react-cookie";
 import Page from "./common/Page";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import Landing from "./pages/Landing";
 import Upload from "./pages/Upload";
 import Edit from "./pages/Edit";
 import EditPodcast from "./pages/EditPodcast";
@@ -22,6 +21,8 @@ import Author from "./pages/Author";
 import Analytics from "./pages/Analytics";
 import Subscriptions from "./pages/Subscriptions";
 import Search from "./pages/Search";
+import Following from "./pages/Following";
+import User from "./pages/User";
 
 function PrivateRoute({ cookies, children, ...rest }) {
   return (
@@ -104,11 +105,6 @@ export default function App() {
       <RoleHandler />
       <Switch>
         {/* Public Routes */}
-        <Route path="/landing">
-          <Page handleCookie={handleCookie} state={state}>
-            <Landing />
-          </Page>
-        </Route>
         <Route path="/signin">
           <Page handleCookie={handleCookie} state={state}>
             <SignIn handleCookie={handleCookie} />
@@ -120,7 +116,6 @@ export default function App() {
           </Page>
         </Route>
 
-        {/* Logged In Routes */}
         {/* Creator Paths */}
         <Route path="/creators/upload">
           <PrivateRoute cookies={cookies}>
@@ -191,6 +186,20 @@ export default function App() {
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
               <Subscriptions state={state} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/following">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state} player>
+              <Following state={state} />
+            </Page>
+          </PrivateRoute>
+        </Route>
+        <Route path="/user/:id">
+          <PrivateRoute cookies={cookies}>
+            <Page handleCookie={handleCookie} state={state} player>
+              <User state={state} />
             </Page>
           </PrivateRoute>
         </Route>

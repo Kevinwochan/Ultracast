@@ -8,16 +8,15 @@ import { markAsPlayed } from "../api/query";
 
 // Add an audio to the sessionState audioList
 // https://github.com/lijinke666/react-music-player#bulb-audiolistprops
-export function addAudio(state, { name, musicSrc, cover, id }) {
-  console.log(name)
+export function addAudio(state, { title, url, podcast, id }) {
   const [sessionState, updateState] = state;
   const newList = [
     ...sessionState.audioList,
     {
-      name: name,
-      musicSrc: musicSrc,
-      cover: cover,
       id: id,
+      name: title,
+      musicSrc: url,
+      cover: podcast.image,
     },
   ];
 

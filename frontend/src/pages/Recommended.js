@@ -5,7 +5,7 @@ import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {getRecommended} from "../api/query";
+import {getMyRecommended} from "../api/query";
 
 const useStyles = makeStyles((theme) => ({
   cardGrid: {
@@ -19,7 +19,7 @@ export default function History({ state }) {
   const [recommended, setRecommended] = useState('loader');
 
   useEffect(() => {
-    getRecommended(state[0].cookies.token,).then((data) => {
+    getMyRecommended(state[0].cookies.token,).then((data) => {
       setRecommended(data);
     });
   }, [state]);

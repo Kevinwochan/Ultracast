@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
-import { getSubscriptions } from "../api/query";
+import { getMySubscriptions } from "../api/query";
 import PodcastPlaylist from "../components/PodcastList";
 
 export default function Subscriptions({ state }) {
@@ -10,7 +10,7 @@ export default function Subscriptions({ state }) {
   const [podcasts, setPodcasts] = useState("loader");
 
   useEffect(() => {
-    getSubscriptions(sessionState.cookies.token).then((podcasts) => {
+    getMySubscriptions(sessionState.cookies.token).then((podcasts) => {
       podcasts.forEach((podcast) => {
         podcast.subscribed = true;
       });
@@ -30,7 +30,7 @@ export default function Subscriptions({ state }) {
   ) : (
     <Box m={2}>
       <SentimentVeryDissatisfiedIcon fontSize="large" />
-      <Typography paragraph variant="subtitle">
+      <Typography paragraph variant="subtitle2">
         You have no subscriptions
       </Typography>
     </Box>

@@ -165,9 +165,6 @@ const updateEpisode = async (episode, token) => {
     episode.audio ? true : false
   );
 
-  console.log(episode);
-  console.log(data);
-
   return data.updatePodcastEpisode;
 };
 
@@ -186,10 +183,45 @@ const deleteEpisode = async (podcastId, token) => {
     token
   );
 
-  return data.deletePodcastMetadata;
+  return data.deletePodcastEpisode;
 };
 
+
+const follow = async (userId, token) => {
+  const data = await graphql(
+    `
+    mutation($userId: ID!){
+      followUser(input: {followUserId: $userId}){
+        success
+        message
+      }
+    }
+    `,
+    { userId: userId },
+    token
+  );
+  return data.followUser.success;
+};
+
+const unfollow = async (userId, token) => {
+  const data = await graphql(
+    `
+    mutation($userId: ID!){
+      unfollowUser(input: {unfollowUserId: $userId}){
+        success
+      }
+    }
+    `,
+    { userId: userId },
+    token
+  );
+  return data.unfollowUser.success;
+};
+
+
 export {
+  follow,
+  unfollow,
   newPodcast,
   updatePodcast,
   deletePodcast,

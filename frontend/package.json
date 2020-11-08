@@ -11,7 +11,6 @@
     "express": "^4.17.1",
     "extract-files": "^9.0.0",
     "instantsearch.css": "^7.4.5",
-    "jquery": "^3.5.1",
     "react": "^16.13.1",
     "react-cookie": "^4.0.3",
     "react-dom": "^16.13.1",
