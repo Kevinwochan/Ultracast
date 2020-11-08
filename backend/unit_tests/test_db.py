@@ -86,9 +86,4 @@ class TestStringMethods(unittest.TestCase):
             data = fh.read()
             audio = AudioSegment.from_file(io.BytesIO(data), format="mp3")
             self.assertEqual(db.audio_file_duration_secs(data), 1709)
-
-        with open('unit_tests/resources/cM3ZLd_4Msa1rs2IQSX6884A9XyVzhB6VbPxm2wHDxE=.mp3', 'rb') as fh:
-            data = fh.read()
-            audio = AudioSegment.from_file(io.BytesIO(data), format="mp3")
-            self.assertEqual(db.audio_file_duration_secs(data), 1834)
     
