@@ -3,7 +3,7 @@ import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 import { getMySubscriptions } from "../api/query";
-import PodcastPlaylist from "../components/PodcastList";
+import SubscriptionsList from "../components/SubscriptionsList";
 
 export default function Subscriptions({ state }) {
   const [sessionState, updateState] = state;
@@ -22,10 +22,10 @@ export default function Subscriptions({ state }) {
     <>
       <Box m={2}>
         <Typography gutterBottom variant="h5">
-          <b>Subscriptions</b>
+          <b>PODCAST SUBSCRIPTION PREVIEW</b>
         </Typography>
       </Box>
-      <PodcastPlaylist podcasts={podcasts} state={state} />
+      <SubscriptionsList podcasts={podcasts} state={state} />
     </>
   ) : (
     <Box m={2}>
