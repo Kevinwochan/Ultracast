@@ -367,6 +367,7 @@ const parseEpisode = (episode, verbose = true) => {
   };
 
   return {
+    id: episode.id,
     title: episode.name,
     url: episode.audioUrl,
     podcast: {

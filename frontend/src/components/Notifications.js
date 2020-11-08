@@ -73,7 +73,7 @@ const Notifications = ({ state }) => {
       }
       setCount(count);
     });
-  }, 1000);
+  }, 100000);
 
   const classes = useStyles();
 

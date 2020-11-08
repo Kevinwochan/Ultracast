@@ -8,6 +8,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
+import Badge from "@material-ui/core/Badge";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { PodcastCover } from "./Podcast";
 
@@ -23,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     paddingLeft: theme.spacing(5),
     paddingRight: theme.spacing(5),
+  },
+  watched: {
+    background: "rgba(0,0,0, 0.1)",
   },
 }));
 
@@ -42,6 +46,10 @@ const toHHMMSS = (secs) => {
 
 export default function Playlist({ episodes, state }) {
   const classes = useStyles();
+
+  if (episodes.length === 0) {
+    return <Typography variant="subtitle1">No episodes to display</Typography>;
+  }
 
   return (
     <TableContainer>
@@ -63,8 +71,6 @@ export default function Playlist({ episodes, state }) {
                 <CircularProgress />
               </TableCell>
             </TableRow>
-          ) : episodes.length === 0 ? (
-            <Typography variant="subtitle1">No episodes to display</Typography>
           ) : (
             episodes.map((episode, index) => (
               <TableRow key={uid(episode)}>
@@ -73,9 +79,18 @@ export default function Playlist({ episodes, state }) {
                   <PodcastCover episode={episode} state={state} />
                 </TableCell>
                 <TableCell>
-                  <Typography>
-                    <b>{episode.title}</b>
-                  </Typography>
+                  <Badge
+                    variant={
+                      (episode.watched !== undefined && !episode.watched)
+                        ? "dot"
+                        : "standard"
+                    }
+                    color="error"
+                  >
+                    <Typography>
+                      <b>{episode.title}</b>
+                    </Typography>
+                  </Badge>
                   <Typography variant="body2" gutterBottom>
                     {episode.description}
                   </Typography>
