@@ -17,7 +17,7 @@ export function addAudio(state, { title, url, podcast, id }) {
   const newList = [
     ...sessionState.audioList,
     {
-      id: id,
+      episodeId: id,
       name: title,
       musicSrc: url,
       cover: podcast.image,
@@ -32,8 +32,8 @@ export default function Player({ state }) {
   const mode = sessionState.audioList ? "full" : "";
 
   const onAudioPlay = (audioInfo) => {
-    console.log(`Marking audio as played ${audioInfo.name}`);
-    markAsPlayed(audioInfo.id, sessionState.cookies.token);
+    console.log(`Marking audio as played ${audioInfo.name}, ${audioInfo.id}`);
+    markAsPlayed(audioInfo.episodeId, sessionState.cookies.token);
   };
 
   const setPlaybackRate = (e) => {
