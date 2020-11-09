@@ -522,6 +522,24 @@ class DeleteStream(ClientIDMutation):
 
         return DeleteStream(success=True, user=user.model())
 
+class MarkPodcastSearched(ClientIDMutation):
+    success = graphene.Boolean()
+    user = graphene.Field(query.User)
+
+    class Input:
+        podcast_metadata_id = graphene.ID(required=True)
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, podcast_metadata_id):
+        user = flask_jwt_extended.current_user
+        podcast_metadata = schema.get_node_from_global_id(info, 
+                podcast_metadata_id, query.PodcastMetadata)
+
+        user.add_searched_podcast(podcast_metadata)
+
+        return MarkPodcastSearched(success=True, user=user.model())
+
 class Mutations(graphene.ObjectType):
     '''
     Podcast mutations
@@ -557,5 +575,6 @@ class Mutations(graphene.ObjectType):
     unsubscribe_podcast = UnsubscribePodcast.Field()
     follow_user = FollowUser.Field()
     unfollow_user = UnfollowUser.Field()
+    mark_podcast_searched = MarkPodcastSearched.Field()
 
 middleware = []

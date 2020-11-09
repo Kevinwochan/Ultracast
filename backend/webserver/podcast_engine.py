@@ -243,6 +243,9 @@ class User(BusinessLayerObject):
     def unbookmark(self, bookmark_model):
         self._model.modify(pull__bookmarks=bookmark_model)
 
+    def add_searched_podcast(self, podcast_metadata_model):
+        self._model.modify(push__searched_podcasts=podcast_metadata_model)
+
     @classmethod
     def from_email(cls, email):
         user_query = models.User.objects(email=email)
