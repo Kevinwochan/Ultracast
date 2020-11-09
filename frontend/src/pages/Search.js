@@ -62,6 +62,7 @@ const Hit = ({ hit }) => {
       id: hit.objectID,
       title: hit.name,
       image: hit.cover_url,
+      subscribers: hit.numSubscribers,
     },
     author: {
       id: hit.author,
