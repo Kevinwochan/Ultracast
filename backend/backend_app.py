@@ -1,5 +1,6 @@
 import multiprocessing
 import gunicorn.app.base
+import sys
 
 from webserver import app
 from search import search_engine
@@ -37,9 +38,15 @@ class Server:
         self.app.on_exit(server)
 
 if __name__ == '__main__':
+
+    # Webserver runs on remote server by default
+    host_ip = '0.0.0.0'
+    if  len(sys.argv) > 1 and sys.argv[1] == "--local":
+        host_ip = '127.0.0.1'
+
     server = Server()
     options = {
-        'bind': '%s:%s' % ('127.0.0.1', '5000'),
+        'bind': '%s:%s' % (host_ip, '5000'),
         'workers': number_of_workers(),
         #'capture-output': True,
         #'errorlog': "logs.txt",
