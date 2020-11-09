@@ -15,6 +15,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { uid } from "react-uid";
 import { addAudio } from "./Player";
 import { getMyNotifications, getNumNotifications } from "../api/query";
+import useInterval from "../hooks/useInterval";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
@@ -51,6 +52,7 @@ const timeSince = (timestamp) => {
 
 const Notifications = ({ state }) => {
   const [count, setCount] = useState(0);
+  const [dismissed, setDismissed] = useState(0);
   const [episodes, setEpisodes] = useState([]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -60,10 +62,11 @@ const Notifications = ({ state }) => {
   };
 
   const handleClose = () => {
+    setDismissed(count);
     setAnchorEl(null);
   };
 
-  useEffect(() => {
+  useInterval(() => {
     getNumNotifications(state[0].cookies.token).then((count) => {
       if (count > 0) {
         getMyNotifications(state[0].cookies.token).then((episodes) => {
@@ -72,7 +75,7 @@ const Notifications = ({ state }) => {
       }
       setCount(count);
     });
-  }, [state]);
+  }, 1000);
 
   const classes = useStyles();
 
@@ -85,7 +88,7 @@ const Notifications = ({ state }) => {
   return (
     <>
       <IconButton color="secondary" onClick={handleClick}>
-        <Badge badgeContent={count} color="error">
+        <Badge badgeContent={count - dismissed} color="error">
           <NotificationsIcon />
         </Badge>
       </IconButton>

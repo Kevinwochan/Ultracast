@@ -9,7 +9,7 @@ start_backend() {
 
 start_frontend() {
     cd frontend
-    npm start
+    sh deploy.sh
 }
 
 start_backend &

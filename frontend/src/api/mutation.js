@@ -209,7 +209,6 @@ const unfollow = async (userId, token) => {
     mutation($userId: ID!){
       unfollowUser(input: {unfollowUserId: $userId}){
         success
-        message
       }
     }
     `,

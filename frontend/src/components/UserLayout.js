@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -19,17 +19,18 @@ import Menu from "@material-ui/core/Menu";
 import Tooltip from "@material-ui/core/Tooltip";
 import HomeIcon from "@material-ui/icons/Home";
 import SearchIcon from "@material-ui/icons/Search";
-import ExploreIcon from "@material-ui/icons/Explore";
 import PublishIcon from "@material-ui/icons/Publish";
-import AlarmIcon from '@material-ui/icons/Alarm';
+import AlarmIcon from "@material-ui/icons/Alarm";
 import HistoryIcon from "@material-ui/icons/History";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
-import PeopleIcon from '@material-ui/icons/People';
+import PeopleIcon from "@material-ui/icons/People";
 import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
 import { Link, useHistory } from "react-router-dom";
 import ucTheme from "../theme";
 import Logo from "./Logo";
 import Notifications from "./Notifications";
+import { useFormControl } from "@material-ui/core";
+import { getUser } from "../api/query";
 
 const drawerWidth = 240;
 
@@ -215,11 +216,6 @@ const ListenerSideBar = ({ open }) => {
       link: "/search",
     },
     {
-      name: "Explore",
-      icon: <ExploreIcon />,
-      link: "/explore",
-    },
-    {
       name: "Subscriptions",
       icon: <AlarmIcon />,
       link: "/subscriptions",
@@ -228,11 +224,6 @@ const ListenerSideBar = ({ open }) => {
       name: "Following",
       icon: <PeopleIcon />,
       link: "/following",
-    },
-    {
-      name: "Library",
-      icon: <LibraryMusicIcon />,
-      link: "/library",
     },
     {
       name: "Recently Listened",
@@ -297,7 +288,12 @@ const AccountOptions = ({ state, handleCookie }) => {
   const classes = useStyles();
   const [sessionState, updateState] = state;
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [user, setUser] = React.useState(null);
   const history = useHistory();
+
+  useEffect(() => {
+    getUser(sessionState.cookies.token).then((user) => setUser(user));
+  }, [sessionState]);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -347,25 +343,14 @@ const AccountOptions = ({ state, handleCookie }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {sessionState.isCreator ? (
+        {user && user.name && <ListItem>{user.name}</ListItem>}
+        {sessionState.isCreator && (
           <MenuItem>
             <Link to={creatorLink} className={classes.link}>
               {creatorTitle}
             </Link>
           </MenuItem>
-        ) : (
-          ""
         )}
-        <MenuItem onClick={handleClose}>
-          <Link to="/profile" className={classes.link}>
-            Profile
-          </Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to="/profile" className={classes.link}>
-            Account Settings
-          </Link>
-        </MenuItem>
         <MenuItem onClick={handleLogout}>Log Out</MenuItem>
       </Menu>
     </>

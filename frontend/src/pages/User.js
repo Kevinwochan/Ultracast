@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import { getMyFollowing, getHistory } from "../api/query";
+import { getMyFollowing, getHistory, getMyHistory } from "../api/query";
 import EpisodePlaylist from "../components/EpisodeList";
 import FollowButton from "../components/FollowButton";
 
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function User({ state }) {
   const { id } = useParams();
-  const [sessionState, updateState] = state;
+  const [sessionState, ] = state;
   const [user, setUser] = useState("loader");
   const [history, setHistory] = useState("loader");
 
@@ -27,7 +27,14 @@ export default function User({ state }) {
         user.id = id;
         user.following = following;
         setUser(user);
-        setHistory(history);
+        // check if episode has been watched
+        getMyHistory(sessionState.cookies.token).then((watchedEpisodes) => {
+          const watchedEpisodeIds = watchedEpisodes.map((episode) => episode.id);
+          history.forEach((episode) => {
+            episode.watched = watchedEpisodeIds.includes(episode.id);
+          });
+          setHistory(history);
+        });
       });
     });
   }, [id, sessionState]);

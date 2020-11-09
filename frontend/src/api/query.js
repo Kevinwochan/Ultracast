@@ -77,8 +77,27 @@ const getUserId = async (token) => {
   return data.currentUser.id;
 };
 
+const getUser = async (token) => {
+  const data = await graphql(
+    `
+      query {
+        currentUser {
+          id
+          name
+          email
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.currentUser;
+};
+
 /*
 Retrieves an array of podcast episodes recommended for the user
+TODO: add authors if possible
 */
 const getMyRecommended = async (token) => {
   const data = await graphql(
@@ -87,7 +106,9 @@ const getMyRecommended = async (token) => {
         recommendations {
           edges {
             node  {
-              ${compactPodcast}
+              name
+              id
+              coverUrl
             }
           }
         }
@@ -103,7 +124,10 @@ const getMyRecommended = async (token) => {
       image: podcast.coverUrl,
       id: podcast.id,
       title: podcast.name,
-      author: podcast.author,
+      author: {
+        name: '',
+        id: ''
+      },
     };
   });
 };
@@ -141,7 +165,7 @@ const getMyFollowing = async (token) => {
     name: user.node.name,
     episode:
       user.node.listenHistory.edges.length > 0
-        ? parseEpisode(user.node.listenHistory.edges[0].node.episode, true)
+        ? parseEpisode(user.node.listenHistory.edges[user.node.listenHistory.edges.length-1].node.episode, true)
         : null,
   }));
 };
@@ -343,6 +367,7 @@ const parseEpisode = (episode, verbose = true) => {
   };
 
   return {
+    id: episode.id,
     title: episode.name,
     url: episode.audioUrl,
     podcast: {
@@ -655,9 +680,14 @@ const getMySubscriptions = async (token) => {
               node {
                 id
                 name
-                description
                 coverUrl
-                episodes {
+                episodes(last: 1) {
+                  edges {
+                    node {
+                      id
+                      name
+                    }
+                  }
                   totalCount
                 }
                 author {
@@ -678,9 +708,12 @@ const getMySubscriptions = async (token) => {
     id: podcast.node.id,
     title: podcast.node.name,
     image: podcast.node.coverUrl,
-    description: podcast.node.description,
     episodeCount: podcast.node.episodes.totalCount,
     author: podcast.node.author,
+    episodes: podcast.node.episodes.edges.map((episode) => ({
+      id: episode.node.id,
+      title: episode.node.name
+    })),
   }));
 };
 
@@ -772,6 +805,7 @@ export {
   newPodcast,
   login,
   register,
+  getUser,
   getUserId,
   getUserPodcasts,
   getUserPodcastsInfo,
