@@ -20,6 +20,7 @@ const useStyles = makeStyles(() => ({
   },
   contentLoggedIn: {
     marginTop: 70,
+    marginBottom: 80,
   },
 }));
 
