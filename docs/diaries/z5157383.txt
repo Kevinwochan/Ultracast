@@ -25,3 +25,31 @@ This took much more time than expected because of the number of libraries involv
 (looking at you graphene_mongo!)
 I also setup the graphql multi-part upload spec to allow clients to upload podcasts to the database.
 
+Week 5:
+
+My main goal for this week is to implement user authentication in the backend properly.
+This has proved somewhat challenging because of our unusual software stack (there are no online examples).
+I also set up an integration testing framework for the backend and wrote up tests for the existing graphql queries and mutations from last week.
+
+Week 6:
+
+This week my main goal was to set up a search API for the frontend to use.
+On Dan's recommendation I used an external API, Algolia to simplify this.
+I created scripts to sync our database with Algolia to allow the frontend to search.
+I also created backend functionalities to implement more user stories (marking podcasts as listened to, new episodes from subscribed podcasts...)
+
+Week 7:
+
+This week I focused on the backend deployment. This involved setting up gunicorn (a production WSGI server) to serve our flask app with multiple worker processes.
+I also tested the deployment on Vlab to ensure it will work during the demo.
+
+Week 8: 
+
+This week I focused on improving the perfomance of the backend. We had an issue where some queries took a long long time (circa 40s).
+I dug into this issue and found a solution (moving the backend webserver to the same EC2 instance as the database).
+Besides this, I also made some new backend functionalities for the Streams user story.
+
+Week 9:
+
+This week I am focusing on begining the report. I plan to write out some of the challenges that have been faced and the introduction.
+I have also written the backend functionalities to allow searches to be saved for the recommendation engine.
