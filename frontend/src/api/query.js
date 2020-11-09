@@ -367,6 +367,7 @@ const parseEpisode = (episode, verbose = true) => {
   };
 
   return {
+    id: episode.id,
     title: episode.name,
     url: episode.audioUrl,
     podcast: {
@@ -679,9 +680,14 @@ const getMySubscriptions = async (token) => {
               node {
                 id
                 name
-                description
                 coverUrl
-                episodes {
+                episodes(last: 1) {
+                  edges {
+                    node {
+                      id
+                      name
+                    }
+                  }
                   totalCount
                 }
                 author {
@@ -702,9 +708,12 @@ const getMySubscriptions = async (token) => {
     id: podcast.node.id,
     title: podcast.node.name,
     image: podcast.node.coverUrl,
-    description: podcast.node.description,
     episodeCount: podcast.node.episodes.totalCount,
     author: podcast.node.author,
+    episodes: podcast.node.episodes.edges.map((episode) => ({
+      id: episode.node.id,
+      title: episode.node.name
+    })),
   }));
 };
 

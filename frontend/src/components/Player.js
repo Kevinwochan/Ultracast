@@ -10,10 +10,14 @@ import { markAsPlayed } from "../api/query";
 // https://github.com/lijinke666/react-music-player#bulb-audiolistprops
 export function addAudio(state, { title, url, podcast, id }) {
   const [sessionState, updateState] = state;
+  // Do not add duplicate episodes
+  if (sessionState.audioList.map((episode) => episode.id).includes(id)) {
+    return;
+  }
   const newList = [
     ...sessionState.audioList,
     {
-      id: id,
+      episodeId: id,
       name: title,
       musicSrc: url,
       cover: podcast.image,
@@ -28,8 +32,8 @@ export default function Player({ state }) {
   const mode = sessionState.audioList ? "full" : "";
 
   const onAudioPlay = (audioInfo) => {
-    console.log(`Marking audio as played ${audioInfo.name}`);
-    markAsPlayed(audioInfo.id, sessionState.cookies.token);
+    console.log(`Marking audio as played ${audioInfo.name}, ${audioInfo.id}`);
+    markAsPlayed(audioInfo.episodeId, sessionState.cookies.token);
   };
 
   const setPlaybackRate = (e) => {
@@ -38,6 +42,10 @@ export default function Player({ state }) {
     const audio = document.querySelector("audio.music-player-audio");
     audio.playbackRate = rate;
     updateState("playbackRate", rate);
+  };
+
+  const onAudioListsChange = (currentPlayId, audioLists, audioInfo) => {
+    updateState("audioList", audioLists);
   };
 
   const options = {
@@ -49,7 +57,7 @@ export default function Player({ state }) {
     seeked: true,
     toggleMode: false,
     autoPlay: true,
-    clearPriorAudioLists: false,
+    clearPriorAudioLists: true,
     autoplayInitLoadPlayList: false,
     showMiniProcessBar: false,
     showMiniModeCover: false,
@@ -61,7 +69,7 @@ export default function Player({ state }) {
     showThemeSwitch: false,
     showLyric: false,
     showDestroy: false,
-    preload: false,
+    preload: true,
     remove: true,
     remember: false,
     spaceBar: true,
@@ -70,6 +78,7 @@ export default function Player({ state }) {
     quietUpdate: false,
     audioLists: sessionState.audioList,
     onAudioPlay: onAudioPlay,
+    onAudioListsChange: onAudioListsChange,
     extendsContent: [
       <Select
         key={1}

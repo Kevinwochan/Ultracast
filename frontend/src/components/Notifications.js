@@ -52,6 +52,7 @@ const timeSince = (timestamp) => {
 
 const Notifications = ({ state }) => {
   const [count, setCount] = useState(0);
+  const [dismissed, setDismissed] = useState(0);
   const [episodes, setEpisodes] = useState([]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -61,6 +62,7 @@ const Notifications = ({ state }) => {
   };
 
   const handleClose = () => {
+    setDismissed(count);
     setAnchorEl(null);
   };
 
@@ -86,7 +88,7 @@ const Notifications = ({ state }) => {
   return (
     <>
       <IconButton color="secondary" onClick={handleClick}>
-        <Badge badgeContent={count} color="error">
+        <Badge badgeContent={count - dismissed} color="error">
           <NotificationsIcon />
         </Badge>
       </IconButton>

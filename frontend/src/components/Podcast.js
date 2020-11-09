@@ -213,14 +213,14 @@ export function EpisodeSlider({ state, episodes }) {
     <Grid container spacing={4} className={classes.podcastContainer}>
       {episodes.map((episode) => (
         <Grid item key={uid(episode)} xs={2} className={classes.podcast}>
-          <LargePodcast state={state} episode={episode} />
+          <PodcastCard state={state} episode={episode} />
         </Grid>
       ))}
     </Grid>
   );
 }
 
-const largePodcastStyles = makeStyles((theme) => ({
+const podcastCardStyles = makeStyles((theme) => ({
   podcastDetailsContainer: {
     padding: "10px 0px",
   },
@@ -232,18 +232,19 @@ const largePodcastStyles = makeStyles((theme) => ({
   },
 }));
 
-export function LargePodcast({ state, episode }) {
-  const classes = largePodcastStyles();
+export function PodcastCard({ state, episode }) {
+  const classes = podcastCardStyles();
 
+  const addEpisodeToPlaylist = () => {
+    addAudio(state, episode)
+  }
   return (
     <>
       <PodcastCover episode={episode} state={state} />
       <CardContent className={classes.podcastDetailsContainer}>
-        <Link to={`/podcast/${episode.podcast.id}`}>
-          <Typography variant="subtitle2" className={classes.podcastDetails}>
-            <b>{episode.podcast.title}</b>
-          </Typography>
-        </Link>
+        <Typography variant="subtitle2" className={classes.podcastDetails} onClick={addEpisodeToPlaylist}>
+          <b>{episode.title}</b>
+        </Typography>
         <Link to={`/author/${episode.podcast.author.id}`}>
           <Typography variant="caption" className={classes.podcastDetails}>
             {episode.podcast.author.name}
