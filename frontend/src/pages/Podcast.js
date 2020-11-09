@@ -87,7 +87,7 @@ export default function Podcast({ state }) {
           <Grid item xs>
             <Link to={`/author/${podcast.author.id}`}>
               <Typography variant="subtitle2">AUTHOR</Typography>
-              <Typography variant="subtitle2">{podcast.author.name}</Typography>
+              <Typography variant="subtitle2"><b>{podcast.author.name}</b></Typography>
             </Link>
           </Grid>
           <Grid item xs>

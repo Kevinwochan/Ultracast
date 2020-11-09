@@ -10,6 +10,10 @@ import { markAsPlayed } from "../api/query";
 // https://github.com/lijinke666/react-music-player#bulb-audiolistprops
 export function addAudio(state, { title, url, podcast, id }) {
   const [sessionState, updateState] = state;
+  // Do not add duplicate episodes
+  if (sessionState.audioList.map((episode) => episode.id).includes(id)) {
+    return;
+  }
   const newList = [
     ...sessionState.audioList,
     {
@@ -40,6 +44,10 @@ export default function Player({ state }) {
     updateState("playbackRate", rate);
   };
 
+  const onAudioListsChange = (currentPlayId, audioLists, audioInfo) => {
+    updateState("audioList", audioLists);
+  };
+
   const options = {
     theme: "light",
     defaultPosition: { bottom: 0, left: 0 },
@@ -49,7 +57,7 @@ export default function Player({ state }) {
     seeked: true,
     toggleMode: false,
     autoPlay: true,
-    clearPriorAudioLists: false,
+    clearPriorAudioLists: true,
     autoplayInitLoadPlayList: false,
     showMiniProcessBar: false,
     showMiniModeCover: false,
@@ -61,7 +69,7 @@ export default function Player({ state }) {
     showThemeSwitch: false,
     showLyric: false,
     showDestroy: false,
-    preload: false,
+    preload: true,
     remove: true,
     remember: false,
     spaceBar: true,
@@ -70,6 +78,7 @@ export default function Player({ state }) {
     quietUpdate: false,
     audioLists: sessionState.audioList,
     onAudioPlay: onAudioPlay,
+    onAudioListsChange: onAudioListsChange,
     extendsContent: [
       <Select
         key={1}
