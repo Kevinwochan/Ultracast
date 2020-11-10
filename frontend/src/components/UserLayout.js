@@ -152,7 +152,7 @@ export default function UserLayout({ handleCookie, state, children }) {
       >
         <Toolbar className={classes.toolbar}>
           <Logo />
-          <Notifications state={state} />
+          {/* <Notifications state={state} /> */}
           <AccountOptions state={state} handleCookie={handleCookie} />
         </Toolbar>
       </AppBar>
