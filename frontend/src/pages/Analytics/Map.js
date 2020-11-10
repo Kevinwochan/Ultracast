@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import React, { useState, useEffect } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import HeatmapOverlay from "leaflet-heatmap";
 import { makeStyles } from "@material-ui/core/styles";
 
