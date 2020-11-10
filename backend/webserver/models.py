@@ -95,6 +95,9 @@ class User(mongoengine.Document):
     subscribed_podcasts = mongofields.ListField(mongofields.ReferenceField(PodcastMetadata),
             default=list, reverse_delete_rule=mongoengine.PULL)
 
+    searched_podcasts = mongofields.ListField(mongofields.ReferenceField(PodcastMetadata), 
+            default=list, reverse_delete_rule=mongoengine.PULL)
+
     # Sorted with most recent entry first
     listen_history = mongofields.EmbeddedDocumentListField(ListenHistoryEntry)
 
