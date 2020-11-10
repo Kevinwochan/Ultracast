@@ -121,13 +121,6 @@ export default function Player({ state }) {
     audioInstance.current.fastSeek(audioInfo.currentTime);
   };
 
-  useEffect(() => {
-    updateState(
-      "audioInstance",
-      audioInstance
-    ); /* this will break if player ever gets destroyed */
-  }, []);
-
   const options = {
     getAudioInstance: (instance) => {
       audioInstance.current = instance;
