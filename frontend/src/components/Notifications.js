@@ -65,7 +65,7 @@ const Notifications = ({ state }) => {
     setDismissed(count);
     setAnchorEl(null);
   };
-
+/*
   useInterval(() => {
     getNumNotifications(state[0].cookies.token).then((count) => {
       if (count > 0) {
@@ -75,7 +75,7 @@ const Notifications = ({ state }) => {
       }
       setCount(count);
     });
-  }, 1000);
+  }, 1000);*/
 
   const classes = useStyles();
 

@@ -306,7 +306,7 @@ const AccountOptions = ({ state, handleCookie }) => {
   const handleLogout = (e) => {
     e.preventDefault();
     handleCookie("token", null);
-    history.push("/");
+    history.push("/signin");
   };
 
   const creatorTitle = sessionState.creatorView

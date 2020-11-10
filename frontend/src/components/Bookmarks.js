@@ -34,7 +34,7 @@ const Bookmarks = ({ state, episode }) => {
     getBookmarks(episode.id, state[0].cookies.token).then((bookmarks) => {
       setBookmarks(bookmarks);
     });
-  },[]);
+  }, []);
 
   const handleChange = () => {
     setExpanded(!expanded);
