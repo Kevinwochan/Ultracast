@@ -19,7 +19,6 @@ import CheckIcon from "@material-ui/icons/Check";
 import theme from "../theme";
 import { getUserPodcasts } from "../api/query";
 import { newPodcast, updatePodcast, newEpisode } from "../api/mutation";
-import getDominantColour from "../common/dominantColor";
 import Spinner from "../components/Spinner";
 
 const useStyles = makeStyles((theme) => ({
@@ -176,7 +175,7 @@ export default function Upload({ userToken }) {
           hasError = false;
       }
 
-      if (!hasError && prevActiveStep == 1) {
+      if (!hasError && prevActiveStep === 1) {
         // We're ready to upload!
         setFields((prevState) => ({
           ...prevState,
@@ -510,21 +509,7 @@ const PodcastPreview = ({ hidden, image, title, description }) => {
     <Card hidden={hidden} variant="outlined" className={classes.preview}>
       <Box mt={7}>
         <div className={classes.previewHeader}>
-          <img
-            className={classes.media}
-            src={image}
-            alt="Preview podcast"
-            onLoad={(e) => {
-              const img = e.target;
-              // TODO fix this
-              // img.src = image + "?" + new Date().getTime();
-              // img.setAttribute("crossOrigin", "Anonymous");
-              // const colour = getDominantColour(img);
-
-              // // It's gross i know :(
-              // img.parentElement.parentElement.parentElement.style.background = `#${colour}`;
-            }}
-          />
+          <img className={classes.media} src={image} alt="Preview podcast" />
           <CardContent className={classes.mediaText}>
             <Typography variant="h6" align="center">
               {title}
@@ -855,7 +840,7 @@ const Confirmation = ({ fieldState, handleNext, handleBack }) => {
 
   useEffect(() => {
     // Once the mutation has resolved, go forward or backward
-    if (fields.status == 0) {
+    if (fields.status === 0) {
       if (fields.snackbar.severity === "success") {
         handleNext();
       } else if (fields.snackbar.severity === "error") {
