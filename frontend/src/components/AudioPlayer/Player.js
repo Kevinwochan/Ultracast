@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
+import { useHistory } from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
 import ListItem from "@material-ui/core/ListItem";
 import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
 import { makeStyles } from "@material-ui/core/styles";
 import ReactJkMusicPlayer from "react-jinke-music-player";
 import BookmarkExtension from "./BookmarkExtension";
@@ -50,6 +50,7 @@ export function addAudio(state, { title, url, podcast, id }) {
       name: title,
       musicSrc: url,
       cover: podcast.image,
+      podcastId: podcast.id,
     },
   ];
 
@@ -91,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Player({ state }) {
   const [sessionState, updateState] = state;
   const mode = sessionState.audioList ? "full" : "";
-
+  const history = useHistory();
   const classes = useStyles();
   const audioInstance = useRef(null);
 
@@ -110,6 +111,14 @@ export default function Player({ state }) {
 
   const onAudioListsChange = (currentPlayId, audioLists, audioInfo) => {
     updateState("audioList", audioLists);
+  };
+
+  const onCoverClick = (mode, audioLists, audioInfo) => {
+    history.push(`/podcast/${audioInfo.podcastId}`);
+  };
+
+  const onAudioSeeked = (audioInfo) => {
+    audioInstance.current.fastSeek(audioInfo.currentTime);
   };
 
   useEffect(() => {
@@ -153,6 +162,8 @@ export default function Player({ state }) {
     audioLists: sessionState.audioList,
     onAudioPlay: onAudioPlay,
     onAudioListsChange: onAudioListsChange,
+    onAudioSeeked: onAudioSeeked,
+    onCoverClick: onCoverClick,
     extendsContent: (
       <>
         <BookmarkExtension
