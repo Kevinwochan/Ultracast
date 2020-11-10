@@ -296,6 +296,7 @@ export default function Upload({ userToken }) {
 
 const selectPodcastStyle = makeStyles({
   root: {
+    marginBottom: 32,
     display: "flex",
   },
   fieldContainer: {
@@ -479,6 +480,14 @@ const SelectPodcast = ({ fieldState }) => {
               style={{ margin: `${theme.spacing(3)}px 0px` }}
               variant="outlined"
               label="Podcast Description"
+              onChange={handleChange}
+            />
+            <TextField
+              id="category"
+              fullWidth
+              variant="outlined"
+              label="Category"
+              value={fields.podcast.category}
               onChange={handleChange}
             />
           </>
