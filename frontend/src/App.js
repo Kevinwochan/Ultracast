@@ -164,7 +164,7 @@ export default function App() {
         <Route path="/search">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
-              <Search />
+              <Search userToken={sessionState.cookies.token} />
             </Page>
           </PrivateRoute>
         </Route>

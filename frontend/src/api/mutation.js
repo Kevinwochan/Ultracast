@@ -379,10 +379,29 @@ const markAsPlayed = async (episodeId, token) => {
   return data.markPodcastListened;
 };
 
+const markAsSearched = async (podcastId, token) => {
+  const data = await graphql(
+    `
+      mutation markAsSearched($podcastId: ID!) {
+        markPodcastSearched(input: { podcastMetadataId: $podcastId }) {
+          success
+        }
+      }
+    `,
+    {
+      podcastId: podcastId,
+    },
+    token
+  );
+
+  return data.markPodcastSearched;
+};
+
 export {
   login,
   register,
   markAsPlayed,
+  markAsSearched,
   subscribe,
   unsubscribe,
   deleteBookmark,
