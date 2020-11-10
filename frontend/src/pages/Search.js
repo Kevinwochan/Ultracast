@@ -15,6 +15,7 @@ import {
 } from "react-instantsearch-dom";
 import { SearchResult } from "../components/Podcast";
 import "instantsearch.css/themes/algolia.css";
+import { markAsSearched } from "../api/mutation";
 
 const searchClient = algoliasearch(
   "DLUH4B7HCZ",
@@ -28,7 +29,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Search() {
+// ! Global variable == bad :(
+let token = "";
+
+export default function Search({ userToken }) {
+  token = userToken;
   const classes = useStyles();
 
   return (
@@ -80,7 +85,19 @@ const Hit = ({ hit }) => {
     },
   };
 
-  return <SearchResult podcast={podcast} />;
+  const markAsSearchedEvent = () => {
+    markAsSearched(podcast.podcast.id, token).then((data) => {
+      if (!data.success) {
+        console.error("Could not mark podcast as searched");
+      }
+    });
+  };
+
+  return (
+    <div onClick={markAsSearchedEvent}>
+      <SearchResult podcast={podcast} />
+    </div>
+  );
 };
 
 // Don't show results when there's no query

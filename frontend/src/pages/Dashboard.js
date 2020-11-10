@@ -31,7 +31,7 @@ export default function Dashboard({ state }) {
     getMyRecommended(sessionState.cookies.token).then((data) => {
       setRecommended(data);
     });
-    getMyHistory(sessionState.cookies.token,).then((data) => {
+    getMyHistory(sessionState.cookies.token).then((data) => {
       setHistory(data);
     });
   }, [sessionState]);
@@ -41,7 +41,7 @@ export default function Dashboard({ state }) {
       className={classes.cardGrid}
       maxWidth={sessionState.open ? "md" : "lg"}
     >
-      <PodcastSliderTitle title="Recommended Podcasts" url="/" />
+      <PodcastSliderTitle title="Recommended Podcasts" url={null} />
       <PodcastSlider state={state} podcasts={recommended} />
       <PodcastSliderTitle title="Recently Listened" url="/history" />
       <EpisodeSlider state={state} episodes={history} />
@@ -56,9 +56,13 @@ const PodcastSliderTitle = ({ title, url }) => {
       <Typography gutterBottom variant="h5">
         <b>{title}</b>
       </Typography>
-      <Typography gutterBottom variant="subtitle1">
-        <Link to={url}>See all</Link>
-      </Typography>
+      {url ? (
+        <Typography gutterBottom variant="subtitle1">
+          <Link to={url}>See all</Link>
+        </Typography>
+      ) : (
+        ""
+      )}
     </Box>
   );
 };

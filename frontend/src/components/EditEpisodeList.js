@@ -163,10 +163,18 @@ export default function EditEpisodeList({
             episodes.map((episode, index) => (
               <TableRow key={uid(episode)}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>
+                <TableCell
+                  style={{
+                    width: 150,
+                  }}
+                >
                   <PodcastCover episode={episode} creator />
                 </TableCell>
-                <TableCell>
+                <TableCell
+                  style={{
+                    maxWidth: 300,
+                  }}
+                >
                   {editing[index] ? (
                     <>
                       <TextField
