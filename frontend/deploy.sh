@@ -2,4 +2,4 @@
 
 npm install --production
 npm run build
-node server.js
+node serve.js

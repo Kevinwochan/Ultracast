@@ -7,6 +7,25 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots['APITestCast::test_add_searched_podcast Podcast is marked as searched'] = {
+    'data': {
+        'markPodcastSearched': {
+            'success': True,
+            'user': {
+                'searchedPodcasts': {
+                    'edges': [
+                        {
+                            'node': {
+                                'name': 'testy_podcast'
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
 snapshots['APITestCast::test_create_user Create a user'] = {
     'data': {
         'createUser': {
