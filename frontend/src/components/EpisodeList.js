@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { uid } from "react-uid";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -13,7 +13,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Bookmarks from "../components/Bookmarks";
 import { PodcastCover } from "./Podcast";
 import { toHHMMSS } from "../common/utils";
-import { getBookmarks } from "../api/query";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
@@ -31,24 +30,13 @@ const useStyles = makeStyles((theme) => ({
   watched: {
     background: "rgba(0,0,0, 0.1)",
   },
+  row: {
+    verticalAlign: "top",
+  },
 }));
 
 export default function Playlist({ episodes, state }) {
   const classes = useStyles();
-  const [episodeBookmarks, setEpisodeBookmarks] = useState({});
-
-  useEffect(() => {
-    if (episodes === "loader") return;
-    episodes.forEach((episode) => {
-      const episodeId = episode.id;
-      getBookmarks(episode.id, state[0].cookies.token).then((bookmarks) => {
-        setEpisodeBookmarks((prevState) => ({
-          ...prevState,
-          episodeId: bookmarks,
-        }));
-      });
-    });
-  }, [state, episodes]);
 
   if (episodes.length === 0) {
     return <Typography variant="subtitle1">No episodes to display</Typography>;
@@ -76,7 +64,7 @@ export default function Playlist({ episodes, state }) {
             </TableRow>
           ) : (
             episodes.map((episode, index) => (
-              <TableRow key={uid(episode)}>
+              <TableRow key={uid(episode)} className={classes.row}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
                   <PodcastCover episode={episode} state={state} />
@@ -97,7 +85,7 @@ export default function Playlist({ episodes, state }) {
                   <Typography variant="body2" gutterBottom>
                     {episode.description}
                   </Typography>
-                  {episode.bookmarks && <Bookmarks />}
+                  <Bookmarks state={state} episode={episode} />
                 </TableCell>
                 <TableCell>{toHHMMSS(episode.length)}</TableCell>
                 <TableCell>{episode.date.toDateString()}</TableCell>

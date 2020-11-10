@@ -20,3 +20,7 @@
   .rc-slider-track {
   background-color: #026178; /* primary colour */
 }
+
+.react-jinke-music-player-main.light-theme svg.MuiSvgIcon-colorDisabled {
+  color: rgba(0, 0, 0, 0.26);
+}

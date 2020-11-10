@@ -7,7 +7,7 @@ import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 import { makeStyles } from "@material-ui/core";
-import { addAudio } from "../components/Player";
+import { addAudio } from "../components/AudioPlayer/Player";
 import Tooltip from "@material-ui/core/Tooltip";
 import { getMyFollowing } from "../api/query";
 import UserSearch from "../components/UserSearch";
@@ -40,7 +40,7 @@ export default function Following({ state }) {
     getMyFollowing(state[0].cookies.token).then((users) => {
       setFollowing(users);
     });
-  }, [state]);
+  },);
 
   const playNow = (episode) => {
     return () => {

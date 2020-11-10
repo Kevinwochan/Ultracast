@@ -15,7 +15,7 @@ import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
 import ucTheme from "../theme";
 import Alert from "@material-ui/lab/Alert";
-import { login } from "../api/query";
+import { login } from "../api/mutation";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

@@ -78,7 +78,7 @@ export default function Podcast({ state }) {
     <>
       <Box className={classes.podcastHero}>
         <Grid container spacing={2} justify="center">
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={12} md={6} lg={6}>
             <Typography variant="subtitle2">PODCAST TITLE</Typography>
             <Typography variant="h4" className={classes.podcastTitle}>
               {podcast.title}

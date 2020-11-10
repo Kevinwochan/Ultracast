@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import theme from "../theme";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import UserLayout from "../components/UserLayout";
-import Player from "../components/Player";
+import Player from "../components/AudioPlayer/Player";
 import NavBar from "../components/NavBar";
 import ucTheme from "../theme";
 

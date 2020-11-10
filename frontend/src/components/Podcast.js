@@ -6,7 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { uid } from "react-uid";
-import { addAudio } from "./Player";
+import { addAudio } from "./AudioPlayer/Player";
 import ultraCastTheme from "../theme";
 
 const playlistStyles = makeStyles((theme) => ({

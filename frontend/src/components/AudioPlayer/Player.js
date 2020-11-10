@@ -1,21 +1,38 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import MenuItem from "@material-ui/core/MenuItem";
-import Button from "@material-ui/core/Button";
+import ListItem from "@material-ui/core/ListItem";
 import Select from "@material-ui/core/Select";
-import Modal from "@material-ui/core/Modal";
-import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
+import InputLabel from "@material-ui/core/InputLabel";
 import { makeStyles } from "@material-ui/core/styles";
-import BookmarkIcon from "@material-ui/icons/Bookmark";
-import CloseIcon from "@material-ui/icons/Close";
-import SaveIcon from "@material-ui/icons/Save";
-import IconButton from "@material-ui/core/IconButton";
 import ReactJkMusicPlayer from "react-jinke-music-player";
+import BookmarkExtension from "./BookmarkExtension";
 import "react-jinke-music-player/assets/index.css";
 import "./player.css"; // "Override" the default jinke-music-player styles
-import { markAsPlayed, saveBookmark } from "../api/query";
-import { toHHMMSS } from "../common/utils";
+import { markAsPlayed } from "../../api/mutation";
+
+export function playNow(state, episode, time = 0) {
+  const [sessionState, updateState] = state;
+  if (
+    sessionState.audioList.length > 0 &&
+    sessionState.audioList[0].id === episode.id
+  ) {
+    sessionState.audioInstance.current.currentTime = time;
+    return;
+  }
+  const newList = [
+    {
+      episodeId: episode.id,
+      name: episode.title,
+      musicSrc: episode.url,
+      cover: episode.podcast.image,
+    },
+    ...sessionState.audioList.filter(
+      (listEpisode) => listEpisode.id === episode.id
+    ),
+  ];
+  updateState("audioList", newList);
+  sessionState.audioInstance.current.currentTime = time;
+}
 
 // Add an audio to the sessionState audioList
 // https://github.com/lijinke666/react-music-player#bulb-audiolistprops
@@ -25,6 +42,7 @@ export function addAudio(state, { title, url, podcast, id }) {
   if (sessionState.audioList.map((episode) => episode.id).includes(id)) {
     return;
   }
+
   const newList = [
     ...sessionState.audioList,
     {
@@ -39,7 +57,10 @@ export function addAudio(state, { title, url, podcast, id }) {
 }
 
 const useStyles = makeStyles((theme) => ({
-  extendedMenu: {},
+  extendedItem: {
+    margin: theme.spacing(1),
+    cursor: "pointer",
+  },
   bookmarkMenu: {
     minHeight: 200,
     minWidth: 400,
@@ -53,6 +74,7 @@ const useStyles = makeStyles((theme) => ({
   bookmarkInputField: {
     height: "100%",
     width: "100%",
+    paddingBottom: theme.spacing(1),
   },
   bookmarkCancel: {
     position: "absolute",
@@ -71,26 +93,12 @@ export default function Player({ state }) {
   const mode = sessionState.audioList ? "full" : "";
 
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
   const audioInstance = useRef(null);
-  const bookmarkField = useRef(null);
-
-  const openBookmarkMenu = (event) => {
-    setOpen(true);
-  };
-
-  const closeBookmarkMenu = () => {
-    setOpen(false);
-  };
-
-  const saveBookmarkHandler = () => {
-    console.log(sessionState.audioList);
-    //saveBookmark(sessionState.audioList[0].id,state[0].cookies.token);
-    closeBookmarkMenu();
-  };
 
   const onAudioPlay = (audioInfo) => {
-    console.log(`Marking audio as played ${audioInfo.name}, ${audioInfo.id}`);
+    console.log(
+      `Marking audio as played ${audioInfo.name}, ${audioInfo.episodeId}`
+    );
     markAsPlayed(audioInfo.episodeId, sessionState.cookies.token);
   };
 
@@ -103,6 +111,13 @@ export default function Player({ state }) {
   const onAudioListsChange = (currentPlayId, audioLists, audioInfo) => {
     updateState("audioList", audioLists);
   };
+
+  useEffect(() => {
+    updateState(
+      "audioInstance",
+      audioInstance
+    ); /* this will break if player ever gets destroyed */
+  }, []);
 
   const options = {
     getAudioInstance: (instance) => {
@@ -140,58 +155,10 @@ export default function Player({ state }) {
     onAudioListsChange: onAudioListsChange,
     extendsContent: (
       <>
-        <BookmarkIcon
-          className={classes.extendedMenu}
-          onClick={openBookmarkMenu}
+        <BookmarkExtension
+          sessionState={sessionState}
+          audioInstance={audioInstance}
         />
-        <Modal open={open} onClose={closeBookmarkMenu}>
-          <Box className={classes.bookmarkMenu} p={5}>
-            {audioInstance.current !== null &&
-            audioInstance.current.currentSrc ? (
-              <>
-                <IconButton
-                  color="primary"
-                  aria-label="cancel bookmark"
-                  onClick={closeBookmarkMenu}
-                  className={classes.bookmarkCancel}
-                >
-                  <CloseIcon />
-                </IconButton>
-                <Typography
-                  variant="body1"
-                  gutterBottom
-                  className={classes.bookmarkMessage}
-                >
-                  {`Bookmarked at ${toHHMMSS(audioInstance.current.currentTime)}`}
-                </Typography>
-                <form noValidate autoComplete="off">
-                  <TextField
-                    multiline
-                    label="Notes"
-                    variant="outlined"
-                    className={classes.bookmarkInputField}
-                    ref={bookmarkField}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={saveBookmarkHandler}
-                    className={classes.bookmarkSave}
-                    aria-label="save"
-                    endIcon={<SaveIcon />}
-                    type="submit"
-                  >
-                    Save
-                  </Button>
-                </form>
-              </>
-            ) : (
-              <Typography variant="body1" className={classes.bookmarkMessage}>
-                Play a podcast episode to begin bookmarking
-              </Typography>
-            )}
-          </Box>
-        </Modal>
         <Select
           key={1}
           value={sessionState.playbackRate}
@@ -199,9 +166,7 @@ export default function Player({ state }) {
           label="Playback Rate"
           className={classes.extendedMenu}
         >
-          <MenuItem value={1}>
-            <em>Playback Rate</em>
-          </MenuItem>
+          <ListItem>Playback Rate</ListItem>
           <MenuItem value={0.5}>0.5</MenuItem>
           <MenuItem value={0.75}>0.75</MenuItem>
           <MenuItem value={1}>1</MenuItem>

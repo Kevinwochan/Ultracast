@@ -60,7 +60,7 @@ export default function Author({ state }) {
       });
       setAuthor(authorInfo.author);
     });
-  }, [id, state]);
+  }, [id]);
 
   if (podcasts === "loader") {
     return <CircularProgress />;

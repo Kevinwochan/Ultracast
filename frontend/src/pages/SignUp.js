@@ -14,7 +14,7 @@ import Copyright from "../components/Copyright";
 import { useHistory } from "react-router-dom";
 import ucTheme from "../theme";
 import Alert from "@material-ui/lab/Alert";
-import { register } from "../api/query";
+import { register } from "../api/mutation";
 
 const useStyles = makeStyles(() => ({
   paper: {
