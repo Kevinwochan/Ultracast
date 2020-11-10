@@ -15,6 +15,7 @@ import Container from "@material-ui/core/Container";
 import Copyright from "../components/Copyright";
 import ucTheme from "../theme";
 import Alert from "@material-ui/lab/Alert";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { login } from "../api/mutation";
 
 const useStyles = makeStyles((theme) => ({
@@ -37,9 +38,18 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    minHeight: 36,
   },
   message: {
     margin: theme.spacing(2, 0, 2, 0),
+  },
+  buttonProgress: {
+    color: "#4caf50",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -12,
+    marginLeft: -12,
   },
 }));
 
@@ -49,12 +59,15 @@ export default function SignIn({ handleCookie }) {
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     login(emailRef.current.value, passwordRef.current.value).then((data) => {
+      setLoading(false);
       if (data.success) {
         handleCookie("token", data.token);
         history.push("/");
@@ -117,12 +130,19 @@ export default function SignIn({ handleCookie }) {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
+                disabled={loading}
               >
-                Sign In
+                {loading ? (
+                  <CircularProgress
+                    size={24}
+                    className={classes.buttonProgress}
+                  />
+                ) : (
+                  "SIGN IN"
+                )}
               </Button>
               <Grid container>
-                <Grid item xs>
-                </Grid>
+                <Grid item xs></Grid>
                 <Grid item>
                   <Link href="/signup" variant="body2">
                     {"Don't have an account? Sign Up"}
