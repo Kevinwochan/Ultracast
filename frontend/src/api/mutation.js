@@ -397,6 +397,46 @@ const markAsSearched = async (podcastId, token) => {
   return data.markPodcastSearched;
 };
 
+const saveStream = async (query, token) => {
+  const data = await graphql(
+    `
+      mutation saveStream($query: String!) {
+        createStream(input: { search: $query }) {
+          success
+          stream {
+            id
+            search
+          }
+        }
+      }
+    `,
+    {
+      query: query,
+    },
+    token
+  );
+
+  return data.createStream;
+};
+
+const deleteStream = async (id, token) => {
+  const data = await graphql(
+    `
+      mutation deleteStream($id: ID!) {
+        deleteStream(input: { streamId: $id }) {
+          success
+        }
+      }
+    `,
+    {
+      id: id,
+    },
+    token
+  );
+
+  return data.deleteStream;
+};
+
 export {
   login,
   register,
@@ -406,6 +446,8 @@ export {
   unsubscribe,
   deleteBookmark,
   saveBookmark,
+  saveStream,
+  deleteStream,
   follow,
   unfollow,
   newPodcast,

@@ -640,6 +640,27 @@ const getBookmarks = async (episodeId, token) => {
   return data.currentUser.bookmarks.edges.map((bookmark) => bookmark.node);
 };
 
+const getStreams = async (token) => {
+  const data = await graphql(
+    `
+      query getStreams {
+        allStream {
+          edges {
+            node {
+              id
+              search
+            }
+          }
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.allStream;
+};
+
 const getAnalytics = async (token) => {
   const data = await graphql(
     `
@@ -704,4 +725,5 @@ export {
   getUserPodcasts,
   getUserPodcastsInfo,
   getPodcastInfo,
+  getStreams,
 };
