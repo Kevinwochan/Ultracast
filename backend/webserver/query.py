@@ -178,6 +178,7 @@ class Query(graphene.ObjectType):
     all_podcast_metadata = MongoengineConnectionField(PodcastMetadata)
     #all_user = AuthenticatedMongoengineConnectionField(User)
     all_user = MongoengineConnectionField(User)
+    all_stream = MongoengineConnectionField(Stream)
     '''
     Custom query to get recommended podcasts for a particular user
     '''
