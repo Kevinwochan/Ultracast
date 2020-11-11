@@ -19,6 +19,8 @@ def calculateRecommendations(subscriptions, recentEpisodes, searches):
         print(f"Example episode:\t\t'{recentEpisodes[0].episode.name}'\n")
     
 
+    
+
     # Elements to consider:
     # Subscriptions
     #  - Category + subcategory
