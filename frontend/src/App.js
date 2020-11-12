@@ -23,7 +23,7 @@ import Subscriptions from "./pages/Subscriptions";
 import Search from "./pages/Search";
 import Following from "./pages/Following";
 import User from "./pages/User";
-import Map from "./pages/Analytics/Map";
+import Bookmarks from "./pages/Bookmarks";
 
 function PrivateRoute({ cookies, children, ...rest }) {
   return (
@@ -204,10 +204,10 @@ export default function App() {
             </Page>
           </PrivateRoute>
         </Route>
-        <Route path="/map/">
+        <Route path="/bookmarks">
           <PrivateRoute cookies={cookies}>
             <Page handleCookie={handleCookie} state={state} player>
-              <Map />
+              <Bookmarks state={state}/>
             </Page>
           </PrivateRoute>
         </Route>

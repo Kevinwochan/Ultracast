@@ -25,6 +25,7 @@ import HistoryIcon from "@material-ui/icons/History";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
 import PeopleIcon from "@material-ui/icons/People";
 import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
+import BookmarkIcon from "@material-ui/icons/Bookmark";
 import { Link, useHistory } from "react-router-dom";
 import ucTheme from "../theme";
 import Logo from "./Logo";
@@ -211,6 +212,11 @@ const ListenerSideBar = ({ open }) => {
       link: "/",
     },
     {
+      name: "Bookmarks",
+      icon: <BookmarkIcon />,
+      link: "/bookmarks",
+    },
+     {
       name: "Search",
       icon: <SearchIcon />,
       link: "/search",

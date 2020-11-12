@@ -16,7 +16,7 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { toHHMMSS } from "../common/utils";
 import { playNow } from "./AudioPlayer/Player";
-import { getBookmarks } from "../api/query";
+import { getBookmarksForEpisode } from "../api/query";
 import { deleteBookmark } from "../api/mutation";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,13 +25,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Bookmarks = ({ state, episode }) => {
+const BookmarkAccordian = ({ state, episode }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const [bookmarks, setBookmarks] = useState([]);
 
   useEffect(() => {
-    getBookmarks(episode.id, state[0].cookies.token).then((bookmarks) => {
+    getBookmarksForEpisode(episode.id, state[0].cookies.token).then((bookmarks) => {
       setBookmarks(bookmarks);
     });
   }, []);
@@ -96,4 +96,4 @@ const Bookmarks = ({ state, episode }) => {
   );
 };
 
-export default Bookmarks;
+export default BookmarkAccordian;

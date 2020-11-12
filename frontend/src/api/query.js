@@ -615,7 +615,33 @@ const searchUser = async (email) => {
   return data.allUser.totalCount === 1 ? data.allUser.edges[0].node.id : null;
 };
 
-const getBookmarks = async (episodeId, token) => {
+const getBookmarkedEpisodes = async (token) => {
+  const data = await graphql(
+    `
+      query {
+        currentUser {
+          bookmarks {
+            edges {
+              node {
+                episode {
+                  ${verboseEpisode}
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.currentUser.bookmarks.edges.map(
+    (bookmark) => parseEpisode(bookmark.node.episode)
+  );
+};
+
+const getBookmarksForEpisode = async (episodeId, token) => {
   const data = await graphql(
     `
       query($episodeId: ID) {
@@ -710,7 +736,8 @@ const getAnalytics = async (token) => {
 export {
   getAnalytics,
   searchUser,
-  getBookmarks,
+  getBookmarkedEpisodes,
+  getBookmarksForEpisode,
   getMyFollowing,
   getMyHistory,
   getMyRecommended,

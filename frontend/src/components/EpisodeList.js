@@ -10,7 +10,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import Badge from "@material-ui/core/Badge";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Bookmarks from "../components/Bookmarks";
+import BookmarkAccordian from "../components/BookmarkAccordian";
 import { PodcastCover } from "./Podcast";
 import { toHHMMSS } from "../common/utils";
 
@@ -85,7 +85,7 @@ export default function Playlist({ episodes, state }) {
                   <Typography variant="body2" gutterBottom>
                     {episode.description}
                   </Typography>
-                  <Bookmarks state={state} episode={episode} />
+                  <BookmarkAccordian state={state} episode={episode} />
                 </TableCell>
                 <TableCell>{toHHMMSS(episode.length)}</TableCell>
                 <TableCell>{episode.date.toDateString()}</TableCell>
