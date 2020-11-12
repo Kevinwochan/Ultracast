@@ -56,7 +56,7 @@ class Bookmark(mongoengine.Document):
     description = mongofields.StringField()
     last_updated = mongofields.DateTimeField(default=datetime.datetime.now)
     track_timestamp = mongofields.LongField(required=True)
-    episode = mongofields.ReferenceField("PodcastEpisodeMetadata", required=True)
+    episode = mongofields.ReferenceField("PodcastEpisodeMetadata", required=True) # reverse_delete_rule=mongoengine.CASCADE
 
 class FollowingLastListenedEntry(mongoengine.Document):
     following_email = mongofields.StringField()
@@ -125,5 +125,7 @@ User.register_delete_rule(PodcastMetadata, "subscribers", mongoengine.PULL)
 
 # A little mean but this is the only reverse delete rule we can use in embedded documents...
 PodcastEpisodeMetadata.register_delete_rule(User, "listen_history__episode", mongoengine.DENY)
+
+PodcastEpisodeMetadata.register_delete_rule(Bookmark, "episode", mongoengine.CASCADE)
 
 User.register_delete_rule(Stream, "owner", mongoengine.CASCADE)
