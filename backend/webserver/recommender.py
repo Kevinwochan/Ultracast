@@ -17,10 +17,7 @@ def calculateRecommendations(subscriptions, recentEpisodes, searches):
         print(f"Example subscribed podcast:\t'{subscriptions[0].name}'")
         print(f"\n{len(recentEpisodes)} recent episode(s) of type:\t{type(recentEpisodes[0])}")
         print(f"Example episode:\t\t'{recentEpisodes[0].episode.name}'\n")
-    
-
-    
-
+        
     # Elements to consider:
     # Subscriptions
     #  - Category + subcategory
@@ -30,7 +27,8 @@ def calculateRecommendations(subscriptions, recentEpisodes, searches):
     #  - Description / summary
     #  - Category
     # Searches
-    #  - Text
+    #  - Category + subcategory
+    #  - Description / summary
 
 
     # Current (simple) strategy:
@@ -44,6 +42,7 @@ def calculateRecommendations(subscriptions, recentEpisodes, searches):
     for listenEntry in recentEpisodes:
         parentPodcast = listenEntry.episode.podcast_metadata
         interestingPodcasts.add(parentPodcast)
+    interestingPodcasts.update(searches)
 
     # Make a set containing the Categories of each of the interestingPodcasts
     interestingCategories = {podcast.category for podcast in interestingPodcasts}
