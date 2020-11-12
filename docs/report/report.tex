@@ -1,5 +1,6 @@
 \documentclass[12pt]{article}
 
+\usepackage[utf8]{inputenc}
 \usepackage[a4paper, margin=2.5cm]{geometry}
 \usepackage{graphicx}
 \usepackage{rotating}
@@ -10,6 +11,7 @@
 \usepackage{todonotes}
 \usepackage{tabularx}
 \usepackage{amssymb}
+\usepackage{amsfonts}
 \usepackage{tablefootnote}
 \usepackage{appendix}
 \usepackage{threeparttable}
@@ -26,15 +28,53 @@
 \title{COMP3900-H15A-capSquad - Project Report}
 \date{\today}
 \author{
-    Daniel Latimer \\ z5115175 \and
-    Connor O'Shea \\ z5115177 \and
-    Kevin Chan \\ z5113136 \and
-    Oliver Richards \\ z5157383 \and
+    Daniel Latimer \\ z5115175 
+    \and
+    Connor O'Shea \\ z5115177 
+    \and
+    Kevin Chan \\ z5113136 
+    \and
+    Oliver Richards \\ z5157383 
+    \and
     Peter Kerr \\ z5115807} 
 
 \begin{document}
 
-\maketitle
+\makeatletter
+\begin{titlepage}
+    \begin{center}
+        \vfill
+        \includegraphics[width=0.35\textwidth]{resources/unsw_logo}
+
+        \textbf{School of Computer Science and Engineering}
+
+        \textbf{Faculty of Engineering}
+
+        \textbf{UNSW Sydney}
+        \vfill
+
+        \textbf{UltraCast}
+        \vfill
+
+        \textbf{BY}
+        
+        \textbf{
+        \begin{tabular}{ccccc}
+            Daniel Latimer  & Connor O'Shea & Kevin Chan & Oliver Richards & Peter Kerr \\
+            z5115175        & z5115177      & z5113136   & z5157383        & z5115807
+        \end{tabular}
+    }
+
+        \vfill
+
+    \end{center}
+
+    Submitted: \@date
+
+    Tutor: Tatjana Zrimec
+
+\end{titlepage}
+\makeatother
 \tableofcontents
 
 \newpage
