@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { uid } from "react-uid";
 import { addAudio } from "./AudioPlayer/Player";
 import ultraCastTheme from "../theme";
+import { toHHMMSS } from "../common/utils";
 
 const playlistStyles = makeStyles((theme) => ({
   card: {
@@ -87,9 +88,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
                       </Grid>
                       <Grid item lg={4}>
                         <Typography gutterBottom variant="subtitle1">
-                          {variant === "podcast"
-                            ? `${episode.length} episodes`
-                            : `${episode.length} minutes`}
+                          {toHHMMSS(episode.length)}
                         </Typography>
                       </Grid>
                     </Grid>
