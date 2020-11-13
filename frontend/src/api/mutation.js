@@ -186,16 +186,15 @@ const deleteEpisode = async (podcastId, token) => {
   return data.deletePodcastEpisode;
 };
 
-
 const follow = async (userId, token) => {
   const data = await graphql(
     `
-    mutation($userId: ID!){
-      followUser(input: {followUserId: $userId}){
-        success
-        message
+      mutation($userId: ID!) {
+        followUser(input: { followUserId: $userId }) {
+          success
+          message
+        }
       }
-    }
     `,
     { userId: userId },
     token
@@ -206,11 +205,11 @@ const follow = async (userId, token) => {
 const unfollow = async (userId, token) => {
   const data = await graphql(
     `
-    mutation($userId: ID!){
-      unfollowUser(input: {unfollowUserId: $userId}){
-        success
+      mutation($userId: ID!) {
+        unfollowUser(input: { unfollowUserId: $userId }) {
+          success
+        }
       }
-    }
     `,
     { userId: userId },
     token
@@ -218,8 +217,237 @@ const unfollow = async (userId, token) => {
   return data.unfollowUser.success;
 };
 
+const saveBookmark = async (episodeId, title, description, time, token) => {
+  console.log(episodeId, title, description, time, token);
+  const data = await graphql(
+    `
+      mutation(
+        $episodeId: ID!
+        $title: String!
+        $description: String!
+        $time: Int!
+      ) {
+        createBookmark(
+          input: {
+            episode: $episodeId
+            title: $title
+            description: $description
+            trackTimestamp: $time
+          }
+        ) {
+          success
+        }
+      }
+    `,
+    {
+      episodeId: episodeId,
+      title: title,
+      description: description,
+      time: time,
+    },
+    token
+  );
+
+  return data.createBookmark.success;
+};
+
+const deleteBookmark = async (bookmarkId, token) => {
+  const data = await graphql(
+    `
+      mutation($bookmarkId: ID!) {
+        deleteBookmark(input: { bookmarkId: $bookmarkId }) {
+          success
+          clientMutationId
+        }
+      }
+    `,
+    {
+      bookmarkId: bookmarkId,
+    },
+    token
+  );
+  return data.deleteBookmark.success;
+};
+
+/*
+subscribes the the specified user (token) to the specified podcast series
+*/
+const subscribe = async (podcastId, token) => {
+  const data = await graphql(
+    `
+      mutation($podcastId: ID!) {
+        subscribePodcast(input: { podcastMetadataId: $podcastId }) {
+          success
+        }
+      }
+    `,
+    {
+      podcastId: podcastId,
+    },
+    token
+  );
+  return data.subscribePodcast.success;
+};
+
+/*
+subscribes the the specified user (token) to the specified podcast series
+*/
+const unsubscribe = async (podcastId, token) => {
+  const data = await graphql(
+    `
+      mutation($podcastId: ID!) {
+        unsubscribePodcast(input: { podcastMetadataId: $podcastId }) {
+          success
+        }
+      }
+    `,
+    {
+      podcastId: podcastId,
+    },
+    token
+  );
+  return data.unsubscribePodcast.success;
+};
+
+/*
+Logs a user in
+*/
+const login = async (email, password) => {
+  const data = await graphql(
+    `
+      mutation($email: String!, $password: String!) {
+        login(input: { email: $email, password: $password }) {
+          success
+          token
+          message
+        }
+      }
+    `,
+    {
+      email: `${email}`,
+      password: `${password}`,
+    }
+  );
+
+  return data.login;
+};
+
+/*
+Registers a email password combination as user account
+*/
+const register = async (name, email, password) => {
+  const data = await graphql(
+    `
+      mutation($name: String, $email: String!, $password: String!) {
+        createUser(input: { name: $name, email: $email, password: $password }) {
+          success
+          token
+          failWhy
+        }
+      }
+    `,
+    {
+      name: name,
+      email: `${email}`,
+      password: `${password}`,
+    }
+  );
+  return {
+    success: data.createUser.success,
+    message: data.createUser.failWhy,
+    token: data.createUser.token,
+  };
+};
+
+/*
+Marks the podcast id given as watched for the specified user (token)
+*/
+const markAsPlayed = async (episodeId, token) => {
+  const data = await graphql(
+    `
+      mutation($episodeId: ID!) {
+        markPodcastListened(input: { podcastEpisodeMetadataId: $episodeId }) {
+          success
+        }
+      }
+    `,
+    {
+      episodeId: episodeId,
+    },
+    token
+  );
+  return data.markPodcastListened;
+};
+
+const markAsSearched = async (podcastId, token) => {
+  const data = await graphql(
+    `
+      mutation markAsSearched($podcastId: ID!) {
+        markPodcastSearched(input: { podcastMetadataId: $podcastId }) {
+          success
+        }
+      }
+    `,
+    {
+      podcastId: podcastId,
+    },
+    token
+  );
+
+  return data.markPodcastSearched;
+};
+
+const saveStream = async (query, token) => {
+  const data = await graphql(
+    `
+      mutation saveStream($query: String!) {
+        createStream(input: { search: $query }) {
+          success
+          stream {
+            id
+            search
+          }
+        }
+      }
+    `,
+    {
+      query: query,
+    },
+    token
+  );
+
+  return data.createStream;
+};
+
+const deleteStream = async (id, token) => {
+  const data = await graphql(
+    `
+      mutation deleteStream($id: ID!) {
+        deleteStream(input: { streamId: $id }) {
+          success
+        }
+      }
+    `,
+    {
+      id: id,
+    },
+    token
+  );
+
+  return data.deleteStream;
+};
 
 export {
+  login,
+  register,
+  markAsPlayed,
+  markAsSearched,
+  subscribe,
+  unsubscribe,
+  deleteBookmark,
+  saveBookmark,
+  saveStream,
+  deleteStream,
   follow,
   unfollow,
   newPodcast,

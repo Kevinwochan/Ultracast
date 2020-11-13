@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -13,7 +13,7 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { uid } from "react-uid";
-import { addAudio } from "./Player";
+import { addAudio } from "./AudioPlayer/Player";
 import { getMyNotifications, getNumNotifications } from "../api/query";
 import useInterval from "../hooks/useInterval";
 
@@ -65,7 +65,7 @@ const Notifications = ({ state }) => {
     setDismissed(count);
     setAnchorEl(null);
   };
-
+/*
   useInterval(() => {
     getNumNotifications(state[0].cookies.token).then((count) => {
       if (count > 0) {
@@ -75,7 +75,7 @@ const Notifications = ({ state }) => {
       }
       setCount(count);
     });
-  }, 1000);
+  }, 1000);*/
 
   const classes = useStyles();
 

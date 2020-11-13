@@ -423,3 +423,30 @@ class APITestCast(snapshottest.TestCase):
             '''
         result = self.execute_with_jwt(delete_stream_query, variables={"stream_id": stream_id})
         self.assertMatchSnapshot(result, "Stream is deleted")
+
+    def test_add_searched_podcast(self):
+        self.createUser(email="danIKnowYoureReadingThis@test.com")
+
+        podcast_id = self.createPodcast()
+
+        mark_searched_query = \
+            '''
+            mutation a($podcast_id: ID!) {
+              markPodcastSearched (input: {
+                podcastMetadataId: $podcast_id
+              }) {
+                success
+                user {
+                  searchedPodcasts {
+                    edges {
+                      node {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            '''
+        result = self.execute_with_jwt(mark_searched_query, variables={"podcast_id": podcast_id})
+        self.assertMatchSnapshot(result, "Podcast is marked as searched")

@@ -10,11 +10,12 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grow from "@material-ui/core/Grow";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Copyright from "../components/Copyright";
 import { useHistory } from "react-router-dom";
 import ucTheme from "../theme";
 import Alert from "@material-ui/lab/Alert";
-import { register } from "../api/query";
+import { register } from "../api/mutation";
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -36,6 +37,15 @@ const useStyles = makeStyles(() => ({
   },
   submit: {
     margin: ucTheme.spacing(3, 0, 2),
+    minHeight: 36
+  },
+  buttonProgress: {
+    color: "#4caf50",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -12,
+    marginLeft: -12,
   },
 }));
 
@@ -47,18 +57,20 @@ export default function SignUp({ handleCookie }) {
   const nameRef = React.useRef();
   const history = useHistory();
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) {
       return;
     }
+    setLoading(true);
     register(
       nameRef.current.value,
       emailRef.current.value,
       passwordRef.current.value
     ).then((data) => {
-      console.log(data);
+      setLoading(false);
       if (data.success) {
         handleCookie("token", data.token);
         history.push("/");
@@ -152,7 +164,14 @@ export default function SignUp({ handleCookie }) {
             color="primary"
             className={classes.submit}
           >
-            Sign Up
+            {loading ? (
+                  <CircularProgress
+                    size={24}
+                    className={classes.buttonProgress}
+                  />
+                ) : (
+                  "SIGN UP"
+                )}
           </Button>
           <Grid container justify="flex-end">
             <Grid item>

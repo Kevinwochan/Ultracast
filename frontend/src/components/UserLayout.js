@@ -25,6 +25,7 @@ import HistoryIcon from "@material-ui/icons/History";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
 import PeopleIcon from "@material-ui/icons/People";
 import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
+import BookmarkIcon from "@material-ui/icons/Bookmark";
 import { Link, useHistory } from "react-router-dom";
 import ucTheme from "../theme";
 import Logo from "./Logo";
@@ -152,7 +153,7 @@ export default function UserLayout({ handleCookie, state, children }) {
       >
         <Toolbar className={classes.toolbar}>
           <Logo />
-          <Notifications state={state} />
+          {/* <Notifications state={state} /> */}
           <AccountOptions state={state} handleCookie={handleCookie} />
         </Toolbar>
       </AppBar>
@@ -211,6 +212,11 @@ const ListenerSideBar = ({ open }) => {
       link: "/",
     },
     {
+      name: "Bookmarks",
+      icon: <BookmarkIcon />,
+      link: "/bookmarks",
+    },
+     {
       name: "Search",
       icon: <SearchIcon />,
       link: "/search",
@@ -306,7 +312,7 @@ const AccountOptions = ({ state, handleCookie }) => {
   const handleLogout = (e) => {
     e.preventDefault();
     handleCookie("token", null);
-    history.push("/");
+    history.push("/signin");
   };
 
   const creatorTitle = sessionState.creatorView

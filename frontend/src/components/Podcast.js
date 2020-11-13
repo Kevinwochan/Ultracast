@@ -6,7 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { uid } from "react-uid";
-import { addAudio } from "./Player";
+import { addAudio } from "./AudioPlayer/Player";
 import ultraCastTheme from "../theme";
 
 const playlistStyles = makeStyles((theme) => ({
@@ -236,13 +236,17 @@ export function PodcastCard({ state, episode }) {
   const classes = podcastCardStyles();
 
   const addEpisodeToPlaylist = () => {
-    addAudio(state, episode)
-  }
+    addAudio(state, episode);
+  };
   return (
     <>
       <PodcastCover episode={episode} state={state} />
       <CardContent className={classes.podcastDetailsContainer}>
-        <Typography variant="subtitle2" className={classes.podcastDetails} onClick={addEpisodeToPlaylist}>
+        <Typography
+          variant="subtitle2"
+          className={classes.podcastDetails}
+          onClick={addEpisodeToPlaylist}
+        >
           <b>{episode.title}</b>
         </Typography>
         <Link to={`/author/${episode.podcast.author.id}`}>
@@ -389,6 +393,12 @@ const SearchResult = ({ podcast }) => {
         <Link to={`/podcast/${podcast.podcast.id}`}>
           <Typography variant="subtitle2" className={classes.podcastDetails}>
             <b>{podcast.podcast.title}</b>
+          </Typography>
+          <Typography variant="body2" className={classes.podcastDetails}>
+            <b>
+              {podcast.podcast.subscribers} subscriber
+              {podcast.podcast.subscribers === 1 ? "" : "s"}
+            </b>
           </Typography>
         </Link>
         <Link to={`/author/${podcast.author.id}`}>

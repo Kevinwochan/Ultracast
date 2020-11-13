@@ -24,7 +24,7 @@ this components expects podcast.subscribed, the parent component should evaluate
 */
 export default function PodcastList({ podcasts, state, creator }) {
   const classes = useStyles();
-  const [sessionState, setSessionState] = state;
+  const [sessionState] = state;
 
   if (podcasts === "loader") {
     return <CircularProgress />;

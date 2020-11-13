@@ -149,7 +149,11 @@ export default function EditPodcast({ userToken }) {
   const updateEp = (epInfo, onSuccess) => {
     updateEpisode(epInfo, userToken).then((data) => {
       if (data.success) {
-        onSuccess();
+        getEpisodes(podcastId).then((podcastInfo) => {
+          setPodcast(podcastInfo.podcast);
+          setEpisodes(podcastInfo.episodes);
+          onSuccess();
+        });
       } else {
         setSnackbar({
           message: "Could not update episode.",

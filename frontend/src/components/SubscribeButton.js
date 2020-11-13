@@ -2,7 +2,7 @@ import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import React, { useState } from "react";
-import { subscribe, unsubscribe } from "../api/query";
+import { subscribe, unsubscribe } from "../api/mutation";
 
 const SubscribeButton = ({ podcast, sessionState }) => {
   const [subscribed, setSubscription] = useState(podcast.subscribed);
