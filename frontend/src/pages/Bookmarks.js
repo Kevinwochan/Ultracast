@@ -30,7 +30,19 @@ const Bookmarks = ({ state }) => {
 
   useEffect(() => {
     getBookmarkedEpisodes(state[0].cookies.token).then((episodes) => {
-      setEpisodes(episodes);
+      const uniqueEpisodeIds = [
+        ...new Set(episodes.map((episode) => episode.id)),
+      ];
+      let uniqueEpisodes = [];
+      for (let i = 0; i < uniqueEpisodeIds.length; ++i) {
+        for (let j = 0; j < episodes.length; ++j) {
+          if (uniqueEpisodeIds[i] === episodes[j].id) {
+            uniqueEpisodes.push(episodes[j]);
+            break;
+          }
+        }
+      }
+      setEpisodes(uniqueEpisodes);
     });
   }, []);
 
