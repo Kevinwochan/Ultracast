@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
-import algoliasearch from "algoliasearch/lite";
 import {
   connectAutoComplete,
   connectStateResults,
@@ -17,11 +16,7 @@ import { SearchResult } from "../components/Podcast";
 import "instantsearch.css/themes/algolia.css";
 import { saveStream, deleteStream, markAsSearched } from "../api/mutation";
 import { getStreams } from "../api/query";
-
-const searchClient = algoliasearch(
-  "DLUH4B7HCZ",
-  "85303ce5c9827fc85ed49f641c6963a6"
-);
+import config from "../api/config";
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -85,7 +80,7 @@ export default function Search({ userToken }) {
         Search
       </Typography>
       <InstantSearch
-        searchClient={searchClient}
+        searchClient={config.ALGOLIA_CLIENT}
         indexName="podcasts"
         onSearchStateChange={(searchState) => {
           if (searchState.query !== "") {
