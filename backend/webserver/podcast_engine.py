@@ -168,7 +168,7 @@ class User(BusinessLayerObject):
         stream_model.delete()
 
     def can_edit_stream(self, stream_model):
-        return stream_model in self._model.streams
+        return stream_model.id in [o.id for o in self._model.streams]
 
     def can_edit_podcast_metadata(self, podcast_metadata):
         return podcast_metadata.author.id == self._model.id
