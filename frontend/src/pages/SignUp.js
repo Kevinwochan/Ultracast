@@ -163,6 +163,7 @@ export default function SignUp({ handleCookie }) {
             variant="contained"
             color="primary"
             className={classes.submit}
+            disabled={loading}
           >
             {loading ? (
                   <CircularProgress
