@@ -1,6 +1,7 @@
 from webserver import db
 from webserver import models
 from webserver import query
+from webserver import app
 
 from algoliasearch.search_client import SearchClient
 import graphene
@@ -8,9 +9,6 @@ import graphene.relay
 
 from pprint import pprint
 import json
-
-API_KEY = "548eb1d95df6a4ac461e7a656230a1f9"
-ALGOLIA_ID = "DLUH4B7HCZ"
 
 '''
 Fields that will be forwarded to algolia
@@ -121,8 +119,9 @@ def upload_to_algolia(algolia_client, index_name, mongo_objects, query_class):
 
 
 if __name__ == "__main__":
-    db.connect_mongo()
-    algolia_client = SearchClient.create(ALGOLIA_ID, API_KEY)
+    cfg = app.get_config()
+    db.connect_mongo(cfg)
+    algolia_client = SearchClient.create(cfg["ALGOLIA_ID"], cfg["ALGOLIA_API_KEY"])
 
     # Creates two indexes - one for podcasts and another for publishers
     upload_podcasts(algolia_client)

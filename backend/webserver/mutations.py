@@ -514,6 +514,7 @@ class DeleteStream(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, stream_id):
         user = flask_jwt_extended.current_user
         stream_model = schema.get_node_from_global_id(info, stream_id, query.Stream)
+        #print("Deleting stream {} have streams {}".format(stream_model.id, [ o.id for o in user.model().streams]))
         if not user.can_edit_stream(stream_model):
             raise werkzeug.exceptions.Forbidden("User {} cannot edit this stream"
                     .format(user.get_email()))

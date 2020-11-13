@@ -12,22 +12,14 @@ import io
 import hashlib
 from base64 import urlsafe_b64encode
 
-# Mongodb connection
-MONGO_USERNAME = 'ultracast_admin'
-MONGO_PASSWORD = 'vtcXHq7fS$si9$Bi6c&2'
-MONGO_IP = '139.59.227.230'
-MONGO_AUTH_DB = 'admin'
-MONGO_DB = 'ultracast_sandbox_static_files'
+#MONGO_URI = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_DB}?authSource={MONGO_AUTH_DB}'
 
-MONGO_URI = f'mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@{MONGO_IP}/{MONGO_DB}?authSource={MONGO_AUTH_DB}'
+config = None
 
-
-def connect_mongo():
-    connect(host=MONGO_URI)
-#connect(host=MONGO_URI)
-
-# Digital Ocean Space (Static-Files)
-
+'''
+Defaults
+Modified when init_app() called
+'''
 REGION = 'sfo2'
 STATIC_FILE_BASE_URL = f'https://{REGION}.digitaloceanspaces.com'
 session = boto3.session.Session()
@@ -39,6 +31,31 @@ client = session.client('s3',
 
 BUCKET = 'ultracast-files'
 FILE_ACCESS = 'public-read'
+
+def init_app(app):
+    '''
+    Init based off apps config
+    '''
+    config = app.config
+    REGION = app.config["S3"]["REGION"]
+    STATIC_FILE_BASE_URL = f'https://{REGION}.digitaloceanspaces.com'
+    client = session.client('s3',
+                            region_name=REGION,
+                            endpoint_url=STATIC_FILE_BASE_URL,
+                            aws_access_key_id=app.config["S3"]["AWS_ACCESS_KEY"],
+                            aws_secret_access_key=app.config["S3"]["AWS_SECRET_ACCESS_KEY"])
+
+    BUCKET = app.config["S3"]["BUCKET"]
+    FILE_ACCESS = app.config["S3"]["FILE_ACCESS"]
+
+def connect_mongo(app_config):
+    mongo_uri = "mongodb://{u}:{p}@{ip}/{db}?authSource={auth_db}".format(
+            u=app_config["MONGO_USERNAME"], p=app_config["MONGO_PASSWORD"], 
+            ip=app_config["MONGO_IP"], db=app_config["MONGO_DB"], auth_db=app_config["MONGO_AUTH_DB"])
+    connect(host=mongo_uri)
+
+# Digital Ocean Space (Static-Files)
+
 
 
 class IllegalMimeException(Exception):

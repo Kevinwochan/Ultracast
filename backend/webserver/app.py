@@ -2,27 +2,48 @@ from . import db
 from .schema import (schema, middleware)
 from . import models
 from . import podcast_engine
+from config import default_settings
 
 from flask import Flask
 from flask_graphql import GraphQLView
 from flask_cors import CORS
 import flask_jwt_extended
+import os
+import sys
 
 import json
 import datetime
+import importlib
 
 from graphene_file_upload.flask import FileUploadGraphQLView
 
 jwt = flask_jwt_extended.JWTManager()
 # App config
 
+def get_config():
+    # Load defaults
+    config = default_settings.__dict__
+    try:
+        # Read the file environ var points to and update config with it
+        spec = importlib.util.spec_from_file_location("config", os.environ["ULTRACAST_BACKEND_SETTINGS"])
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+        config.update(module.__dict__)
+    except Exception as e:
+        print("Failed to load environment variable ULTRACAST_BACKEND_SETTINGS. {}".format(e))
+    return config
+
 def create_app(config=None):
     app = Flask(__name__)
-    app.config["JWT_SECRET_KEY"] = "something"
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=60*60)
-    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(minutes=75)
-
-    db.connect_mongo()
+    app.config.from_object(default_settings)
+    try:
+        app.config.from_envvar('ULTRACAST_BACKEND_SETTINGS')
+    except RuntimeError as err:
+        print("Failed to load config from environment: {}".format(err))
+    
+    db.init_app(app)
+    db.connect_mongo(app.config)
 
     jwt.init_app(app)
 

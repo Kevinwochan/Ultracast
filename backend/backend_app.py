@@ -3,6 +3,8 @@ import gunicorn.app.base
 
 from webserver import app
 from search import search_engine
+from config import default_settings
+import flask
 
 
 def number_of_workers():
@@ -14,7 +16,8 @@ class BackendApp(gunicorn.app.base.BaseApplication):
     def __init__(self, app, options=None):
         self.options = options or {}
         self.application = app
-        self.search_engine = search_engine.SearchEngine()
+        #self.search_engine = search_engine.SearchEngine(app.config)
+        self.search_engine = None
         super().__init__()
 
     def load_config(self):
@@ -24,7 +27,9 @@ class BackendApp(gunicorn.app.base.BaseApplication):
             self.cfg.set(key.lower(), value)
 
     def load(self):
-        return self.application()
+        app = self.application()
+        self.search_engine = search_engine.SearchEngine(app.config)
+        return app
 
     def on_exit(self, server):
         self.search_engine.shutdown()
