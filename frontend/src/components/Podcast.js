@@ -6,7 +6,6 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { uid } from "react-uid";
-import { addAudio } from "./AudioPlayer/Player";
 import ultraCastTheme from "../theme";
 import { toHHMMSS } from "../common/utils";
 
@@ -191,7 +190,7 @@ const sliderStyles = makeStyles((theme) => ({
   },
 }));
 
-export function EpisodeSlider({ state, episodes }) {
+export function EpisodeSlider({ audioPlayerControls, episodes }) {
   const classes = sliderStyles();
 
   // Waiting for DB query - just show loader for now
@@ -212,7 +211,7 @@ export function EpisodeSlider({ state, episodes }) {
     <Grid container spacing={4} className={classes.podcastContainer}>
       {episodes.map((episode) => (
         <Grid item key={uid(episode)} xs={2} className={classes.podcast}>
-          <PodcastCard state={state} episode={episode} />
+          <PodcastCard audioPlayerControls={audioPlayerControls} episode={episode} />
         </Grid>
       ))}
     </Grid>
@@ -231,15 +230,15 @@ const podcastCardStyles = makeStyles((theme) => ({
   },
 }));
 
-export function PodcastCard({ state, episode }) {
+export function PodcastCard({ audioPlayerControls, episode }) {
   const classes = podcastCardStyles();
 
   const addEpisodeToPlaylist = () => {
-    addAudio(state, episode);
+    audioPlayerControls.addAudio(episode);
   };
   return (
     <>
-      <PodcastCover episode={episode} state={state} />
+      <PodcastCover episode={episode} audioPlayerControls={audioPlayerControls} />
       <CardContent className={classes.podcastDetailsContainer}>
         <Typography
           variant="subtitle2"
@@ -280,7 +279,7 @@ const coverStyles = makeStyles((theme) => ({
 }));
 
 // Image for the podcast
-function PodcastCover({ episode, state, creator }) {
+function PodcastCover({ episode, audioPlayerControls, creator }) {
   const classes = coverStyles();
   const [play, updatePlay] = useState(false);
 
@@ -292,8 +291,8 @@ function PodcastCover({ episode, state, creator }) {
     updatePlay(false);
   }
 
-  const updateAudioList = () => {
-    addAudio(state, episode);
+  const addEpisodeToPlaylist = () => {
+    audioPlayerControls.addAudio(episode);
   };
 
   return (
@@ -301,7 +300,7 @@ function PodcastCover({ episode, state, creator }) {
       className={creator ? classes.editItem : classes.podcastItem}
       onMouseEnter={creator ? null : showPlay}
       onMouseLeave={creator ? null : hidePlay}
-      onClick={creator ? null : updateAudioList}
+      onClick={creator ? null : addEpisodeToPlaylist}
     >
       <img
         src={episode.podcast.image}

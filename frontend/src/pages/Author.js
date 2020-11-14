@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -42,7 +43,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Author({ state }) {
+export default function Author() {
+  const [cookies] = useCookies(['token']);
   const classes = useStyles();
   const { id } = useParams();
   const [author, setAuthor] = useState();
@@ -51,7 +53,7 @@ export default function Author({ state }) {
   useEffect(() => {
     getPodcasts(id).then((authorInfo) => {
       // initalise podcast.subscribed
-      getMySubscriptions(state[0].cookies.token).then((data) => {
+      getMySubscriptions(cookies.token).then((data) => {
         const subscriptions = data.map((podcast) => podcast.id);
         authorInfo.podcasts.forEach((podcast) => {
           podcast.subscribed = subscriptions.includes(podcast.id);
@@ -76,7 +78,7 @@ export default function Author({ state }) {
         </Grid>
       </Grid>
       {/* List of podcasts */}
-      <PodcastPlaylist podcasts={podcasts} state={state} />
+      <PodcastPlaylist podcasts={podcasts}/>
     </>
   );
 }

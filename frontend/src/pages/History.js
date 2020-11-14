@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { getMyHistory } from "../api/query";
 import EpisodePlaylist from "../components/EpisodeList";
 
-export default function History({ state }) {
-  const [sessionState, ] = state;
+export default function History() {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
 
   const [history, setHistory] = useState("loader");
   useEffect(() => {
-    getMyHistory(sessionState.cookies.token).then((data) => {
+    getMyHistory(cookies.token).then((data) => {
       setHistory(data);
     });
-  }, [sessionState]);
+  }, []);
 
   return (
     <>
@@ -21,7 +22,7 @@ export default function History({ state }) {
           <b>Recently Listened</b>
         </Typography>
       </Box>
-      <EpisodePlaylist episodes={history} state={state} />
+      <EpisodePlaylist episodes={history} />
     </>
   );
 }

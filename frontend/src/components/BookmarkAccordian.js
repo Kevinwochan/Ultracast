@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { uid } from "react-uid";
 import { makeStyles } from "@material-ui/core/styles";
 import Accordion from "@material-ui/core/Accordion";
@@ -15,7 +16,6 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { toHHMMSS } from "../common/utils";
-import { playNow } from "./AudioPlayer/Player";
 import { getBookmarksForEpisode } from "../api/query";
 import { deleteBookmark } from "../api/mutation";
 
@@ -25,13 +25,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BookmarkAccordian = ({ state, episode }) => {
+const BookmarkAccordian = ({ audioPlayerControls, episode }) => {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const [bookmarks, setBookmarks] = useState([]);
 
   useEffect(() => {
-    getBookmarksForEpisode(episode.id, state[0].cookies.token).then((bookmarks) => {
+    /* TODO implement axios cancel token
+    and clean up
+    https://dev.to/otamnitram/react-useeffect-cleanup-how-and-when-to-use-it-2hbm
+    */
+    getBookmarksForEpisode(episode.id, cookies.token).then((bookmarks) => {
       setBookmarks(bookmarks);
     });
   }, []);
@@ -44,12 +49,12 @@ const BookmarkAccordian = ({ state, episode }) => {
     return <></>;
   }
 
-  const seekToTimestamp = (state, bookmark, episode) => () => {
-    playNow(state, episode, bookmark.trackTimestamp);
+  const seekToTimestamp = (audioPlayerControls, bookmark, episode) => () => {
+    audioPlayerControls.playNow(episode, bookmark.trackTimestamp);
   };
 
   const deleteBoomarkId = (bookmarkId) => () => {
-    deleteBookmark(bookmarkId, state[0].cookies.token);
+    deleteBookmark(bookmarkId, cookies.token);
     setBookmarks(bookmarks.filter((bookmark) => bookmark.id !== bookmarkId));
   };
 
@@ -67,7 +72,7 @@ const BookmarkAccordian = ({ state, episode }) => {
               <ListItem
                 key={uid(bookmark)}
                 className={classes.bookmark}
-                onClick={seekToTimestamp(state, bookmark, episode)}
+                onClick={seekToTimestamp(audioPlayerControls, bookmark, episode)}
                 divider
               >
                 <Tooltip

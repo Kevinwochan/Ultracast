@@ -1,4 +1,5 @@
 import React from "react";
+import { useCookies } from "react-cookie";
 import { uid } from "react-uid";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -35,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Playlist({ episodes, state }) {
+export default function Playlist({ episodes, audioPlayerControls }) {
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const classes = useStyles();
 
   if (episodes.length === 0) {
@@ -67,7 +69,7 @@ export default function Playlist({ episodes, state }) {
               <TableRow key={uid(episode)} className={classes.row}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
-                  <PodcastCover episode={episode} state={state} />
+                  <PodcastCover episode={episode} audioPlayerControls={audioPlayerControls}/>
                 </TableCell>
                 <TableCell>
                   <Badge
@@ -85,7 +87,7 @@ export default function Playlist({ episodes, state }) {
                   <Typography variant="body2" gutterBottom>
                     {episode.description}
                   </Typography>
-                  <BookmarkAccordian state={state} episode={episode} />
+                  <BookmarkAccordian audioPlayerControls={audioPlayerControls} episode={episode} />
                 </TableCell>
                 <TableCell>{toHHMMSS(episode.length)}</TableCell>
                 <TableCell>{episode.date.toDateString()}</TableCell>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -34,11 +35,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// Details of the user
-const user = {
-  token: "",
-};
-
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -67,10 +63,9 @@ function getStepContent(step, fieldState, handleNext, handleBack) {
   }
 }
 
-export default function Upload({ userToken }) {
+export default function Upload() {
   const classes = useStyles();
-  user.token = userToken;
-
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const [activeStep, setActiveStep] = useState(0);
   const fieldState = useState({
     podcast: {
@@ -106,6 +101,7 @@ export default function Upload({ userToken }) {
     ],
     isNewPodcast: false,
     status: 0,
+    token: cookies.token
   });
   const [fields, setFields] = fieldState;
 
@@ -212,7 +208,7 @@ export default function Upload({ userToken }) {
 
   // Add all the podcasts the user has created already
   useEffect(() => {
-    getUserPodcasts(user.token).then((podcasts) => {
+    getUserPodcasts(cookies.token).then((podcasts) => {
       setFields((prevState) => ({
         ...prevState,
         allPodcasts: prevState.allPodcasts.concat(podcasts),
@@ -377,7 +373,7 @@ const SelectPodcast = ({ fieldState }) => {
         subCategory: "",
         keywords: [""],
       },
-      user.token
+      fields.token
     ).then((data) => {
       // Show the button again
       button.style.display = "inherit";
@@ -739,7 +735,7 @@ async function createNewPodcastAndEpisode(fields) {
       subCategory: fields.podcast.subcategory,
       keywords: fields.podcast.keywords,
     },
-    user.token
+    fields.token
   );
   if (data.success) {
     return createNewEpisode(data.podcastMetadata.id, fields);
@@ -766,7 +762,7 @@ async function updatePodcastCreateEpisode(podcastID, fields) {
       subCategory: fields.podcast.subcategory,
       keywords: fields.podcast.keywords,
     },
-    user.token
+    fields.token
   );
   if (data.success) {
     return createNewEpisode(podcastID, fields);
@@ -790,7 +786,7 @@ async function createNewEpisode(podcastId, fields) {
       audio: fields.episode.audio.file,
       keywords: fields.episode.keywords,
     },
-    user.token
+    fields.token
   );
 
   return success;

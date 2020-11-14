@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -56,7 +57,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Analytics({ state }) {
+export default function Analytics() {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -66,7 +68,7 @@ export default function Analytics({ state }) {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    getAnalytics(state[0].cookies.token).then((data) => {
+    getAnalytics(cookies.token).then((data) => {
       setData(data);
     });
   }, []);

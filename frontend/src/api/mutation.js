@@ -218,7 +218,6 @@ const unfollow = async (userId, token) => {
 };
 
 const saveBookmark = async (episodeId, title, description, time, token) => {
-  console.log(episodeId, title, description, time, token);
   const data = await graphql(
     `
       mutation(

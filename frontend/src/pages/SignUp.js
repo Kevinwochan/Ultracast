@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useCookies } from "react-cookie";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -49,9 +50,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function SignUp({ handleCookie }) {
+export default function SignUp() {
   const classes = useStyles();
-
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
   const nameRef = React.useRef();
@@ -72,7 +73,7 @@ export default function SignUp({ handleCookie }) {
     ).then((data) => {
       setLoading(false);
       if (data.success) {
-        handleCookie("token", data.token);
+        setCookie("token", data.token);
         history.push("/");
       } else {
         setMessage(data.message);
@@ -163,6 +164,7 @@ export default function SignUp({ handleCookie }) {
             variant="contained"
             color="primary"
             className={classes.submit}
+            disabled={loading}
           >
             {loading ? (
                   <CircularProgress

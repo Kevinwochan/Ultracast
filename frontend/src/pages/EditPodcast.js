@@ -1,3 +1,4 @@
+import { useCookies } from "react-cookie";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
@@ -50,7 +51,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditPodcast({ userToken }) {
+export default function EditPodcast() {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const classes = useStyles();
   const { podcastId } = useParams();
   const history = useHistory();
@@ -90,7 +92,7 @@ export default function EditPodcast({ userToken }) {
       ...prevState,
       sending: true,
     }));
-    deletePodcast(podcastId, userToken).then((data) => {
+    deletePodcast(podcastId, cookies.token).then((data) => {
       if (data.success) {
         history.push("/creators/podcasts/");
       } else {
@@ -147,7 +149,7 @@ export default function EditPodcast({ userToken }) {
   };
 
   const updateEp = (epInfo, onSuccess) => {
-    updateEpisode(epInfo, userToken).then((data) => {
+    updateEpisode(epInfo, cookies.token).then((data) => {
       if (data.success) {
         getEpisodes(podcastId).then((podcastInfo) => {
           setPodcast(podcastInfo.podcast);
@@ -165,7 +167,7 @@ export default function EditPodcast({ userToken }) {
   };
 
   const deleteEp = (id) => {
-    deleteEpisode(id, userToken).then((data) => {
+    deleteEpisode(id, cookies.token).then((data) => {
       if (data.success) {
         setSnackbar({
           message: "Deleted episode.",
@@ -202,7 +204,7 @@ export default function EditPodcast({ userToken }) {
           description: newInfo.description,
           cover: newInfo.cover.file,
         },
-        userToken
+        cookies.token
       ).then((data) => {
         if (data.success) {
           getEpisodes(podcastId).then((podcastInfo) => {

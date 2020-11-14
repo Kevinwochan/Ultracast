@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { useCookies } from "react-cookie";
 import { useHistory } from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
 import ListItem from "@material-ui/core/ListItem";
@@ -90,18 +91,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Player({ state }) {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const [sessionState, updateState] = state;
-  const mode = sessionState.audioList ? "full" : "";
   const history = useHistory();
   const classes = useStyles();
   const audioInstance = useRef(null);
 
-  const onAudioPlay = (audioInfo) => {
-    console.log(
-      `Marking audio as played ${audioInfo.name}, ${audioInfo.episodeId}`
-    );
-    markAsPlayed(audioInfo.episodeId, sessionState.cookies.token);
-  };
+  console.log('hello?');
+
 
   const setPlaybackRate = (e) => {
     const rate = e.target.value;
@@ -127,7 +124,7 @@ export default function Player({ state }) {
     },
     theme: "light",
     defaultPosition: { bottom: 0, left: 0 },
-    mode: mode,
+    mode: "full",
     glassBg: false,
     drag: false,
     seeked: true,

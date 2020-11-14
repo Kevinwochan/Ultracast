@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -53,9 +54,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn({ handleCookie }) {
+export default function SignIn() {
   const classes = useStyles();
-
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
   const [message, setMessage] = useState("");
@@ -69,7 +70,7 @@ export default function SignIn({ handleCookie }) {
     login(emailRef.current.value, passwordRef.current.value).then((data) => {
       setLoading(false);
       if (data.success) {
-        handleCookie("token", data.token);
+        setCookie('token', data.token)
         history.push("/");
       } else {
         setMessage(data.message);

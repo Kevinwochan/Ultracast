@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { uid } from "react-uid";
 import { Link } from "react-router-dom";
 import Box from "@material-ui/core/Box";
@@ -7,7 +8,6 @@ import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 import { makeStyles } from "@material-ui/core";
-import { addAudio } from "../components/AudioPlayer/Player";
 import Tooltip from "@material-ui/core/Tooltip";
 import { getMyFollowing } from "../api/query";
 import UserSearch from "../components/UserSearch";
@@ -32,19 +32,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Following({ state }) {
+export default function Following({audioPlayerControls}) {
+  const [cookies] = useCookies(['token']);
   const [users, setFollowing] = useState([]);
   const classes = useStyles();
 
   useEffect(() => {
-    getMyFollowing(state[0].cookies.token).then((users) => {
+    getMyFollowing(cookies.token).then((users) => {
       setFollowing(users);
     });
-  },);
+  },[]);
 
   const playNow = (episode) => {
     return () => {
-      addAudio(state, episode);
+      audioPlayerControls.addAudio(episode);
     };
   };
 

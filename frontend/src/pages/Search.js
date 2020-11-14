@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -27,20 +28,19 @@ const useStyles = makeStyles((theme) => ({
 
 // ! Global variables === bad :(
 // But its the best I can do since we can't pass props into the autocomplete component
-let token = "";
 let currQuery = null;
 let savedStream = false;
 let streams = [];
 
-export default function Search({ userToken }) {
-  token = userToken;
+export default function Search() {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const classes = useStyles();
   const [query, setQuery] = useState(null);
   const [streamSaved, setStreamSaved] = useState(false);
 
   // Grab the user's saved streams on first render
   useEffect(() => {
-    getStreams(token).then((data) => {
+    getStreams(cookies.token).then((data) => {
       if (data) {
         data.edges.forEach((n) => {
           const search = {
@@ -97,6 +97,7 @@ export default function Search({ userToken }) {
 }
 
 const Autocomplete = () => {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const [disableStream, setDisableStream] = useState(false);
   const [streamSaved, setStreamSaved] = useState(savedStream);
 
@@ -132,7 +133,7 @@ const Autocomplete = () => {
             if (streamSaved) {
               for (const stream of streams) {
                 if (stream.query === currQuery) {
-                  deleteStream(stream.id, token).then((data) => {
+                  deleteStream(stream.id, cookies.token).then((data) => {
                     setDisableStream(false);
                     if (data && data.success) {
                       streams = streams.filter((e) => e !== stream);
@@ -149,7 +150,7 @@ const Autocomplete = () => {
             }
 
             // Remove the button text and save the stream
-            saveStream(currQuery, token).then((data) => {
+            saveStream(currQuery, cookies.token).then((data) => {
               setDisableStream(false);
               if (data && data.success) {
                 streams.push({
@@ -175,6 +176,7 @@ const Autocomplete = () => {
 };
 
 const Hit = ({ hit }) => {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const podcast = {
     podcast: {
       id: hit.objectID,
@@ -189,7 +191,7 @@ const Hit = ({ hit }) => {
   };
 
   const markAsSearchedEvent = () => {
-    markAsSearched(podcast.podcast.id, token).then((data) => {
+    markAsSearched(podcast.podcast.id, cookies.token).then((data) => {
       if (!data.success) {
         console.error("Could not mark podcast as searched");
       }

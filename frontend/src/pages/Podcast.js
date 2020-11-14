@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
@@ -31,10 +32,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Podcast({ state }) {
+export default function Podcast({ audioPlayerControls }) {
+  const [cookies] = useCookies(["token"]);
   const classes = useStyles();
   const { podcastId } = useParams();
-  const [sessionState, updateState] = state;
   const [addedToQueue, setAddedToQueue] = useState(false);
   const [podcast, setPodcast] = useState("loader"); // TODO: paginate the episodes
   const [episodes, setEpisodes] = useState([]);
@@ -43,13 +44,13 @@ export default function Podcast({ state }) {
     getEpisodes(podcastId).then((podcastInfo) => {
       podcastInfo.podcast.id = podcastId;
       // initalise podcast.subscribed
-      getMySubscriptions(sessionState.cookies.token).then((data) => {
+      getMySubscriptions(cookies.token).then((data) => {
         const subscriptions = data.map((podcast) => podcast.id);
         podcastInfo.podcast.subscribed = subscriptions.includes(podcastId);
         setPodcast(podcastInfo.podcast);
       });
       // check if episode has been watched
-      getMyHistory(sessionState.cookies.token).then((watchedEpisodes) => {
+      getMyHistory(cookies.token).then((watchedEpisodes) => {
         const watchedEpisodeIds = watchedEpisodes.map((episode) => episode.id);
         podcastInfo.episodes.forEach((episode) => {
           episode.watched = watchedEpisodeIds.includes(episode.id);
@@ -57,16 +58,10 @@ export default function Podcast({ state }) {
         setEpisodes(podcastInfo.episodes);
       });
     });
-  }, [podcastId, sessionState]);
+  }, [podcastId, cookies]);
 
   const addAll = () => {
-    const episodePlaylist = episodes.map((episode) => ({
-      id: episode.id,
-      name: episode.title,
-      musicSrc: episode.audioUrl,
-      cover: podcast.image,
-    }));
-    updateState("audioList", sessionState.audioList.concat(episodePlaylist));
+    audioPlayerControls.addAllAudio(episodes);
     setAddedToQueue(true);
   };
 
@@ -87,7 +82,9 @@ export default function Podcast({ state }) {
           <Grid item xs>
             <Link to={`/author/${podcast.author.id}`}>
               <Typography variant="subtitle2">AUTHOR</Typography>
-              <Typography variant="subtitle2"><b>{podcast.author.name}</b></Typography>
+              <Typography variant="subtitle2">
+                <b>{podcast.author.name}</b>
+              </Typography>
             </Link>
           </Grid>
           <Grid item xs>
@@ -100,7 +97,7 @@ export default function Podcast({ state }) {
         </Typography>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs>
-            <SubscribeButton podcast={podcast} sessionState={sessionState} />
+            <SubscribeButton podcast={podcast} />
           </Grid>
           <Grid item xs>
             {!addedToQueue ? (
@@ -125,7 +122,7 @@ export default function Podcast({ state }) {
         </Grid>
       </Box>
       <Divider variant="fullWidth" />
-      <EpisodePlaylist episodes={episodes} state={state} />
+      <EpisodePlaylist episodes={episodes} audioPlayerControls={audioPlayerControls}/>
     </>
   );
 }

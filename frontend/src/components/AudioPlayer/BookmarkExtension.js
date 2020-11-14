@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useCookies } from "react-cookie";
 import Button from "@material-ui/core/Button";
 import Modal from "@material-ui/core/Modal";
 import Box from "@material-ui/core/Box";
@@ -42,7 +43,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BookmarkExtension = ({ sessionState, audioInstance }) => {
+const BookmarkExtension = ({ audioEl, nowPlaying }) => {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const [open, setOpen] = useState(false);
   const bookmarkTitle = useRef(null);
   const bookmarkDescription = useRef(null);
@@ -50,12 +52,12 @@ const BookmarkExtension = ({ sessionState, audioInstance }) => {
 
   const openBookmarkMenu = (event) => {
     if (
-      audioInstance.current === null ||
-      audioInstance.current.currentSrc === ""
+      audioEl.current === null ||
+      audioEl.current.currentSrc === ""
     ) {
       return;
     }
-    bookmarkTime.current = audioInstance.current.currentTime;
+    bookmarkTime.current = audioEl.current.currentTime;
     setOpen(true);
   };
 
@@ -65,11 +67,11 @@ const BookmarkExtension = ({ sessionState, audioInstance }) => {
 
   const saveBookmarkHandler = () => {
     saveBookmark(
-      sessionState.audioList[0].episodeId,
+      nowPlaying.id,
       bookmarkTitle.current.value,
       bookmarkDescription.current.value,
       bookmarkTime.current,
-      sessionState.cookies.token
+      cookies.token
     );
     closeBookmarkMenu();
   };
@@ -81,9 +83,9 @@ const BookmarkExtension = ({ sessionState, audioInstance }) => {
         className={classes.extendedItem}
         onClick={openBookmarkMenu}
         color={
-          sessionState.audioList && sessionState.audioList.length === 0
-            ? "disabled"
-            : "primary"
+          nowPlaying 
+            ? "primary"
+            : "disabled"
         }
       />
       <Modal open={open} onClose={closeBookmarkMenu}>

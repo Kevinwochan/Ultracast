@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
+import { useCookies } from "react-cookie";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
@@ -125,23 +126,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserLayout({ handleCookie, state, children }) {
+export default function UserLayout({ children, creator }) {
   const classes = useStyles();
-  const [sessionState, updateState] = state;
-  const open = sessionState.open;
+  const [open, setOpen] = useState(true);
 
   const handleDrawerOpen = () => {
-    updateState("open", true);
+    setOpen(true);
   };
 
   const handleDrawerClose = () => {
-    updateState("open", false);
+    setOpen(false);
   };
 
-  const SideBar =
-    sessionState.isCreator && sessionState.creatorView
-      ? () => <CreatorSideBar classes={classes} open={open} />
-      : () => <ListenerSideBar classes={classes} open={open} />;
+  const SideBar = creator
+    ? () => <CreatorSideBar classes={classes} open={open} />
+    : () => <ListenerSideBar classes={classes} open={open} />;
 
   return (
     <div className={classes.root}>
@@ -153,8 +152,8 @@ export default function UserLayout({ handleCookie, state, children }) {
       >
         <Toolbar className={classes.toolbar}>
           <Logo />
-          <Notifications state={state} />
-          <AccountOptions state={state} handleCookie={handleCookie} />
+          <Notifications />
+          <AccountOptions creator={creator} />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -216,7 +215,7 @@ const ListenerSideBar = ({ open }) => {
       icon: <BookmarkIcon />,
       link: "/bookmarks",
     },
-     {
+    {
       name: "Search",
       icon: <SearchIcon />,
       link: "/search",
@@ -290,16 +289,16 @@ const CreatorSideBar = ({ open }) => {
   );
 };
 
-const AccountOptions = ({ state, handleCookie }) => {
+const AccountOptions = ({ creator }) => {
   const classes = useStyles();
-  const [sessionState, updateState] = state;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [user, setUser] = React.useState(null);
   const history = useHistory();
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
 
   useEffect(() => {
-    getUser(sessionState.cookies.token).then((user) => setUser(user));
-  }, [sessionState]);
+    getUser(cookies.token).then((user) => setUser(user));
+  }, []);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -311,14 +310,12 @@ const AccountOptions = ({ state, handleCookie }) => {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    handleCookie("token", null);
+    removeCookie("token");
     history.push("/signin");
   };
 
-  const creatorTitle = sessionState.creatorView
-    ? "For listeners"
-    : "For creators";
-  const creatorLink = sessionState.creatorView ? "/" : "/creators/podcasts";
+  const creatorTitle = creator ? "For listeners" : "For creators";
+  const creatorLink = creator ? "/" : "/creators/podcasts";
 
   return (
     <>
@@ -350,13 +347,13 @@ const AccountOptions = ({ state, handleCookie }) => {
         onClose={handleClose}
       >
         {user && user.name && <ListItem>{user.name}</ListItem>}
-        {sessionState.isCreator && (
+        {
           <MenuItem>
             <Link to={creatorLink} className={classes.link}>
               {creatorTitle}
             </Link>
           </MenuItem>
-        )}
+        }
         <MenuItem onClick={handleLogout}>Log Out</MenuItem>
       </Menu>
     </>

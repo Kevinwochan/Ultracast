@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
@@ -24,12 +25,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Bookmarks = ({ state }) => {
+const Bookmarks = ({ audioPlayerControls }) => {
+  const [cookies] = useCookies(['token']);
   const [episodes, setEpisodes] = useState(null);
   const classes = useStyles();
 
   useEffect(() => {
-    getBookmarkedEpisodes(state[0].cookies.token).then((episodes) => {
+    getBookmarkedEpisodes(cookies.token).then((episodes) => {
       const uniqueEpisodeIds = [
         ...new Set(episodes.map((episode) => episode.id)),
       ];
@@ -58,7 +60,7 @@ const Bookmarks = ({ state }) => {
         </Typography>
       </Box>
       <Divider variant="fullWidth" />
-      <EpisodePlaylist episodes={episodes} state={state} />
+      <EpisodePlaylist episodes={episodes} audioPlayerControls={audioPlayerControls}/>
     </>
   );
 };

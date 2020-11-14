@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import { useCookies } from "react-cookie";
 import { makeStyles } from "@material-ui/core/styles";
 import PodcastList from "../components/PodcastList";
 import Box from "@material-ui/core/Box";
@@ -15,11 +16,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function History({ state }) {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const classes = useStyles();
   const [recommended, setRecommended] = useState('loader');
 
   useEffect(() => {
-    getMyRecommended(state[0].cookies.token,).then((data) => {
+    getMyRecommended(cookies.token,).then((data) => {
       setRecommended(data);
     });
   }, [state]);

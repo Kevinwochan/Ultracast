@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {useCookies} from "react-cookie";
 import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -13,7 +14,6 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { uid } from "react-uid";
-import { addAudio } from "./AudioPlayer/Player";
 import { getMyNotifications, getNumNotifications } from "../api/query";
 import useInterval from "../hooks/useInterval";
 
@@ -50,7 +50,8 @@ const timeSince = (timestamp) => {
   return `${localTime.toLocaleDateString("en-au")}`;
 };
 
-const Notifications = ({ state }) => {
+const Notifications = ({ audioPlayerControls }) => {
+  const [cookies] = useCookies(['token']);
   const [count, setCount] = useState(0);
   const [dismissed, setDismissed] = useState(0);
   const [episodes, setEpisodes] = useState([]);
@@ -67,9 +68,9 @@ const Notifications = ({ state }) => {
   };
 
   useInterval(() => {
-    getNumNotifications(state[0].cookies.token).then((count) => {
+    getNumNotifications(cookies.token).then((count) => {
       if (count > 0) {
-        getMyNotifications(state[0].cookies.token).then((episodes) => {
+        getMyNotifications(cookies.token).then((episodes) => {
           setEpisodes(episodes);
         });
       }
@@ -81,7 +82,7 @@ const Notifications = ({ state }) => {
 
   const playNow = (index) => {
     return () => {
-      addAudio(state, episodes[index]);
+      audioPlayerControls.addAudio(episodes[index]);
     };
   };
 
