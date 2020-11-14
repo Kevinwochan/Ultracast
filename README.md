@@ -10,6 +10,7 @@ Running Ultracast from CSE is simple. Simply run:
 ```
 
 The script `start.sh` will:
+
     * Create a python venv for the backend
     * Install all required python packages in the venv
     * Install all npm packages that are required for the frontend
@@ -20,6 +21,7 @@ The script `start.sh` will:
 ## Advanced Usage
 
 There are two scripts which can be used to run the site's backend:
+
     * `backend/start.sh` runs the backend in a development environment (debugging enable and with a development WSGI webserver)
     * `backend/start_production.sh` runs the backend in a production environment
         * Production WSGI webserver with multiple worker processes
@@ -31,6 +33,7 @@ There are two scripts which can be used to run the site's backend:
 
 The backend is configured by using python files which set various configuration variables.
 These include options including:
+
     * The IP address of the MonogDB instance
     * The MonogDB database
     * Flask secret keys (for encryption)
@@ -49,6 +52,7 @@ bash backend/start.sh
 
 The frontend can be configured by editing the file `frontend/src/api/config.js`
 Here you can set options including:
+
     * The backend GraphQL endpoint to use
     * Algolia API key and user
 
