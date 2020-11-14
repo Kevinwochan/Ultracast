@@ -43,11 +43,14 @@ class Server:
         self.app.on_exit(server)
 
 if __name__ == '__main__':
-
+    config = app.get_config()
+    host_ip = config.get("HOST", "127.0.0.1")
+    '''
     # Webserver runs on remote server by default
     host_ip = '0.0.0.0'
     if  len(sys.argv) > 1 and sys.argv[1] == "--local":
         host_ip = '127.0.0.1'
+    '''
 
     server = Server()
     options = {
