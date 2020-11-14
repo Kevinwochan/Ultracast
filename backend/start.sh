@@ -18,5 +18,7 @@ if [ -n "$(diff <( pip freeze) <( cat requirements.txt))" ]; then
     pip install -r requirements.txt
 fi
 
-export ULTRACAST_BACKEND_SETTINGS="$(dirname $(realpath $0))/config/development_settings.py"
+if [[ -z "${ULTRACAST_BACKEND_SETTINGS}" ]]; then
+    export ULTRACAST_BACKEND_SETTINGS="$(dirname $(realpath $0))/config/development_settings.py"
+fi
 python backend.py
