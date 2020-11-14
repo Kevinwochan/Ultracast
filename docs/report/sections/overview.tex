@@ -45,18 +45,23 @@ The following additional requirements have also been implemented:
 
 \subsection{System Architecture}
 
-The highlevel system architecture can be seen in Figure \ref{fig:system_architecture}.
-It can be seen that our end users will be podcast listeners and content creators who
-connect to the presentation layer which is powered by a ReactJS application. ReactJS was selected as
-the framework for the frontend application due to .... TODO justification of React\\
+The highlevel system architecture can be seen in \cref{fig:system_architecture}.
+The end users, podcast listeners and content creators, connect to the presentation layer 
+which is powered by a ReactJS application. ReactJS was selected as the framework for the 
+frontend application primarly due to it being a mature and world leading framework\cite{react} as well
+as due to previous experience with the framework.\\
 
-Flask, a micro-framework, \cite{flask} was used for the web-server, due ease of use which allowed
+Flask, a python based micro-framework\cite{flask}, was used for the web-server, due ease of use which allowed
 for rapid development. The React application communicates with Flask web-server through a GraphQL API: 
 a scalable alternative to the popular REST API\cite{graphql}. The Flask web-server also contains a
-recommendation service which drives recommendation functionality described in TODO. The Flask
-web-server uploads static files (episode audio and podcast covers) to a static file storage server while
+recommendation service which drives recommendation functionality described in 
+\cref{ssec:recommendations_and_following,ssec:system}. The Flask web-server uploads static files 
+(episode audio and podcast covers) to a static file storage server while
 the urls for these static files along with all other data is stored in MongoDB. MongoDB, a NoSQL database, 
-was selected to store metadata due to its scalability \cite{MongoDB2020}.
+was selected to store metadata due to its scalability\cite{MongoDB2020}. MongoDB could not be hosted on
+CSE so was hosted on AWS EC2 instead, see \ref{tab:third_party} for reason. As a result the Flask web-server
+needed to be on the the remote server as well to improve performance as described in \ref{sssec:backend_challenges}.
+Algolia, a search engine service\cite{algolia}, was used to maximise search performance and reduce development time.
 
 \begin{figure}[ht] 
     \centering
@@ -65,11 +70,34 @@ was selected to store metadata due to its scalability \cite{MongoDB2020}.
     \label{fig:system_architecture} 
 \end{figure}
 
-A static file storage server (AWS S3 Bucket) was used instead of MongoDB due to the lower costs 
-and increased performance associated with storing larger files, particularly audio files TODO-cite.
-MongoDB was not supported by Debian 6 (the Linux environment on the VLab machine), so a remote server
-(AWS EC2 instance) was used to host MongoDB. To improve query performance, the entire business layer
-was migrated to the remote server. (TODO - should probs cite why query performance improved)
+\newpage
 
+\subsubsection{Third Party Components}
+
+The third party components which had a notable impact on the functionality
+of UltraCast are shown in \cref{tab:third_party}. This is not an exhaustive
+list of all the libraries and system libraries in UltraCast but rather a list
+of components which were notable and impacted functionality.
+
+\begin{longtable}[c]{|l|l|l|}
+    \caption{Third Party Components}
+    \label{tab:third_party}\\
+    \hline
+    \rowcolor[HTML]{E2E2E2} 
+    \textbf{Name} & \textbf{Component Type}                                                         & \textbf{Reason For Use}                                                                                              \\ \hline
+    \endfirsthead
+    %
+    \endhead
+    %
+    AWS S3        & Cloud: Static File Storage                                                      & \begin{tabular}[c]{@{}l@{}}Exceeded CSE server storage limits. \\ \textgreater 80GB of test data\end{tabular}        \\ \hline
+    AWS EC2       & Cloud: Remote Server                                                            & \begin{tabular}[c]{@{}l@{}}MongoDB not supported on Debian 6 \\ (Linux environment on the VLab machine)\end{tabular} \\ \hline
+    Algolia       & SaaS: Search Engine                                                             & Avoid building search engine from scratch                                                                            \\ \hline
+    React         & Frontend Framework                                                              & Bootstrap and provide basic functionality                                                                            \\ \hline
+    Flask         & Micro Framework                                                                 & Bootstrap and provide basic functionality                                                                            \\ \hline
+    Graphene      & Python GraphQL Library                                                          & Standard library                                                                                                     \\ \hline
+    Mongoengine   & \begin{tabular}[c]{@{}l@{}}Python object data mapper\\ for MongoDB\end{tabular} & Standard library                                                                                                     \\ \hline
+    Pandas        & Python data Library                                                             & Standard library                                                                                                     \\ \hline
+    NumPy         & Python maths Library                                                            & Standard library                                                                                                     \\ \hline
+\end{longtable}
 
 \end{document}

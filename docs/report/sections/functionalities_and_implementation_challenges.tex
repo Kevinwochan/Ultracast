@@ -3,11 +3,34 @@
 
 \subsection{Functionalities}
 
+The subsections below describe the functionalities of UltraCast broken down into 5
+major functionality groupings. Each functionality is directly connected to a User Story,
+defined in the Propsal, as well as a project objective if it addresses it. The colour 
+schema defined in \cref{tab:func_table_colours} was used for functionalities in  
+\cref{tab:func_viewing_and_searching,tab:func_playing_episode,tab:func_recommend_and_follow,tab:func_creator,tab:func_subscribe}.
+
+\begin{longtable}[c]{|l|l|}
+  \caption{Functionality Table Colour Schema}
+  \label{tab:func_table_colours}\\
+  \hline
+  \rowcolor[HTML]{E2E2E2} 
+  \textbf{Colour} & \textbf{Meaning} \\ \hline
+  \endfirsthead
+  %
+  \endhead
+  %
+  \cellcolor[HTML]{FFFDD1} & Functionality relates to project objective \\ \hline
+  \cellcolor[HTML]{FAFAFA} & Functionality not specified in project objective \\ \hline
+  \cellcolor[HTML]{E8FBFF} & As above, but functionality is novel \\ \hline
+\end{longtable}
+
 \subsubsection{Viewing and Searching}
 
-TODO reference and write description
+The viewing and searching functionalities are described in \cref{tab:func_viewing_and_searching} below.
 
 \begin{longtable}[c]{|l|l|l|}
+  \caption{Viewing and Searching Functionality Mapping}
+  \label{tab:func_viewing_and_searching} \\
   \hline
   \rowcolor[HTML]{E2E2E2} 
   \textbf{\begin{tabular}[c]{@{}l@{}}Story \\ ID\end{tabular}} & \textbf{Functionality}                                                                                                                              & \textbf{Project Objective}                                                                                                                                                                                                                                                                                                                                                 \\ \hline
@@ -31,11 +54,13 @@ TODO reference and write description
   UL-41                                                        & Signup as user                                                                                                                                      & -                                                                                                                                                                                                                                                                                                                                                                          \\ \hline
 \end{longtable}
 
-\subsubsection{Playing Podcast Episodes}
+\subsubsection{Playing Podcast Episode}
 
-TODO reference and write description
+The playing podcast episode functionalities are described in \cref{tab:func_playing_episode} below.
 
 \begin{longtable}[c]{|l|l|l|}
+  \caption{Playing Episode Functionality Mapping}
+  \label{tab:func_playing_episode}\\
   \hline
   \rowcolor[HTML]{E2E2E2} 
   \textbf{\begin{tabular}[c]{@{}l@{}}Story \\ ID\end{tabular}} & \textbf{Functionality}                                                                                                                     & \textbf{Project Objective}                                                                                                                                                                                                                                                                      \\ \hline
@@ -64,11 +89,13 @@ TODO reference and write description
 \end{longtable}
 
 
-\subsubsection{Recommendation and Following}
+\subsubsection{Recommendation and Following} \label{ssec:recommendations_and_following}
 
-TODO reference and write description
+The recommendation and following functionalities are described in \cref{tab:func_recommend_and_follow} below.
 
 \begin{longtable}[c]{|l|l|l}
+  \caption{Recommendation and Following Functionality Mapping}
+  \label{tab:func_recommend_and_follow}\\
   \hline
   \rowcolor[HTML]{E2E2E2} 
   \textbf{\begin{tabular}[c]{@{}l@{}}Story \\ ID\end{tabular}} & \textbf{Functionality}                                                                                                                                                      & \multicolumn{1}{l|}{\cellcolor[HTML]{E2E2E2}\textbf{Project Objective}}                                                                                                                                                                                                                                                        \\ \hline
@@ -91,9 +118,11 @@ TODO reference and write description
 
 \subsubsection{Creator Mode}
 
-TODO reference and write description
+The creator functionalities are described in \cref{tab:func_creator} below.
 
 \begin{longtable}[c]{|l|l|l|}
+  \caption{Creator Mode Functionality Mapping}
+  \label{tab:func_creator}\\
   \hline
   \rowcolor[HTML]{E2E2E2} 
   \textbf{\begin{tabular}[c]{@{}l@{}}Story \\ ID\end{tabular}} & \textbf{Functionality}                       & \textbf{Project Objective}                  \\ \hline
@@ -111,11 +140,13 @@ TODO reference and write description
   UL-27                                                        & Access to podcast and episode viewer metrics & -                                           \\ \hline
 \end{longtable}
 
-\subsubsection{Subscribing}
+\subsubsection{Subscribe}
 
-TODO reference and write description
+The subscribe functionalities are described in \cref{tab:func_subscribe} below.
 
 \begin{longtable}[c]{|l|l|l|}
+  \caption{Subscribe Functionality Mapping}
+  \label{tab:func_subscribe}\\
   \hline
   \rowcolor[HTML]{E2E2E2} 
   \textbf{\begin{tabular}[c]{@{}l@{}}Story \\ ID\end{tabular}} & \textbf{Functionality}                                                                                                             & \textbf{Project Objective}                                                                                                                                                                                                                          \\ \hline
@@ -135,7 +166,7 @@ TODO reference and write description
 
 
 
-\subsection{System}
+\subsection{System} \label{ssec:system}
 % Implementation (justify why we’ve chosen GraphQL and MongoDB)
 %  - Copy paste the sales pitch on each of the websites
 % Engingeering capability (reliability, scalability, consistency)
@@ -143,7 +174,7 @@ TODO reference and write description
 
 \subsection{Implementation Challenges}
 
-\subsubsection{Backend Stack}
+\subsubsection{Backend Stack} \label{sssec:backend_challenges}
 
 The backend of UltraCast employs an unusual technology stack, with MongoDB as a persistence layer, flask as a webserver framework and graphql (via graphene and graphene-mongo libraries) as an API layer.
 This created difficulties in implementing common web-app functionalities due to (1) a lack of documentation on the libraries being used and (2) no online examples implementing these functionalities with this stack.
@@ -161,7 +192,7 @@ The frontend calls a signin mutation which returns a Json Web Token (JWT).
 This mutation does not require authentication.
 The frontend then stores this JWT as a cookie and sends it in the header of any future GraphQL API requests.
 
-\paragraph{Resolving Nested Queries}
+\paragraph{Resolving Nested Queries} 
 
 While testing the frontend, it was discovered that some backend GraphQL queries were taking upwards of one minute to return.
 The site was still responsive, however it took a long time for recommended podcasts to be displayed.
