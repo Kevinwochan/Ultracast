@@ -57,11 +57,15 @@ def create_app(config=None):
     '''
     @jwt.user_identity_loader
     def user_to_json(user):
-        return user.to_json()
+        user_dict = {
+                "id": str(user.model().id),
+                "email": user.model().email
+                }
+        return json.dumps(user_dict)
 
     @jwt.user_loader_callback_loader
     def load_user_from_db(identity):
-        user_id = json.loads(identity)["_id"]["$oid"]
+        user_id = json.loads(identity)["id"]
         return podcast_engine.User.from_mongo_id(user_id)
 
     CORS(app, resources={r"/*": {"origins": "*"}})
