@@ -30,25 +30,30 @@ const useStyles = makeStyles((theme) => ({
 // But its the best I can do since we can't pass props into the autocomplete component
 let currQuery = null;
 let savedStream = false;
-let streams = [];
 
 export default function Search() {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(["token"]);
   const classes = useStyles();
   const [query, setQuery] = useState(null);
   const [streamSaved, setStreamSaved] = useState(false);
+  const [showStream, setShowStream] = useState(false);
+  const [streams, setStreams] = useState([]);
 
   // Grab the user's saved streams on first render
   useEffect(() => {
     getStreams(cookies.token).then((data) => {
       if (data) {
+        const prevStreams = [];
         data.edges.forEach((n) => {
           const search = {
             id: n.node.id,
             query: n.node.search,
           };
-          streams.push(search);
+          prevStreams.push(search);
         });
+
+        setStreams(prevStreams);
+        setShowStream(true);
       } else {
         console.error("Could not get saved streams");
       }
@@ -85,19 +90,49 @@ export default function Search() {
         onSearchStateChange={(searchState) => {
           if (searchState.query !== "") {
             setQuery(searchState.query);
+            setShowStream(false);
           } else {
             setQuery(null);
+            setShowStream(true);
           }
         }}
       >
-        <CustomAutocomplete />
+        <Autocomplete streams={streams} setStreams={setStreams} />
+        {showStream ? <StreamList streams={streams} /> : ""}
       </InstantSearch>
     </Container>
   );
 }
 
-const Autocomplete = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+const StreamList = ({ streams }) => {
+  return (
+    <>
+      <Typography gutterBottom variant="h6">
+        Your streams
+      </Typography>
+      {streams.map((value) => (
+        <Box key={value.id} my={2} ml={1}>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="small"
+            onClick={() => {
+              const search = document.querySelector("input[type='search']");
+              const event = new Event("input", { bubbles: true });
+              search.setAttribute("value", value.query);
+              search.dispatchEvent(event);
+            }}
+          >
+            {value.query}
+          </Button>
+        </Box>
+      ))}
+    </>
+  );
+};
+
+const Autocomplete = connectAutoComplete(({ token, streams, setStreams }) => {
+  const [cookies] = useCookies(["token"]);
   const [disableStream, setDisableStream] = useState(false);
   const [streamSaved, setStreamSaved] = useState(savedStream);
 
@@ -136,8 +171,9 @@ const Autocomplete = () => {
                   deleteStream(stream.id, cookies.token).then((data) => {
                     setDisableStream(false);
                     if (data && data.success) {
-                      streams = streams.filter((e) => e !== stream);
+                      const newStreams = streams.filter((e) => e !== stream);
                       savedStream = false;
+                      setStreams(newStreams);
                       setStreamSaved(false);
                     } else {
                       console.error("Could not delete stream");
@@ -153,10 +189,13 @@ const Autocomplete = () => {
             saveStream(currQuery, cookies.token).then((data) => {
               setDisableStream(false);
               if (data && data.success) {
-                streams.push({
-                  id: data.stream.id,
-                  query: data.stream.search,
-                });
+                setStreams((prevState) => [
+                  ...prevState,
+                  {
+                    id: data.stream.id,
+                    query: data.stream.search,
+                  },
+                ]);
                 savedStream = true;
                 setStreamSaved(true);
               } else {
@@ -173,10 +212,10 @@ const Autocomplete = () => {
       </Results>
     </>
   );
-};
+});
 
 const Hit = ({ hit }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(["token"]);
   const podcast = {
     podcast: {
       id: hit.objectID,
@@ -209,5 +248,3 @@ const Hit = ({ hit }) => {
 const Results = connectStateResults(({ searchState, children }) =>
   searchState && searchState.query ? children : <div></div>
 );
-
-const CustomAutocomplete = connectAutoComplete(Autocomplete);
