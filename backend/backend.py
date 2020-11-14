@@ -10,7 +10,7 @@ if __name__ == "__main__":
         host_ip = '127.0.0.1'
 
     app = app.create_app()
-    search_engine = SearchEngine()
+    search_engine = SearchEngine(app.config)
     app.run(debug=True, host=host_ip)
     search_engine.shutdown()
 

@@ -1,5 +1,6 @@
 from webserver import db
 from webserver import models
+from webserver import app
 
 import mongoengine
 import mongoengine.connection
@@ -12,6 +13,8 @@ def drop_collections():
 
 
 if __name__ == "__main__":
+    config = app.get_config()
+    db.connect_mongo(config)
     db = mongoengine.get_db()
     print("Dropping *ALL* collections. This will delete the entire DB {}!!!!".format(db.name))
     word = input("Type 'yes' to do this (You can only blame yourself now :)")
