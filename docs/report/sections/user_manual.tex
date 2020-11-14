@@ -4,7 +4,63 @@
 % User manual
 \subsection{Software Setup Instructions}
 
-% TODO run dis shell script plz
+For the simple case where no API keys need to be changed, setting up and running UltraCast is as simple as running:
+
+\begin{verbatim}
+    # cd to the root directory of the git repo
+    ./start.sh
+\end{verbatim}
+%
+This script will: 
+\begin{itemize}
+    \item Create a python venv for the backend
+    \item Install all required python packages in the venv
+    \item Install all npm packages that are required for the frontend
+    \item Launch the backend webserver
+    \item Launch the frontend
+    \item Open ultracast in your browser
+\end{itemize}
+
+\subsection{Configuration}
+
+The following external services are used and their IP addresses and/or API keys will need to be set in configuration files:
+
+\begin{itemize}
+    \item Algolia
+    \item MongoDB Instance (hosted in a cloud container e.g. Amazon EC2)
+    \item S3 Bucket
+    \item Backend GraphQL endpoint (if not hosted on local machine)
+\end{itemize}
+
+Some of these variables need to be set for the frontend and some for the backend.
+
+\subsubsection{Backend Configuration}
+
+The backend is configured by using python files which set various configuration variables. These include options including:
+\begin{itemize}
+    \item The IP address of the MonogDB instance
+    \item The MonogDB database
+    \item Flask secret keys (for encryption)
+    \item Algolia API key and user
+\end{itemize}
+A full list of the variables that can be set is in \verb|backend/config/default_settings.py|.
+%
+Any variables that are not set are defaulted to the value in \verb|backend/config/default_settings.py|.
+You can override these settings by writing a new python file and setting the environment variable \verb|ULTRACAST_BACKEND_SETTINGS| to be the real path of this file. 
+For example if the settings file is at \verb|~/ultracast_settings.py|, you could do:
+
+\begin{verbatim}
+    export ULTRACAST_BACKEND_SETTINGS=$(realpath ~/ultracast_settings.py)
+    bash backend/start.sh
+\end{verbatim}
+
+\subsubsection{Frontend Configuration}
+
+The frontend can be configured by editing the file \verb|frontend/src/api/config.js| Here you can set options including:
+\begin{itemize}
+    \item The backend GraphQL endpoint to use
+    \item Algolia API key and user
+\end{itemize}
 
 \subsection{Site Usage and Functionality Guide}
 % Keep in mind this section is worth 50%
