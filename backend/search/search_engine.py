@@ -35,8 +35,8 @@ class SearchEngine:
     Saves modified documents into bounded queue
     Then in another thread, when the queue is larger than BATCH_SIZE, triggers an upload
     '''
-    def __init__(self):
-        self.algolia_client = SearchClient.create(ALGOLIA_ID, API_KEY)
+    def __init__(self, config):
+        self.algolia_client = SearchClient.create(config["ALGOLIA_ID"], config["ALGOLIA_API_KEY"])
         self.podcast_metadata_to_upload = queue.Queue() # thread safe queue
         self.is_shutdown = threading.Event()
         self.should_upload = threading.Event()

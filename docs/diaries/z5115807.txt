@@ -48,7 +48,7 @@ This week I finished the query hook - after writing something that was close to 
 
 Week 8
 
-a
+ - Got the recommendation function actually working, sans search terms
 
 
 Week 9

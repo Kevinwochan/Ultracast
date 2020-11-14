@@ -4,6 +4,8 @@ import sys
 
 from webserver import app
 from search import search_engine
+from config import default_settings
+import flask
 
 
 def number_of_workers():
@@ -15,7 +17,8 @@ class BackendApp(gunicorn.app.base.BaseApplication):
     def __init__(self, app, options=None):
         self.options = options or {}
         self.application = app
-        self.search_engine = search_engine.SearchEngine()
+        #self.search_engine = search_engine.SearchEngine(app.config)
+        self.search_engine = None
         super().__init__()
 
     def load_config(self):
@@ -25,7 +28,9 @@ class BackendApp(gunicorn.app.base.BaseApplication):
             self.cfg.set(key.lower(), value)
 
     def load(self):
-        return self.application()
+        app = self.application()
+        self.search_engine = search_engine.SearchEngine(app.config)
+        return app
 
     def on_exit(self, server):
         self.search_engine.shutdown()
@@ -38,18 +43,21 @@ class Server:
         self.app.on_exit(server)
 
 if __name__ == '__main__':
-
+    config = app.get_config()
+    host_ip = config.get("HOST", "127.0.0.1")
+    '''
     # Webserver runs on remote server by default
     host_ip = '0.0.0.0'
     if  len(sys.argv) > 1 and sys.argv[1] == "--local":
         host_ip = '127.0.0.1'
+    '''
 
     server = Server()
     options = {
         'bind': '%s:%s' % (host_ip, '5000'),
         'workers': number_of_workers(),
-        #'capture-output': True,
-        #'errorlog': "logs.txt",
+        'capture-output': True,
+        'errorlog': "logs.txt",
         'on_exit': server.on_exit
     }
     '''
