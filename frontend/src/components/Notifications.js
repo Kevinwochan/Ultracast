@@ -74,6 +74,9 @@ const Notifications = ({ audioPlayerControls }) => {
           setEpisodes(episodes);
         });
       }
+      if (dismissed > count){
+        setDismissed(count);
+      }
       setCount(count);
     });
   }, 1000);
@@ -89,7 +92,7 @@ const Notifications = ({ audioPlayerControls }) => {
   return (
     <>
       <IconButton color="secondary" onClick={handleClick}>
-        <Badge badgeContent={count - dismissed} color="error">
+        <Badge badgeContent={count - dismissed < 0 ? 0 : count - dismissed} color="error">
           <NotificationsIcon />
         </Badge>
       </IconButton>
