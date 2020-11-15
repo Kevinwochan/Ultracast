@@ -2,7 +2,7 @@
 
 npm install --production
 
-if [ $1 = "--local" ]
+if [ "$1" == "--local" ];
 then
 	npm run local
 
