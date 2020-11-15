@@ -253,7 +253,7 @@ export function PodcastCard({ audioPlayerControls, episode }) {
         >
           <b>{episode.title}</b>
         </Typography>
-        <Link to={`/podcast/${episode.id}`}>
+        <Link to={`/podcast/${episode.podcast.id}`}>
           <Typography variant="subtitle2" className={classes.podcastDetails}>
             {episode.podcast.title}
           </Typography>
