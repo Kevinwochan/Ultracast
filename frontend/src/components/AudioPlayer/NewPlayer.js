@@ -65,9 +65,12 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(2),
   },
   playlistPanel: {
+    minHeight: 150,
+    maxHeight: 500,
     width: 400,
     zIndex: 1202 /* sidebar is 1200*/,
     background: theme.palette.secondary.main,
+    overflowY: 'scroll',
   },
   playbackRateSelector: {
   },
@@ -411,7 +414,7 @@ const Player = ({ setAudioPlayerControls }) => {
                   <Paper>
                     <List component="ul" className={classes.playlistPanel}>
                       <ListItem divider>
-                        <b>Player</b>
+                        <b>Playlist ({state.playlist.length})</b>
                       </ListItem>
                       {state.playlist.length === 0 ? (
                         <ListItem>Your playlist is empty</ListItem>
