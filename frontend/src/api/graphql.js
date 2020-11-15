@@ -62,7 +62,6 @@ const graphql = async (query, variables, token = "", upload = false) => {
       return response.data.errors;
     } else if (response.data) {
       // Successfully queried data
-      console.log(response);
       /* may want to change this to only .data allowing the components to handle errors */
       return upload ? response.data : response.data.data;
     } else {
