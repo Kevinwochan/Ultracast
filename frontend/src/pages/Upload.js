@@ -214,7 +214,7 @@ export default function Upload() {
         allPodcasts: prevState.allPodcasts.concat(podcasts),
       }));
     });
-  }, []);
+  }, [cookies.token, setFields]);
 
   return (
     <Grid container>
@@ -682,8 +682,8 @@ const EpisodePreview = ({ image, title, description, podcast, duration }) => {
             src={image}
             alt="Preview podcast"
             onLoad={(e) => {
-              const img = e.target;
               // TODO fix this
+              // const img = e.target;
               // img.src = image + "?" + new Date().getTime();
               // img.setAttribute("crossOrigin", "Anonymous");
               // const colour = getDominantColour(img);
@@ -853,7 +853,7 @@ const Confirmation = ({ fieldState, handleNext, handleBack }) => {
         handleBack();
       }
     }
-  }, [fields.status]);
+  }, [fields.snackbar.severity, fields.status, handleBack, handleNext]);
 
   return (
     <div className={classes.root}>

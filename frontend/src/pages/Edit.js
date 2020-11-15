@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Edit() {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(["token"]);
   const classes = useStyles();
   const [podcasts, setPodcasts] = useState("loader");
 
@@ -48,7 +48,7 @@ export default function Edit() {
     getUserPodcastsInfo(cookies.token).then((data) => {
       setPodcasts(data);
     });
-  }, []);
+  }, [cookies.token]);
 
   if (podcasts === "loader") {
     return (

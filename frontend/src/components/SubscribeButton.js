@@ -6,7 +6,7 @@ import { useCookies } from "react-cookie";
 import { subscribe, unsubscribe } from "../api/mutation";
 
 const SubscribeButton = ({ podcast }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(["token"]);
   const [subscribed, setSubscription] = useState(podcast.subscribed);
   const toggleSubscription = () => {
     if (subscribed) {

@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignIn() {
   const classes = useStyles();
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [, setCookie] = useCookies(["token"]);
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
   const [message, setMessage] = useState("");
@@ -70,7 +70,7 @@ export default function SignIn() {
     login(emailRef.current.value, passwordRef.current.value).then((data) => {
       setLoading(false);
       if (data.success) {
-        setCookie('token', data.token)
+        setCookie("token", data.token);
         history.push("/");
       } else {
         setMessage(data.message);

@@ -40,7 +40,7 @@ export default function User() {
         });
       });
     });
-  }, [id]);
+  }, [cookies.token, id]);
 
   const classes = useStyles();
 

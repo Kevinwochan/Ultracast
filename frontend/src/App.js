@@ -15,7 +15,6 @@ import EditPodcast from "./pages/EditPodcast";
 import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
 import History from "./pages/History";
-import Recommended from "./pages/Recommended";
 import Author from "./pages/Author";
 import Analytics from "./pages/Analytics";
 import Subscriptions from "./pages/Subscriptions";

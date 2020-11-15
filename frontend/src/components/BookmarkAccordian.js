@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BookmarkAccordian = ({ audioPlayerControls, episode }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(['token']);
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const [bookmarks, setBookmarks] = useState([]);
@@ -39,7 +39,7 @@ const BookmarkAccordian = ({ audioPlayerControls, episode }) => {
     getBookmarksForEpisode(episode.id, cookies.token).then((bookmarks) => {
       setBookmarks(bookmarks);
     });
-  }, []);
+  }, [cookies.token, episode.id]);
 
   const handleChange = () => {
     setExpanded(!expanded);

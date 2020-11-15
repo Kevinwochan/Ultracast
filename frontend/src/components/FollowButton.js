@@ -4,7 +4,7 @@ import Button from "@material-ui/core/Button";
 import { follow, unfollow } from "../api/mutation";
 
 const FollowButton = ({ user, state }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(['token']);
   const [following, setFollowing] = useState(user.following);
   const toggle = () => {
     if (following) {

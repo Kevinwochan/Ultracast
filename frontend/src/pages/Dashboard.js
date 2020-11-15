@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard({ audioPlayerControls }) {
   const classes = useStyles();
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies] = useCookies(["token"]);
   const [recommended, setRecommended] = useState("loader");
   const [history, setHistory] = useState("loader");
 
@@ -35,7 +35,7 @@ export default function Dashboard({ audioPlayerControls }) {
     getMyHistory(cookies.token).then((data) => {
       setHistory(data);
     });
-  }, []);
+  }, [cookies.token]);
 
   return (
     <Container className={classes.cardGrid}>

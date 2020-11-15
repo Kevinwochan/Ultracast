@@ -294,11 +294,11 @@ const AccountOptions = ({ creator }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [user, setUser] = React.useState(null);
   const history = useHistory();
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies,, removeCookie] = useCookies(["token"]);
 
   useEffect(() => {
     getUser(cookies.token).then((user) => setUser(user));
-  }, []);
+  }, [cookies.token]);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);

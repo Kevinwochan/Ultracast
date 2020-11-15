@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BookmarkExtension = ({ audioEl, nowPlaying }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies] = useCookies(["token"]);
   const [open, setOpen] = useState(false);
   const bookmarkTitle = useRef(null);
   const bookmarkDescription = useRef(null);

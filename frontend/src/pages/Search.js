@@ -58,7 +58,7 @@ export default function Search() {
         console.error("Could not get saved streams");
       }
     });
-  }, []);
+  }, [cookies.token]);
 
   // Update the currQuery every time query it changes
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function Search() {
     }
 
     setStreamSaved(false);
-  }, [query]);
+  }, [query, streams]);
 
   // Update savedStream every time it changes
   useEffect(() => {
@@ -168,6 +168,8 @@ const Autocomplete = connectAutoComplete(({ token, streams, setStreams }) => {
             if (streamSaved) {
               for (const stream of streams) {
                 if (stream.query === currQuery) {
+                  // TODO?
+                  // eslint-disable-next-line no-loop-func 
                   deleteStream(stream.id, cookies.token).then((data) => {
                     setDisableStream(false);
                     if (data && data.success) {

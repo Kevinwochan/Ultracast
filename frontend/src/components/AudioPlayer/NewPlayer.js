@@ -31,6 +31,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Badge from "@material-ui/core/Badge";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   player: {
@@ -70,10 +71,17 @@ const useStyles = makeStyles((theme) => ({
     width: 400,
     zIndex: 1202 /* sidebar is 1200*/,
     background: theme.palette.secondary.main,
-    overflowY: 'scroll',
+    overflowY: "scroll",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
-  playbackRateSelector: {
+  playlistItem: {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
+  playbackRateSelector: {},
 }));
 
 function VolumeValueLabel(props) {
@@ -85,10 +93,6 @@ function VolumeValueLabel(props) {
     </Tooltip>
   );
 }
-
-const truncate = (text, maxLength) => {
-  return text.length < maxLength ? text : `${text.substr(0, maxLength - 3)}...`;
-};
 
 const Player = ({ setAudioPlayerControls }) => {
   const [cookies] = useCookies(["token"]);
@@ -160,7 +164,8 @@ const Player = ({ setAudioPlayerControls }) => {
     audioEl.current.currentTime = state.currentTime;
     audioEl.current.play();
     markAsPlayed(state.nowPlaying.id, cookies.token);
-  }, [state.nowPlaying]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookies.token, state.nowPlaying]);
 
   const updatePlayerUI = () => {
     setState((prevState) => ({
@@ -273,9 +278,10 @@ const Player = ({ setAudioPlayerControls }) => {
                 }}
               />
             )}
-            <img                   onError={(e) => {
-                    e.target.src = `/branding/square.svg`;
-                  }}
+            <img
+              onError={(e) => {
+                e.target.src = `/branding/square.svg`;
+              }}
               alt={state.nowPlaying ? state.nowPlaying.title : ""}
               src={
                 state.nowPlaying
@@ -433,7 +439,9 @@ const Player = ({ setAudioPlayerControls }) => {
                             }}
                             divider
                           >
-                            {`${index + 1}. ${truncate(audio.title, 30)}`}
+                            <Typography className={classes.playlistItem}>
+                              {`${index + 1}. ${audio.title}`}
+                            </Typography>
                             <ListItemSecondaryAction
                               onClick={() => removeFromPlaylist(audio)}
                             >

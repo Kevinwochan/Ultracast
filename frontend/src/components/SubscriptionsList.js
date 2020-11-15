@@ -1,5 +1,4 @@
 import React from "react";
-import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
 import { uid } from "react-uid";
 import Typography from "@material-ui/core/Typography";

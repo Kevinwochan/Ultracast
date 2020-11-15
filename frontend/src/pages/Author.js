@@ -6,7 +6,6 @@ import Grid from "@material-ui/core/Grid";
 import { useParams } from "react-router-dom";
 import { getPodcasts, getMySubscriptions } from "../api/query";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Divider from "@material-ui/core/Divider";
 import PodcastPlaylist from "../components/PodcastList";
 
 const useStyles = makeStyles((theme) => ({
@@ -62,7 +61,7 @@ export default function Author() {
       });
       setAuthor(authorInfo.author);
     });
-  }, [id]);
+  }, [cookies.token, id]);
 
   if (podcasts === "loader") {
     return <CircularProgress />;

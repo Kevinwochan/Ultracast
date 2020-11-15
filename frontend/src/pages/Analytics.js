@@ -8,7 +8,6 @@ import Paper from "@material-ui/core/Paper";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import TopPodcasts from "./Analytics/TopPodcasts";
 import TopEpisodes from "./Analytics/TopEpisodes";
@@ -58,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Analytics() {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(['token']);
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -71,7 +70,7 @@ export default function Analytics() {
     getAnalytics(cookies.token).then((data) => {
       setData(data);
     });
-  }, []);
+  }, [cookies.token]);
 
   return (
     <Container maxWidth="lg" className={classes.container}>

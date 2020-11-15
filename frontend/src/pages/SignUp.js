@@ -52,7 +52,7 @@ const useStyles = makeStyles(() => ({
 
 export default function SignUp() {
   const classes = useStyles();
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [, setCookie, ] = useCookies(['token']);
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
   const nameRef = React.useRef();

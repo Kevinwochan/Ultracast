@@ -46,7 +46,7 @@ const Bookmarks = ({ audioPlayerControls }) => {
       }
       setEpisodes(uniqueEpisodes);
     });
-  }, []);
+  }, [cookies.token]);
 
   if (episodes === null) {
     return <CircularProgress />;

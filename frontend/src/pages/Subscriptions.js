@@ -7,7 +7,7 @@ import { getMySubscriptions } from "../api/query";
 import SubscriptionsList from "../components/SubscriptionsList";
 
 export default function Subscriptions() {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(['token']);
   const [podcasts, setPodcasts] = useState("loader");
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function Subscriptions() {
       });
       setPodcasts(podcasts);
     });
-  }, []);
+  }, [cookies.token]);
 
   return podcasts.length > 0 ? (
     <>

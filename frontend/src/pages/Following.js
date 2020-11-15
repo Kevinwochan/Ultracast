@@ -87,7 +87,7 @@ export default function Following({ audioPlayerControls }) {
     getMyFollowing(cookies.token).then((users) => {
       setFollowing(users);
     });
-  }, []);
+  }, [cookies.token]);
 
   if (users === null) {
     return (

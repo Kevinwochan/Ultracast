@@ -1,5 +1,4 @@
 import graphql from "./graphql";
-import { getUserId } from "./query";
 
 /**
  * Create a new podcast for the user

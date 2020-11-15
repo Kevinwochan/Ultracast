@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
 
 export default function Page({ player, children, creator }) {
   const classes = useStyles();
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(['token']);
 
   return (
     <ThemeProvider theme={theme}>

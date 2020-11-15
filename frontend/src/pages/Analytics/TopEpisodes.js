@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "@material-ui/core/Link";
-import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -9,18 +8,8 @@ import TableRow from "@material-ui/core/TableRow";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Title from "./Title";
 
-const useStyles = makeStyles((theme) => ({
-  seeMore: {
-    marginTop: theme.spacing(3),
-  },
-  episodeCover: {
-    height: 100,
-    width: 100,
-  },
-}));
 
 export default function TopEpisodes({ data }) {
-  const classes = useStyles();
 
   if (data === null) {
     return <CircularProgress />;

@@ -26,7 +26,7 @@ const HeatMap = ({ heatmapData }) => {
     const layer = new HeatmapOverlay(cfg);
     setLayer(layer);
     map.addLayer(layer);
-  }, []);
+  }, [map]);
 
   useEffect(() => {
     if (layer) {

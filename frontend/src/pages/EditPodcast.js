@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EditPodcast() {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(['token']);
   const classes = useStyles();
   const { podcastId } = useParams();
   const history = useHistory();
@@ -231,7 +231,7 @@ export default function EditPodcast() {
         }
       });
     }
-  }, [podcastId, newInfo, editing]);
+  }, [podcastId, newInfo, editing, cookies.token]);
 
   if (podcast === "loader") {
     return (

@@ -374,15 +374,6 @@ const verbosePodcast = `
   }
 `;
 
-const compactPodcast = `
-  name
-  id
-  coverUrl
-  author {
-    name
-    id
-  }
-`;
 
 /*
 Fetches a array of episodes the are part of the specified podcast
