@@ -44,17 +44,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BookmarkExtension = ({ audioEl, nowPlaying }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const [open, setOpen] = useState(false);
   const bookmarkTitle = useRef(null);
   const bookmarkDescription = useRef(null);
   const bookmarkTime = useRef(null);
 
   const openBookmarkMenu = (event) => {
-    if (
-      audioEl.current === null ||
-      audioEl.current.currentSrc === ""
-    ) {
+    if (audioEl.current === null || audioEl.current.currentSrc === "") {
       return;
     }
     bookmarkTime.current = audioEl.current.currentTime;
@@ -79,15 +76,14 @@ const BookmarkExtension = ({ audioEl, nowPlaying }) => {
   const classes = useStyles();
   return (
     <>
-      <BookmarkIcon
-        className={classes.extendedItem}
+      <IconButton
         onClick={openBookmarkMenu}
-        color={
-          nowPlaying 
-            ? "primary"
-            : "disabled"
-        }
-      />
+        color="primary"
+        className={classes.extendedItem}
+        disabled={nowPlaying === null}
+      >
+        <BookmarkIcon />
+      </IconButton>
       <Modal open={open} onClose={closeBookmarkMenu}>
         <Box className={classes.bookmarkMenu} p={5}>
           <IconButton
