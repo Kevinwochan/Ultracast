@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
-  useHistory,
 } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import Page from "./common/Page";
@@ -16,7 +15,7 @@ import EditPodcast from "./pages/EditPodcast";
 import Dashboard from "./pages/Dashboard";
 import Podcast from "./pages/Podcast";
 import History from "./pages/History";
-import Explore from "./pages/Recommended";
+import Recommended from "./pages/Recommended";
 import Author from "./pages/Author";
 import Analytics from "./pages/Analytics";
 import Subscriptions from "./pages/Subscriptions";
@@ -24,12 +23,10 @@ import Search from "./pages/Search";
 import Following from "./pages/Following";
 import User from "./pages/User";
 import Bookmarks from "./pages/Bookmarks";
-
 import NewPlayer from "./components/AudioPlayer/NewPlayer";
-import { markAsPlayed } from "./api/mutation";
 
 function PrivateRoute({ children, ...rest }) {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies] = useCookies(["token"]);
   return (
     <Route
       {...rest}
@@ -50,7 +47,7 @@ function PrivateRoute({ children, ...rest }) {
 }
 
 function LoggedInRedirect({ children, ...rest }) {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies] = useCookies(["token"]);
   return (
     <Route
       {...rest}
@@ -72,8 +69,6 @@ function LoggedInRedirect({ children, ...rest }) {
 
 export default function App() {
   //Top level state (variables that are stored between pages)
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
-  const history = useHistory();
   const [audioPlayerControls, setAudioPlayerControls] = useState({
     addAudio: () => {},
     playNow: () => {},
@@ -91,11 +86,11 @@ export default function App() {
             <SignIn />
           </Page>
         </LoggedInRedirect>
-        <Route path="/signup">
-          <LoggedInRedirect>
+        <LoggedInRedirect path="/signup">
+          <Page>
             <SignUp />
-          </LoggedInRedirect>
-        </Route>
+          </Page>
+        </LoggedInRedirect>
         {/* Creator Paths */}
         <PrivateRoute path="/creators">
           <Page creator>
@@ -114,7 +109,7 @@ export default function App() {
           </Page>
         </PrivateRoute>
         {/* Listener Paths */}
-        <Route path="/">
+        <PrivateRoute path="/">
           <Page player={audioPlayer.current}>
             <Switch>
               <PrivateRoute path="/podcast/:podcastId">
@@ -146,7 +141,7 @@ export default function App() {
               </PrivateRoute>
             </Switch>
           </Page>
-        </Route>
+        </PrivateRoute>
       </Switch>
     </Router>
   );
