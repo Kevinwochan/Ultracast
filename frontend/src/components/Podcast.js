@@ -116,6 +116,11 @@ const PodcastSliderStyles = makeStyles((theme) => ({
   podcastCover: {
     height: 150,
     width: 150,
+    transition: "0.3s",
+    boxShadow: "1px 1px 1px #bfbfbf",
+    "&:hover": {
+      boxShadow: "5px 5px 5px #bfbfbf",
+    },
   },
   podcastDetailsContainer: {
     padding: "10px 0px",
@@ -150,14 +155,18 @@ export function PodcastSlider({ state, podcasts }) {
       {podcasts.map((podcast) => (
         <Grid item key={uid(podcast)} xs={2} className={classes.podcast}>
           <Link to={`/podcast/${podcast.id}`}>
-            <img
-              src={podcast.image}
-              alt={`${podcast.title} cover`}
-              className={classes.podcastCover}
-              onError={(e) => {
-                e.target.src = `/branding/square.svg`;
-              }}
-            ></img>
+            <div className={classes.podcastCoverContainer}>
+              <div className={classes.cover}>
+                <img
+                  src={podcast.image}
+                  alt={`${podcast.title} cover`}
+                  className={classes.podcastCover}
+                  onError={(e) => {
+                    e.target.src = `/branding/square.svg`;
+                  }}
+                ></img>
+              </div>
+            </div>
           </Link>
           <CardContent className={classes.podcastDetailsContainer}>
             <Link to={`/podcast/${podcast.id}`}>
@@ -211,7 +220,10 @@ export function EpisodeSlider({ audioPlayerControls, episodes }) {
     <Grid container spacing={4} className={classes.podcastContainer}>
       {episodes.map((episode) => (
         <Grid item key={uid(episode)} xs={2} className={classes.podcast}>
-          <PodcastCard audioPlayerControls={audioPlayerControls} episode={episode} />
+          <PodcastCard
+            audioPlayerControls={audioPlayerControls}
+            episode={episode}
+          />
         </Grid>
       ))}
     </Grid>
@@ -238,15 +250,23 @@ export function PodcastCard({ audioPlayerControls, episode }) {
   };
   return (
     <>
-      <PodcastCover episode={episode} audioPlayerControls={audioPlayerControls} />
+      <PodcastCover
+        episode={episode}
+        audioPlayerControls={audioPlayerControls}
+      />
       <CardContent className={classes.podcastDetailsContainer}>
         <Typography
-          variant="subtitle2"
+          variant="subtitle1"
           className={classes.podcastDetails}
           onClick={addEpisodeToPlaylist}
         >
           <b>{episode.title}</b>
         </Typography>
+        <Link to={`/podcast/${episode.podcast.id}`}>
+          <Typography variant="subtitle2" className={classes.podcastDetails}>
+            {episode.podcast.title}
+          </Typography>
+        </Link>
         <Link to={`/author/${episode.podcast.author.id}`}>
           <Typography variant="caption" className={classes.podcastDetails}>
             {episode.podcast.author.name}
@@ -275,6 +295,19 @@ const coverStyles = makeStyles((theme) => ({
     position: "absolute",
     top: 60,
     left: 60,
+  },
+  overlay: {
+    height: "100%",
+    width: "100%",
+    top: 0,
+    left: 0,
+    position: "absolute",
+    translate: "transformXY(-50%, -50%)",
+    transition: "0.3s",
+    opacity: 0,
+    background: "white",
+    boxShadow: "1px 1px 1px #bfbfbf",
+    "&:hover": {},
   },
 }));
 
@@ -310,6 +343,10 @@ function PodcastCover({ episode, audioPlayerControls, creator }) {
           e.target.src = `/branding/square.svg`;
         }}
       ></img>
+      <div
+        className={classes.overlay}
+        style={ play ? { opacity: 0.5, boxShadow: "5px 5px 5px #bfbfbf" } : {}}
+      ></div>
       <div
         className={classes.podcastPlay}
         style={{ display: play ? "block" : "none" }}

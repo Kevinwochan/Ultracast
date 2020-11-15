@@ -1,15 +1,17 @@
-const express = require('express');
-const path = require('path');
+const express = require("express");
+const path = require("path");
 const app = express();
 
-port = process.argv[2] || 4000;
+const port = process.argv[2] || 0;
 
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, "build")));
 
-app.get('*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
-app.listen(port);
-
-console.log(`Serving frontend at http://localhost:${port}/`);
+const listener = app.listen(port, function () {
+  console.log(
+    `Serving frontend at http://localhost:${listener.address().port}/`
+  );
+});
