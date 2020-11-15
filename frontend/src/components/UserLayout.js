@@ -27,11 +27,10 @@ import ShowChartIcon from "@material-ui/icons/ShowChart";
 import PeopleIcon from "@material-ui/icons/People";
 import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
 import BookmarkIcon from "@material-ui/icons/Bookmark";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import ucTheme from "../theme";
 import Logo from "./Logo";
 import Notifications from "./Notifications";
-import { useFormControl } from "@material-ui/core";
 import { getUser } from "../api/query";
 
 const drawerWidth = 240;
@@ -203,6 +202,7 @@ export default function UserLayout({ children, creator }) {
 }
 
 const ListenerSideBar = ({ open }) => {
+  const location = useLocation();
   const classes = useStyles();
   const listenerItems = [
     {
@@ -236,13 +236,12 @@ const ListenerSideBar = ({ open }) => {
       link: "/history",
     },
   ];
-
   return (
-    <List>
+    <List disablePadding>
       {listenerItems.map((item) => (
         <Link to={item.link} className={classes.link} key={item.link}>
           <Tooltip title={open ? "" : item.name} placement="right">
-            <ListItem button key={item.name}>
+            <ListItem button key={item.name} selected={item.link === location.pathname}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.name} />
             </ListItem>
@@ -254,6 +253,7 @@ const ListenerSideBar = ({ open }) => {
 };
 
 const CreatorSideBar = ({ open }) => {
+  const location = useLocation();
   const classes = useStyles();
   const creatorItems = [
     {
@@ -274,11 +274,11 @@ const CreatorSideBar = ({ open }) => {
   ];
 
   return (
-    <List>
+    <List disablePadding>
       {creatorItems.map((item) => (
         <Link to={item.link} className={classes.link} key={item.link}>
           <Tooltip title={open ? "" : item.name} placement="right">
-            <ListItem button key={item.name}>
+            <ListItem button key={item.name} selected={location.pathname === item.link}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.name} />
             </ListItem>
