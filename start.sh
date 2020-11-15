@@ -8,8 +8,11 @@ start_backend() {
 
 start_frontend() {
     cd frontend
-    sh deploy.sh
+    ./deploy.sh $1
 }
 
-start_backend &
-start_frontend 
+if [ "$1" == "--local" ]; then
+    echo "Local run. Starting backend webserver"
+    start_backend &
+fi
+start_frontend  $1

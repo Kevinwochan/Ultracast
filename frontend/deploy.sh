@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 npm install --production
 
-if [ "$1" == "--local" ];
-then
+if [ "$1" == "--local" ]; then
+    echo "Local run. Binding to local graphql endpoint"
 	npm run local
 
 else
