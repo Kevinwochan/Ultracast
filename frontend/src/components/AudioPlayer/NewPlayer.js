@@ -89,7 +89,7 @@ const truncate = (text, maxLength) => {
 };
 
 const Player = ({ setAudioPlayerControls }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies] = useCookies(["token"]);
   const history = useHistory();
   const [state, setState] = useState({
     playbackRate: 1.0,
@@ -175,7 +175,10 @@ const Player = ({ setAudioPlayerControls }) => {
 
   const hasNext = () => {
     const nowPlayingIndex = state.playlist.indexOf(state.nowPlaying);
-    if (nowPlayingIndex !== -1 && nowPlayingIndex + 1 < state.playlist.length) {
+    if (
+      nowPlayingIndex + 1 >= 0 &&
+      nowPlayingIndex + 1 < state.playlist.length
+    ) {
       return nowPlayingIndex + 1;
     }
     return -1;
@@ -190,11 +193,25 @@ const Player = ({ setAudioPlayerControls }) => {
   };
 
   /* Player control handlers */
+  const onAudioEnd = (event) => {
+    setState((prevState) => ({
+      ...prevState,
+      nowPlaying: hasNext() < 0 ? null : prevState.playlist[hasNext()],
+      currentTime: 0,
+    }));
+  };
+
   const removeFromPlaylist = (audio) => {
     setState((prevState) => ({
       ...prevState,
       playlist: prevState.playlist.filter((a) => a !== audio),
-      nowPlaying: prevState.nowPlaying === audio ? null : prevState.nowPlaying,
+      nowPlaying:
+        prevState.nowPlaying === audio
+          ? hasNext() < 0
+            ? null
+            : prevState.playlist[hasNext()]
+          : prevState.nowPlaying,
+      currentTime: 0,
     }));
   };
 
@@ -245,13 +262,15 @@ const Player = ({ setAudioPlayerControls }) => {
       <Container>
         <Grid container justify="center" alignItems="center" spacing={2}>
           <Box style={{ position: "relative" }}>
-            {state.networkState === 2 && state.nowPlaying && <CircularProgress
-              style={{
-                position: "absolute",
-                top: 14,
-                left: 14,
-              }}
-            />}
+            {state.networkState === 2 && state.nowPlaying && (
+              <CircularProgress
+                style={{
+                  position: "absolute",
+                  top: 14,
+                  left: 14,
+                }}
+              />
+            )}
             <img
               alt={state.nowPlaying ? state.nowPlaying.title : ""}
               src={
@@ -431,14 +450,15 @@ const Player = ({ setAudioPlayerControls }) => {
             </Popper>
             <IconButton onClick={togglePlaylistMenu} color="primary">
               <Badge showZero badgeContent={state.playlist.length}>
-              <QueueMusicIcon /> {/* TODO items in playlist count */}
-              </Badge >
+                <QueueMusicIcon />
+              </Badge>
             </IconButton>
           </Grid>
           <audio
             ref={audioEl}
             onTimeUpdate={updatePlayerUI}
             onLoadedMetadata={updatePlayerUI}
+            onEnded={onAudioEnd}
           />
         </Grid>
       </Container>
