@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -14,21 +15,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function User({ state }) {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const { id } = useParams();
   const [sessionState, ] = state;
   const [user, setUser] = useState("loader");
   const [history, setHistory] = useState("loader");
 
   useEffect(() => {
-    getMyFollowing(sessionState.cookies.token).then((users) => {
+    getMyFollowing(cookies.token).then((users) => {
       const following = users.map((user) => user.id).includes(id);
-      getHistory(id, sessionState.cookies.token).then((data) => {
+      getHistory(id, cookies.token).then((data) => {
         let { user, history } = data;
         user.id = id;
         user.following = following;
         setUser(user);
         // check if episode has been watched
-        getMyHistory(sessionState.cookies.token).then((watchedEpisodes) => {
+        getMyHistory(cookies.token).then((watchedEpisodes) => {
           const watchedEpisodeIds = watchedEpisodes.map((episode) => episode.id);
           history.forEach((episode) => {
             episode.watched = watchedEpisodeIds.includes(episode.id);

@@ -6,56 +6,6 @@ This file defines the mutation strings used and how the response data is then un
 
 /* TODO: handle when the server invalidates the token */
 
-/*
-Logs a user in
-*/
-const login = async (email, password) => {
-  const data = await graphql(
-    `
-      mutation($email: String!, $password: String!) {
-        login(input: { email: $email, password: $password }) {
-          success
-          token
-          message
-        }
-      }
-    `,
-    {
-      email: `${email}`,
-      password: `${password}`,
-    }
-  );
-
-  return data.login;
-};
-
-/*
-Registers a email password combination as user account
-*/
-const register = async (name, email, password) => {
-  const data = await graphql(
-    `
-      mutation($name: String, $email: String!, $password: String!) {
-        createUser(input: { name: $name, email: $email, password: $password }) {
-          success
-          token
-          failWhy
-        }
-      }
-    `,
-    {
-      name: name,
-      email: `${email}`,
-      password: `${password}`,
-    }
-  );
-  return {
-    success: data.createUser.success,
-    message: data.createUser.failWhy,
-    token: data.createUser.token,
-  };
-};
-
 /**
  * Gets the logged in user's ID
  *
@@ -105,7 +55,7 @@ const getMyRecommended = async (token) => {
       query recommended {
         recommendations {
           edges {
-            node  {
+            node {
               name
               id
               coverUrl
@@ -121,12 +71,12 @@ const getMyRecommended = async (token) => {
   return data.recommendations.edges.map((n) => {
     const podcast = n.node;
     return {
-      image: podcast.coverUrl,
+      image: podcast.coverUrl ? podcast.coverUrl : "/branding/square.svg",
       id: podcast.id,
       title: podcast.name,
       author: {
-        name: '',
-        id: ''
+        name: "",
+        id: "",
       },
     };
   });
@@ -165,7 +115,12 @@ const getMyFollowing = async (token) => {
     name: user.node.name,
     episode:
       user.node.listenHistory.edges.length > 0
-        ? parseEpisode(user.node.listenHistory.edges[user.node.listenHistory.edges.length-1].node.episode, true)
+        ? parseEpisode(
+            user.node.listenHistory.edges[
+              user.node.listenHistory.edges.length - 1
+            ].node.episode,
+            true
+          )
         : null,
   }));
 };
@@ -309,7 +264,7 @@ const getUserPodcastsInfo = async (token) => {
     const podcast = n.node;
     return {
       id: podcast.id,
-      image: podcast.coverUrl,
+      image: podcast.coverUrl ? podcast.coverUrl : "/branding/square.svg",
       title: podcast.name,
       description: podcast.description,
       episodeCount: podcast.episodes.totalCount,
@@ -373,7 +328,9 @@ const parseEpisode = (episode, verbose = true) => {
     podcast: {
       title: episode.podcastMetadata.name,
       id: episode.podcastMetadata.id,
-      image: episode.podcastMetadata.coverUrl,
+      image: episode.podcastMetadata.coverUrl
+        ? episode.podcastMetadata.coverUrl
+        : "/branding/square.svg",
       author: episode.podcastMetadata.author,
     },
     ...(verbose ? verboseInfo : null),
@@ -427,52 +384,6 @@ const compactPodcast = `
   }
 `;
 
-const newPodcast = async (title, description, keywords, token) => {
-  const data = await graphql(
-    `
-      mutation($author: ID!, $name: String!, $description: String) {
-        createPodcastMetadata(
-          input: { author: $author, name: $name, description: $description }
-        ) {
-          success
-          podcastMetadata {
-            id
-            name
-          }
-        }
-      }
-    `,
-    {
-      name: title,
-      author:
-        "VXNlcjo1Zjg4MDJkODhjMTk0NDgwNTlkNDM4NTY=" /* TODO: dynamic authors */,
-      description: description,
-      keywords: keywords,
-    }
-  );
-  return data.podcastMetadata;
-};
-
-/*
-Marks the podcast id given as watched for the specified user (token)
-*/
-const markAsPlayed = async (episodeId, token) => {
-  const data = await graphql(
-    `
-      mutation($episodeId: ID!) {
-        markPodcastListened(input: { podcastEpisodeMetadataId: $episodeId }) {
-          success
-        }
-      }
-    `,
-    {
-      episodeId: episodeId,
-    },
-    token
-  );
-  return data.markPodcastListened;
-};
-
 /*
 Fetches a array of episodes the are part of the specified podcast
 */
@@ -518,8 +429,9 @@ const getEpisodes = async (podcastId, token) => {
     title: data.allPodcastMetadata.edges[0].node.name,
     description: data.allPodcastMetadata.edges[0].node.description,
     author: data.allPodcastMetadata.edges[0].node.author,
-    image:
-      data.allPodcastMetadata.edges[0].node.coverUrl ?? "/branding/square.svg",
+    image: data.allPodcastMetadata.edges[0].node.coverUrl
+      ? data.allPodcastMetadata.edges[0].node.coverUrl
+      : "/branding/square.svg",
     episodeCount: data.allPodcastMetadata.edges[0].node.episodes.totalCount,
   };
   return {
@@ -576,53 +488,15 @@ const getPodcasts = async (authorId, token) => {
     author: author,
     podcasts: data.allPodcastMetadata.edges.map((podcast) => ({
       id: podcast.node.id,
-      image: podcast.node.coverUrl,
+      image: podcast.node.coverUrl
+        ? podcast.node.coverUrl
+        : "/branding/square.svg",
       title: podcast.node.name,
       description: podcast.node.description,
       author: podcast.node.author,
       episodeCount: podcast.node.episodes.totalCount,
     })),
   };
-};
-
-/*
-subscribes the the specified user (token) to the specified podcast series
-*/
-const subscribe = async (podcastId, token) => {
-  const data = await graphql(
-    `
-      mutation($podcastId: ID!) {
-        subscribePodcast(input: { podcastMetadataId: $podcastId }) {
-          success
-        }
-      }
-    `,
-    {
-      podcastId: podcastId,
-    },
-    token
-  );
-  return data.subscribePodcast.success;
-};
-
-/*
-subscribes the the specified user (token) to the specified podcast series
-*/
-const unsubscribe = async (podcastId, token) => {
-  const data = await graphql(
-    `
-      mutation($podcastId: ID!) {
-        unsubscribePodcast(input: { podcastMetadataId: $podcastId }) {
-          success
-        }
-      }
-    `,
-    {
-      podcastId: podcastId,
-    },
-    token
-  );
-  return data.unsubscribePodcast.success;
 };
 
 /*
@@ -707,12 +581,14 @@ const getMySubscriptions = async (token) => {
   return data.currentUser.subscribedPodcasts.edges.map((podcast) => ({
     id: podcast.node.id,
     title: podcast.node.name,
-    image: podcast.node.coverUrl,
+    image: podcast.node.coverUrl
+      ? podcast.node.coverUrl
+      : "/branding/square.svg",
     episodeCount: podcast.node.episodes.totalCount,
     author: podcast.node.author,
     episodes: podcast.node.episodes.edges.map((episode) => ({
       id: episode.node.id,
-      title: episode.node.name
+      title: episode.node.name,
     })),
   }));
 };
@@ -739,8 +615,129 @@ const searchUser = async (email) => {
   return data.allUser.totalCount === 1 ? data.allUser.edges[0].node.id : null;
 };
 
+const getBookmarkedEpisodes = async (token) => {
+  const data = await graphql(
+    `
+      query {
+        currentUser {
+          bookmarks {
+            edges {
+              node {
+                episode {
+                  ${verboseEpisode}
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.currentUser.bookmarks.edges.map(
+    (bookmark) => parseEpisode(bookmark.node.episode)
+  );
+};
+
+const getBookmarksForEpisode = async (episodeId, token) => {
+  const data = await graphql(
+    `
+      query($episodeId: ID) {
+        currentUser {
+          bookmarks(episode: $episodeId) {
+            edges {
+              node {
+                id
+                title
+                description
+                trackTimestamp
+              }
+            }
+          }
+        }
+      }
+    `,
+    { episodeId: episodeId },
+    token
+  );
+
+  return data.currentUser.bookmarks.edges.map((bookmark) => bookmark.node);
+};
+
+const getStreams = async (token) => {
+  const data = await graphql(
+    `
+      query getStreams {
+        allStream {
+          edges {
+            node {
+              id
+              search
+            }
+          }
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.allStream;
+};
+
+const getAnalytics = async (token) => {
+  const data = await graphql(
+    `
+      query {
+        currentUser {
+          id
+          publishedPodcasts {
+            edges {
+              node {
+                id
+                name
+                coverUrl
+                publishDate
+                episodes {
+                  edges {
+                    node {
+                      id
+                      name
+                      publishDate
+                      views {
+                        totalCount
+                        edges {
+                          node {
+                            latLon
+                            browser
+                            timestamp
+                            isSubscribed
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {},
+    token
+  );
+
+  return data.currentUser;
+};
+
 export {
+  getAnalytics,
   searchUser,
+  getBookmarkedEpisodes,
+  getBookmarksForEpisode,
   getMyFollowing,
   getMyHistory,
   getMyRecommended,
@@ -748,17 +745,12 @@ export {
   getNumNotifications,
   getMyNotifications,
   getHistory,
-  subscribe,
-  unsubscribe,
   getPodcasts,
   getEpisodes,
-  markAsPlayed,
-  newPodcast,
-  login,
-  register,
   getUser,
   getUserId,
   getUserPodcasts,
   getUserPodcastsInfo,
   getPodcastInfo,
+  getStreams,
 };

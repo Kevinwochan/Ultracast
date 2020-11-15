@@ -2,3 +2,7 @@
 __pycache__/
 env
 .python-version
+docs/report/report.fdb_latexmk
+docs/report/report.fls
+docs/report/report.synctex.gz
+docs/report/report.synctex(busy)

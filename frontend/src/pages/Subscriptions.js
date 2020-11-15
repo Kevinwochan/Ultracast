@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 import { getMySubscriptions } from "../api/query";
 import SubscriptionsList from "../components/SubscriptionsList";
 
-export default function Subscriptions({ state }) {
-  const [sessionState, updateState] = state;
+export default function Subscriptions() {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const [podcasts, setPodcasts] = useState("loader");
 
   useEffect(() => {
-    getMySubscriptions(sessionState.cookies.token).then((podcasts) => {
+    getMySubscriptions(cookies.token).then((podcasts) => {
       podcasts.forEach((podcast) => {
         podcast.subscribed = true;
       });
       setPodcasts(podcasts);
     });
-  }, [sessionState]);
+  }, []);
 
   return podcasts.length > 0 ? (
     <>
@@ -25,7 +26,7 @@ export default function Subscriptions({ state }) {
           <b>PODCAST SUBSCRIPTION PREVIEW</b>
         </Typography>
       </Box>
-      <SubscriptionsList podcasts={podcasts} state={state} />
+      <SubscriptionsList podcasts={podcasts}/>
     </>
   ) : (
     <Box m={2}>

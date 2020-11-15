@@ -151,7 +151,7 @@ def resolve_recommendations(root, info):
     # See 'models.py -> User' for all of the fields you can query
     subscriptions = flask_jwt_extended.current_user.model().subscribed_podcasts
     recentEpisodes = flask_jwt_extended.current_user.model().listen_history
-    searches = None  # search history isn't implemented yet
+    searches = flask_jwt_extended.current_user.model().searched_podcasts
     return calculateRecommendations(subscriptions, recentEpisodes, searches)
 
 @flask_jwt_extended.jwt_required
@@ -178,6 +178,7 @@ class Query(graphene.ObjectType):
     all_podcast_metadata = MongoengineConnectionField(PodcastMetadata)
     #all_user = AuthenticatedMongoengineConnectionField(User)
     all_user = MongoengineConnectionField(User)
+    all_stream = MongoengineConnectionField(Stream)
     '''
     Custom query to get recommended podcasts for a particular user
     '''

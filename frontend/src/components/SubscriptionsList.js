@@ -1,4 +1,5 @@
 import React from "react";
+import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
 import { uid } from "react-uid";
 import Typography from "@material-ui/core/Typography";
@@ -22,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
 /*
 this components expects podcast.subscribed, the parent component should evaluate this
 */
-export default function PodcastList({ podcasts, state, creator }) {
+export default function PodcastList({ podcasts, creator }) {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const classes = useStyles();
-  const [sessionState, setSessionState] = state;
 
   if (podcasts === "loader") {
     return <CircularProgress />;
@@ -64,7 +65,7 @@ export default function PodcastList({ podcasts, state, creator }) {
             </Link>
           </Grid>
           <Grid item>
-            <SubscribeButton podcast={podcast} sessionState={sessionState} />
+            <SubscribeButton podcast={podcast} />
           </Grid>
         </Grid>
       ))}

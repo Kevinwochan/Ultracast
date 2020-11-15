@@ -392,7 +392,7 @@ class Login(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, email, password):
         user = podcast_engine.User.from_email(email)
         if user is None:
-            return Login(success=False, message="Invalid username")
+            return Login(success=False, message="Invalid email")
 
         if not user.check_password(password):
             return Login(success=False, message="Invalid password")
@@ -514,6 +514,7 @@ class DeleteStream(ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, stream_id):
         user = flask_jwt_extended.current_user
         stream_model = schema.get_node_from_global_id(info, stream_id, query.Stream)
+        #print("Deleting stream {} have streams {}".format(stream_model.id, [ o.id for o in user.model().streams]))
         if not user.can_edit_stream(stream_model):
             raise werkzeug.exceptions.Forbidden("User {} cannot edit this stream"
                     .format(user.get_email()))
@@ -521,6 +522,24 @@ class DeleteStream(ClientIDMutation):
         user.remove_stream(stream_model)
 
         return DeleteStream(success=True, user=user.model())
+
+class MarkPodcastSearched(ClientIDMutation):
+    success = graphene.Boolean()
+    user = graphene.Field(query.User)
+
+    class Input:
+        podcast_metadata_id = graphene.ID(required=True)
+
+    @classmethod
+    @flask_jwt_extended.jwt_required
+    def mutate_and_get_payload(cls, root, info, podcast_metadata_id):
+        user = flask_jwt_extended.current_user
+        podcast_metadata = schema.get_node_from_global_id(info, 
+                podcast_metadata_id, query.PodcastMetadata)
+
+        user.add_searched_podcast(podcast_metadata)
+
+        return MarkPodcastSearched(success=True, user=user.model())
 
 class Mutations(graphene.ObjectType):
     '''
@@ -557,5 +576,6 @@ class Mutations(graphene.ObjectType):
     unsubscribe_podcast = UnsubscribePodcast.Field()
     follow_user = FollowUser.Field()
     unfollow_user = UnfollowUser.Field()
+    mark_podcast_searched = MarkPodcastSearched.Field()
 
 middleware = []

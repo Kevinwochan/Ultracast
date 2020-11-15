@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -19,7 +20,6 @@ import CheckIcon from "@material-ui/icons/Check";
 import theme from "../theme";
 import { getUserPodcasts } from "../api/query";
 import { newPodcast, updatePodcast, newEpisode } from "../api/mutation";
-import getDominantColour from "../common/dominantColor";
 import Spinner from "../components/Spinner";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,11 +34,6 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(2),
   },
 }));
-
-// Details of the user
-const user = {
-  token: "",
-};
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -68,10 +63,9 @@ function getStepContent(step, fieldState, handleNext, handleBack) {
   }
 }
 
-export default function Upload({ userToken }) {
+export default function Upload() {
   const classes = useStyles();
-  user.token = userToken;
-
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const [activeStep, setActiveStep] = useState(0);
   const fieldState = useState({
     podcast: {
@@ -107,6 +101,7 @@ export default function Upload({ userToken }) {
     ],
     isNewPodcast: false,
     status: 0,
+    token: cookies.token
   });
   const [fields, setFields] = fieldState;
 
@@ -176,7 +171,7 @@ export default function Upload({ userToken }) {
           hasError = false;
       }
 
-      if (!hasError && prevActiveStep == 1) {
+      if (!hasError && prevActiveStep === 1) {
         // We're ready to upload!
         setFields((prevState) => ({
           ...prevState,
@@ -213,7 +208,7 @@ export default function Upload({ userToken }) {
 
   // Add all the podcasts the user has created already
   useEffect(() => {
-    getUserPodcasts(user.token).then((podcasts) => {
+    getUserPodcasts(cookies.token).then((podcasts) => {
       setFields((prevState) => ({
         ...prevState,
         allPodcasts: prevState.allPodcasts.concat(podcasts),
@@ -296,6 +291,7 @@ export default function Upload({ userToken }) {
 
 const selectPodcastStyle = makeStyles({
   root: {
+    marginBottom: 32,
     display: "flex",
   },
   fieldContainer: {
@@ -377,7 +373,7 @@ const SelectPodcast = ({ fieldState }) => {
         subCategory: "",
         keywords: [""],
       },
-      user.token
+      fields.token
     ).then((data) => {
       // Show the button again
       button.style.display = "inherit";
@@ -481,6 +477,14 @@ const SelectPodcast = ({ fieldState }) => {
               label="Podcast Description"
               onChange={handleChange}
             />
+            <TextField
+              id="category"
+              fullWidth
+              variant="outlined"
+              label="Category"
+              value={fields.podcast.category}
+              onChange={handleChange}
+            />
           </>
         )}
       </div>
@@ -501,21 +505,7 @@ const PodcastPreview = ({ hidden, image, title, description }) => {
     <Card hidden={hidden} variant="outlined" className={classes.preview}>
       <Box mt={7}>
         <div className={classes.previewHeader}>
-          <img
-            className={classes.media}
-            src={image}
-            alt="Preview podcast"
-            onLoad={(e) => {
-              const img = e.target;
-              // TODO fix this
-              // img.src = image + "?" + new Date().getTime();
-              // img.setAttribute("crossOrigin", "Anonymous");
-              // const colour = getDominantColour(img);
-
-              // // It's gross i know :(
-              // img.parentElement.parentElement.parentElement.style.background = `#${colour}`;
-            }}
-          />
+          <img className={classes.media} src={image} alt="Preview podcast" />
           <CardContent className={classes.mediaText}>
             <Typography variant="h6" align="center">
               {title}
@@ -745,7 +735,7 @@ async function createNewPodcastAndEpisode(fields) {
       subCategory: fields.podcast.subcategory,
       keywords: fields.podcast.keywords,
     },
-    user.token
+    fields.token
   );
   if (data.success) {
     return createNewEpisode(data.podcastMetadata.id, fields);
@@ -772,7 +762,7 @@ async function updatePodcastCreateEpisode(podcastID, fields) {
       subCategory: fields.podcast.subcategory,
       keywords: fields.podcast.keywords,
     },
-    user.token
+    fields.token
   );
   if (data.success) {
     return createNewEpisode(podcastID, fields);
@@ -796,7 +786,7 @@ async function createNewEpisode(podcastId, fields) {
       audio: fields.episode.audio.file,
       keywords: fields.episode.keywords,
     },
-    user.token
+    fields.token
   );
 
   return success;
@@ -846,7 +836,7 @@ const Confirmation = ({ fieldState, handleNext, handleBack }) => {
 
   useEffect(() => {
     // Once the mutation has resolved, go forward or backward
-    if (fields.status == 0) {
+    if (fields.status === 0) {
       if (fields.snackbar.severity === "success") {
         handleNext();
       } else if (fields.snackbar.severity === "error") {

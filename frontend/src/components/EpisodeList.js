@@ -1,4 +1,5 @@
 import React from "react";
+import { useCookies } from "react-cookie";
 import { uid } from "react-uid";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -10,7 +11,9 @@ import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import Badge from "@material-ui/core/Badge";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import BookmarkAccordian from "../components/BookmarkAccordian";
 import { PodcastCover } from "./Podcast";
+import { toHHMMSS } from "../common/utils";
 
 const useStyles = makeStyles((theme) => ({
   podcastCover: {
@@ -28,23 +31,13 @@ const useStyles = makeStyles((theme) => ({
   watched: {
     background: "rgba(0,0,0, 0.1)",
   },
+  row: {
+    verticalAlign: "top",
+  },
 }));
 
-// https://stackoverflow.com/questions/1322732/convert-seconds-to-hh-mm-ss-with-javascript
-// probably a better way but ceebs
-const toHHMMSS = (secs) => {
-  var sec_num = parseInt(secs, 10);
-  var hours = Math.floor(sec_num / 3600);
-  var minutes = Math.floor(sec_num / 60) % 60;
-  var seconds = sec_num % 60;
-
-  return [hours, minutes, seconds]
-    .map((v) => (v < 10 ? "0" + v : v))
-    .filter((v, i) => v !== "00" || i > 0)
-    .join(":");
-};
-
-export default function Playlist({ episodes, state }) {
+export default function Playlist({ episodes, audioPlayerControls }) {
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const classes = useStyles();
 
   if (episodes.length === 0) {
@@ -73,15 +66,15 @@ export default function Playlist({ episodes, state }) {
             </TableRow>
           ) : (
             episodes.map((episode, index) => (
-              <TableRow key={uid(episode)}>
+              <TableRow key={uid(episode)} className={classes.row}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
-                  <PodcastCover episode={episode} state={state} />
+                  <PodcastCover episode={episode} audioPlayerControls={audioPlayerControls}/>
                 </TableCell>
                 <TableCell>
                   <Badge
                     variant={
-                      (episode.watched !== undefined && !episode.watched)
+                      episode.watched !== undefined && !episode.watched
                         ? "dot"
                         : "standard"
                     }
@@ -94,6 +87,7 @@ export default function Playlist({ episodes, state }) {
                   <Typography variant="body2" gutterBottom>
                     {episode.description}
                   </Typography>
+                  <BookmarkAccordian audioPlayerControls={audioPlayerControls} episode={episode} />
                 </TableCell>
                 <TableCell>{toHHMMSS(episode.length)}</TableCell>
                 <TableCell>{episode.date.toDateString()}</TableCell>
