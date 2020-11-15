@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
-port = process.argv[2] || 4000;
+port = process.argv[2] || 0;
 
 app.use(express.static(path.join(__dirname, 'build')));
 
