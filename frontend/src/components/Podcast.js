@@ -211,7 +211,10 @@ export function EpisodeSlider({ audioPlayerControls, episodes }) {
     <Grid container spacing={4} className={classes.podcastContainer}>
       {episodes.map((episode) => (
         <Grid item key={uid(episode)} xs={2} className={classes.podcast}>
-          <PodcastCard audioPlayerControls={audioPlayerControls} episode={episode} />
+          <PodcastCard
+            audioPlayerControls={audioPlayerControls}
+            episode={episode}
+          />
         </Grid>
       ))}
     </Grid>
@@ -238,15 +241,23 @@ export function PodcastCard({ audioPlayerControls, episode }) {
   };
   return (
     <>
-      <PodcastCover episode={episode} audioPlayerControls={audioPlayerControls} />
+      <PodcastCover
+        episode={episode}
+        audioPlayerControls={audioPlayerControls}
+      />
       <CardContent className={classes.podcastDetailsContainer}>
         <Typography
-          variant="subtitle2"
+          variant="subtitle1"
           className={classes.podcastDetails}
           onClick={addEpisodeToPlaylist}
         >
           <b>{episode.title}</b>
         </Typography>
+        <Link to={`/podcast/${episode.id}`}>
+          <Typography variant="subtitle2" className={classes.podcastDetails}>
+            {episode.podcast.title}
+          </Typography>
+        </Link>
         <Link to={`/author/${episode.podcast.author.id}`}>
           <Typography variant="caption" className={classes.podcastDetails}>
             {episode.podcast.author.name}
