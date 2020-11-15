@@ -36,6 +36,7 @@ class SearchEngine:
     Then in another thread, when the queue is larger than BATCH_SIZE, triggers an upload
     '''
     def __init__(self, config):
+        print("Beep boop... starting up SearchEngine")
         self.algolia_client = SearchClient.create(config["ALGOLIA_ID"], config["ALGOLIA_API_KEY"])
         self.podcast_metadata_to_upload = queue.Queue() # thread safe queue
         self.is_shutdown = threading.Event()
@@ -50,7 +51,7 @@ class SearchEngine:
                 sender=models.PodcastMetadata)
 
     def podcast_metadata_save_cb(self, sender, document, created=None):
-        print("cb podcast recieved")
+        #print("cb podcast recieved")
         podcast_metadata = document
         assert(sender == models.PodcastMetadata)
         self.podcast_metadata_to_upload.put(podcast_metadata.id)
@@ -58,7 +59,7 @@ class SearchEngine:
             self.should_upload.set()
 
     def podcast_episode_metadata_save_cb(self, sender, document, created=None):
-        print("cb episode recieved")
+        #print("cb episode recieved")
         assert(sender == models.PodcastEpisodeMetadata)
         podcast_episode_metadata = document
         self.podcast_metadata_to_upload.put(podcast_episode_metadata.podcast_metadata.id)
