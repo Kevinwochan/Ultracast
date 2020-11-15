@@ -3,8 +3,8 @@ import { useCookies } from "react-cookie";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
-import { getMySubscriptions } from "../api/query";
-import SubscriptionsList from "../components/SubscriptionsList";
+import { getMySubscriptions } from "../../api/query";
+import SubscriptionsList from "../../components/SubscriptionsList";
 
 export default function Subscriptions() {
   const [cookies] = useCookies(['token']);

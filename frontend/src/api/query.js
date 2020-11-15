@@ -150,6 +150,7 @@ const getHistory = async (userId, token) => {
     { userId: userId },
     token
   );
+  if (!data.allUser) return null;
   return {
     user: {
       name: data.allUser.edges[0].node.name,
@@ -374,7 +375,6 @@ const verbosePodcast = `
   }
 `;
 
-
 /*
 Fetches a array of episodes the are part of the specified podcast
 */
@@ -415,7 +415,7 @@ const getEpisodes = async (podcastId, token) => {
     },
     token
   );
-  if (data.allPodcastMetadata === null) return {};
+  if (!data.allPodcastMetadata) return null;
   const podcast = {
     title: data.allPodcastMetadata.edges[0].node.name,
     description: data.allPodcastMetadata.edges[0].node.description,
@@ -472,8 +472,7 @@ const getPodcasts = async (authorId, token) => {
     },
     token
   );
-  if (data.allPodcastMetadata.edges.length === 0)
-    return { author: { name: "Author not found" }, podcasts: [] };
+  if (data.allPodcastMetadata.edges.length === 0) return null;
   const author = data.allPodcastMetadata.edges[0].node.author;
   return {
     author: author,

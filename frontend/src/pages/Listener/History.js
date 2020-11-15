@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
-import { getMyHistory } from "../api/query";
-import EpisodePlaylist from "../components/EpisodeList";
+import { getMyHistory } from "../../api/query";
+import EpisodePlaylist from "../../components/EpisodeList";
 
 export default function History({ audioPlayerControls }) {
   const [cookies] = useCookies(["token"]);
@@ -13,7 +13,7 @@ export default function History({ audioPlayerControls }) {
     getMyHistory(cookies.token).then((data) => {
       setHistory(data);
     });
-  });
+  }, []);
 
   return (
     <>
@@ -25,6 +25,7 @@ export default function History({ audioPlayerControls }) {
       <EpisodePlaylist
         episodes={history}
         audioPlayerControls={audioPlayerControls}
+        bookmarks
       />
     </>
   );

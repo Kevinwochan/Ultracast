@@ -7,13 +7,13 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { getEpisodes, getMyHistory, getMySubscriptions } from "../api/query";
+import { getEpisodes, getMyHistory, getMySubscriptions } from "../../api/query";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import PlaylistAddCheckIcon from "@material-ui/icons/PlaylistAddCheck";
 import Divider from "@material-ui/core/Divider";
-import EpisodePlaylist from "../components/EpisodeList";
-import SubscribeButton from "../components/SubscribeButton";
+import EpisodePlaylist from "../../components/EpisodeList";
+import SubscribeButton from "../../components/SubscribeButton";
 
 const useStyles = makeStyles((theme) => ({
   podcastTitle: {
@@ -42,6 +42,10 @@ export default function Podcast({ audioPlayerControls }) {
 
   useEffect(() => {
     getEpisodes(podcastId).then((podcastInfo) => {
+      if (!podcastInfo) {
+        setPodcast("not found");
+        return;
+      }
       podcastInfo.podcast.id = podcastId;
       // initalise podcast.subscribed
       getMySubscriptions(cookies.token).then((data) => {
@@ -67,6 +71,18 @@ export default function Podcast({ audioPlayerControls }) {
 
   if (podcast === "loader") {
     return <CircularProgress />;
+  } else if (podcast === "not found") {
+    return (
+      <Box className={classes.podcastHero}>
+        <Grid container spacing={2} justify="center">
+          <Grid item xs={12} md={6} lg={6}>
+            <Typography variant="h4" className={classes.podcastTitle}>
+              Podcast was not found
+            </Typography>
+          </Grid>
+        </Grid>
+      </Box>
+    );
   }
 
   return (
@@ -122,7 +138,11 @@ export default function Podcast({ audioPlayerControls }) {
         </Grid>
       </Box>
       <Divider variant="fullWidth" />
-      <EpisodePlaylist episodes={episodes} audioPlayerControls={audioPlayerControls}/>
+      <EpisodePlaylist
+        episodes={episodes}
+        audioPlayerControls={audioPlayerControls}
+        bookmarks
+      />
     </>
   );
 }

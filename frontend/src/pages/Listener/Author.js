@@ -4,9 +4,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import { useParams } from "react-router-dom";
-import { getPodcasts, getMySubscriptions } from "../api/query";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import PodcastPlaylist from "../components/PodcastList";
+import PodcastPlaylist from "../../components/PodcastList";
+import { getPodcasts, getMySubscriptions } from "../../api/query";
 
 const useStyles = makeStyles((theme) => ({
   podcastHero: {
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Author() {
-  const [cookies] = useCookies(['token']);
+  const [cookies] = useCookies(["token"]);
   const classes = useStyles();
   const { id } = useParams();
   const [author, setAuthor] = useState();
@@ -52,6 +52,10 @@ export default function Author() {
   useEffect(() => {
     getPodcasts(id).then((authorInfo) => {
       // initalise podcast.subscribed
+      if (!authorInfo) {
+        setAuthor("not found");
+        return;
+      }
       getMySubscriptions(cookies.token).then((data) => {
         const subscriptions = data.map((podcast) => podcast.id);
         authorInfo.podcasts.forEach((podcast) => {
@@ -63,9 +67,21 @@ export default function Author() {
     });
   }, [cookies.token, id]);
 
-  if (podcasts === "loader") {
+  if (author === "not found") {
+    return (
+      <Grid container spacing={0}>
+        {/* Info section */}
+        <Grid item className={classes.podcastHero}>
+          <Typography variant="h3" paragraph style={{ fontWeight: "bold" }}>
+            Podcasts by {author.name}
+          </Typography>
+        </Grid>
+      </Grid>
+    );
+  } else if (podcasts === "loader") {
     return <CircularProgress />;
   }
+
   return (
     <>
       <Grid container spacing={0}>
@@ -77,7 +93,7 @@ export default function Author() {
         </Grid>
       </Grid>
       {/* List of podcasts */}
-      <PodcastPlaylist podcasts={podcasts}/>
+      <PodcastPlaylist podcasts={podcasts} />
     </>
   );
 }

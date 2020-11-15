@@ -17,10 +17,10 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import MenuItem from "@material-ui/core/MenuItem";
 import CheckIcon from "@material-ui/icons/Check";
-import theme from "../theme";
-import { getUserPodcasts } from "../api/query";
-import { newPodcast, updatePodcast, newEpisode } from "../api/mutation";
-import Spinner from "../components/Spinner";
+import theme from "../../theme";
+import { getUserPodcasts } from "../../api/query";
+import { newPodcast, updatePodcast, newEpisode } from "../../api/mutation";
+import Spinner from "../../components/Spinner";
 
 const useStyles = makeStyles((theme) => ({
   root: {

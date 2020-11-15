@@ -9,8 +9,8 @@ import Typography from "@material-ui/core/Typography";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 import { CircularProgress, makeStyles } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
-import { getMyFollowing } from "../api/query";
-import UserSearch from "../components/UserSearch";
+import { getMyFollowing } from "../../api/query";
+import UserSearch from "../../components/UserSearch";
 
 const useStyles = makeStyles((theme) => ({
   user: {

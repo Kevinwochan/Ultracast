@@ -5,8 +5,8 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Divider from "@material-ui/core/Divider";
-import EpisodePlaylist from "../components/EpisodeList";
-import { getBookmarkedEpisodes } from "../api/query";
+import EpisodePlaylist from "../../components/EpisodeList";
+import { getBookmarkedEpisodes } from "../../api/query";
 
 const useStyles = makeStyles((theme) => ({
   podcastTitle: {
@@ -60,7 +60,7 @@ const Bookmarks = ({ audioPlayerControls }) => {
         </Typography>
       </Box>
       <Divider variant="fullWidth" />
-      <EpisodePlaylist episodes={episodes} audioPlayerControls={audioPlayerControls}/>
+      <EpisodePlaylist episodes={episodes} audioPlayerControls={audioPlayerControls} bookmarks/>
     </>
   );
 };

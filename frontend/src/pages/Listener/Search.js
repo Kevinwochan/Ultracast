@@ -13,11 +13,11 @@ import {
   Hits,
   PoweredBy,
 } from "react-instantsearch-dom";
-import { SearchResult } from "../components/Podcast";
+import { SearchResult } from "../../components/Podcast";
 import "instantsearch.css/themes/algolia.css";
-import { saveStream, deleteStream, markAsSearched } from "../api/mutation";
-import { getStreams } from "../api/query";
-import config from "../api/config";
+import { saveStream, deleteStream, markAsSearched } from "../../api/mutation";
+import { getStreams } from "../../api/query";
+import config from "../../api/config";
 
 const useStyles = makeStyles((theme) => ({
   grid: {

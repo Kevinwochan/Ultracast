@@ -3,9 +3,9 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import React, { useEffect, useState } from "react";
-import { getUserPodcastsInfo } from "../api/query";
-import PodcastPlaylist from "../components/PodcastList";
-import { PodcastLoader } from "../components/Podcast";
+import { getUserPodcastsInfo } from "../../api/query";
+import PodcastPlaylist from "../../components/PodcastList";
+import { PodcastLoader } from "../../components/Podcast";
 
 const useStyles = makeStyles((theme) => ({
   podcastHero: {

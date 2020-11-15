@@ -19,12 +19,12 @@ import {
   deletePodcast,
   updateEpisode,
   deleteEpisode,
-} from "../api/mutation";
-import { getEpisodes } from "../api/query";
-import EditEpisodeList from "../components/EditEpisodeList";
-import { PodcastLoader } from "../components/Podcast";
-import Spinner from "../components/Spinner";
-import theme from "../theme";
+} from "../../api/mutation";
+import { getEpisodes } from "../../api/query";
+import EditEpisodeList from "../../components/EditEpisodeList";
+import { PodcastLoader } from "../../components/Podcast";
+import Spinner from "../../components/Spinner";
+import theme from "../../theme";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
