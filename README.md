@@ -16,7 +16,15 @@ The script `start.sh` will:
     * Install all npm packages that are required for the frontend
     * Launch the backend webserver
     * Launch the frontend
-    * Open ultracast in your browser
+    * Open ultracast in your browser (may not work on vlab)
+
+Once the setup is completed and UltraCast is launched you will see a message like:
+
+```
+Serving on port 4000
+```
+
+You can then navigate in a webbrowser to `localhost:4000` to use UltraCast
 
 ## Advanced Usage
 

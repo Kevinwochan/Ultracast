@@ -40,7 +40,7 @@ class SearchEngine:
         self.podcast_metadata_to_upload = queue.Queue() # thread safe queue
         self.is_shutdown = threading.Event()
         self.should_upload = threading.Event()
-        self.upload_thread = threading.Thread(target=self.upload_thread_cb)
+        self.upload_thread = threading.Thread(target=self.upload_thread_cb, daemon=True)
         self.upload_thread.start()
 
         # Register myself with mongo events
