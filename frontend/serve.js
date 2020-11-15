@@ -12,4 +12,4 @@ app.get('*', function (req, res) {
 
 app.listen(port);
 
-console.log(`Serving on port ${port}`);
+console.log(`Serving frontend at http://localhost:${port}/`);
