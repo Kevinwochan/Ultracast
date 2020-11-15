@@ -10,6 +10,7 @@ import logging
 import requests
 import datetime
 import json
+import geocoder
 
 '''
 Business Logic Layer
@@ -181,9 +182,14 @@ class User(BusinessLayerObject):
         self._model.modify(login_time=datetime.datetime.now())
 
     def add_view(self, request_env, podcast_episode_metadata_model):
-        response = requests.get("http://ipinfo.io/json")
-        lat_lon_list = response.json()['loc'].split(",")
-        lat_lon = json.dumps({'lat': lat_lon_list[0], 'lon': lat_lon_list[1]})
+        
+        latlon = geocoder.ip(request_env['REMOTE_ADDR']).latlng
+        if latlon is None or len(latlon) == 0:
+            latlon = geocoder.ip('me').latlng
+
+        lat, lon = latlon
+
+        lat_lon = json.dumps({'lat': lat, 'lon': lon})
         browser = request_env.get("HTTP_USER_AGENT", None)
         is_subscribed = podcast_episode_metadata_model.podcast_metadata in self._model.subscribed_podcasts
 
