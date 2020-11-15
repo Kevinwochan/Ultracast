@@ -31,6 +31,8 @@ You can then navigate in a webbrowser to `localhost:4000` to use UltraCast
 ### Local Backend Instance
 
 You can configure the frontend at runtime to use a local backend webserver for GraphQL queries instead of the remote webserver.
+**It is highly recommended not to run UltraCast in local mode on UNSW CSE machines as the port used for the GraphQL endpoint is often already in use**
+
 To do this:
 
 ```
