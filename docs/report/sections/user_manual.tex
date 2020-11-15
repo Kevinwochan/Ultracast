@@ -2,7 +2,7 @@
 \begin{document}   
 
 % User manual
-\subsection{Software Setup Instructions}
+\subsection{Software Setup Instructions} \label{ssec:setup_instructions}
 
 For the simple case where no API keys need to be changed, setting up and running UltraCast is as simple as running:
 
@@ -71,14 +71,161 @@ The frontend can be configured by editing the file \verb|frontend/src/api/config
     \item Algolia API key and user
 \end{itemize}
 
+\newpage
+
 \subsection{Site Usage and Functionality Guide}
-% Keep in mind this section is worth 50%
 
-% Extra subsection per story / functionality? Might group some together
+\subsubsection{Prerequisites}
 
-% Each person has to demo a set of features for the final demo, it might make sense for each
-% person to add to the manual for the features they are demoing.
-%      - NOTE: We should agree of how these instrustions are laid out (+ how images are displayed) tho so things are uniform
-%      - Might have one person do it earlier / set the standard for everyone else to follow
+Please ensure that:
+\begin{itemize}
+    \item The site is running (See \cref{ssec:setup_instructions} for help)
+    \item Chrome or Firefox is used to improve performance
+\end{itemize}
+
+\subsubsection{Login}
+
+Enter \verb|localhost:4000| into your browser to reach the UltraCast
+login page as seen in \cref{fig:UM_Login}. After filling in your email and password 
+click "SIGN IN" to be redirected to the homepage.
+%
+\begin{figure}[ht] 
+    \centering
+    \includegraphics[width=16cm]{resources/UM_Login}
+    \caption{UltraCast Login}
+    \label{fig:UM_Login} 
+\end{figure}
+
+\underline{If you have not already signed up} click on "SIGN UP", labelled with a red "1" in \cref{fig:UM_Login}, where
+you will be prompted to fill in your name, email and password before clicking "Sign Up" to login:
+
+\newpage
+
+\subsubsection{Homepage}
+
+After logging in you will be directed to the homepage as seen in \cref{fig:UM_Homepage} below. The 
+homepage consists of two components \underline{which will be empty if you are a new user}:
+%
+\begin{itemize}
+    \item \textbf{Recommended Podcasts}: Podcasts our recommended suggests based on your activity
+    \item \textbf{Recently Listened}: Podcast Episodes that you have listened to sorted by most recently listened left to right
+\end{itemize}
+%
+There are also two important components of UltraCast that can be seen and are labelled in red in \cref{fig:UM_Homepage}.
+\begin{enumerate}
+    \item \textbf{Pages Sidebar}: Lists the pages you can navigate to. The top one is "Home" which directs us to the Homepage
+    \item \textbf{Episode Player}: Player which can be used to play episodes. Described in \cref{sssec:UM_playing_episodes}
+\end{enumerate}
+
+\begin{figure}[ht] 
+    \centering
+    \includegraphics[width=16cm]{resources/UM_Homepage}
+    \caption{UltraCast Homepage}
+    \label{fig:UM_Homepage} 
+\end{figure}
+
+\subsubsection{Searching}
+
+To search for a podcast simply click on "Search" in the pages sidebar and type your search term in the search bar
+which will return matching podcasts as seen in \cref{fig:UM_search_result}. Each "tile" in the search result represents
+a podcast. The "SAVE SEARCH AS STREAM" button can be used to save a search term. If the search bar is empty then you 
+will be able to view and click on a saved "Stream" to apply that search term.
+
+\begin{figure}[ht] 
+    \centering
+    \includegraphics[width=16cm]{resources/UM_Search_Result}
+    \caption{UltraCast Search Result}
+    \label{fig:UM_search_result} 
+\end{figure}
+
+\newpage
+
+TODO viewing podcasts once it has been clicked on
+TODO at what point describe "click on" on the cover art with play button
+
+\subsubsection{Playing Podcast Episodes} \label{sssec:UM_playing_episodes}
+
+Once an episode has been clicked on (via the cover image) it will be added to
+the end of a queue in the "Player", which is labelled "8" in \cref{fig:UM_episode_player}.
+%
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=16cm]{resources/UM_Episode_Player}
+    \caption{UltraCast Episode Player}
+    \label{fig:UM_episode_player} 
+\end{figure}
+% 
+The components of the Episode Player, marked in \cref{fig:UM_episode_player}, are:
+\begin{enumerate}
+    \item \textbf{Podcast Cover Art} - Click on to view the podcast the episode is part of
+    \item \textbf{Episode Audio Track} - Can "pull and drag" to specific timestamp
+    \item \textbf{Episode Controller} - Start/pause episode and navigate to next/previous in Player
+    \item \textbf{Bookmarks} - Click on to create Bookmark (See \cref{sssec:UM_bookmarks})
+    \item \textbf{Playback Speed Control}
+    \item \textbf{Volume Control}
+    \item \textbf{Player Toggle} - Toggle the Player popup on/off
+    \item \textbf{Player} - Playist of episodes. Click on episode in player to start it. Click the bin icon to remove an episode. Player will automatically play the next episode once the current one has ended.
+\end{enumerate}
+
+\subsubsection{Bookmarks} \label{sssec:UM_bookmarks}
+
+Bookmarks allow you to create a note which is linked to a timestamp in an episode. To create a bookmark , then fill in the title and description. 
+\begin{enumerate}
+    \item Click the bookmark icon, 4 in \cref{fig:UM_episode_player}, when you are at the timestamp in the episode that you to mark
+    \item Optionally, fill in the title and description in the popup
+    \item Click the "SAVE" button
+\end{enumerate}
+%
+Bookmarks can be viewed in the Bookmarks page as seen in \cref{fig:UM_bookmark}. The numbered labels are described below:
+\begin{enumerate}
+    \item Click "Bookmarks" to navigate to the Bookmarks page
+    \item Click the drop down to show all the bookmarks for a given episode
+    \item Click to play that episode and jump to the saved timestamp
+    \item Click to delete the bookmark
+\end{enumerate}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=16cm]{resources/UM_Bookmark}
+    \caption{UltraCast Bookmark Page}
+    \label{fig:UM_bookmark} 
+\end{figure}
+
+\newpage
+
+\subsubsection{Creator / Listener Mode and Logging Out} \label{sssec:user_modes}
+To logout or swap between creator and listener mode, click on the user icon in the top right corner
+which will display the drop down shown in \cref{fig:UM_user_options}.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=10cm]{resources/UM_CLL}
+    \caption{UltraCast User Options}
+    \label{fig:UM_user_options} 
+\end{figure}
+
+\subsubsection{Creator Mode - Creating Podcasts and Episodes}
+Ensure you are in creator mode as described in \cref{sssec:user_modes}. As per \cref{fig:UM_create} to create
+a podcast or episode:
+\begin{enumerate}
+    \item Click "Upload" on the pages sidebar
+    \item In the podcast series bar, select "New Podcast" if you wish to create a new podcast or select an existing podcast if you wish to add a new episode
+\end{enumerate}
+%
+From this point you will be guided through the creation process.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=16cm]{resources/UM_Create}
+    \caption{UltraCast Create Podcasts and Episodes}
+    \label{fig:UM_create} 
+\end{figure}
+
+\subsubsection{Creator Mode - Updating and Deleting Podcasts and Episodes}
+
+\subsubsection{Creator Mode - Analytics}
+
+\subsubsection{Subscribing}
+
+\subsubsection{Following}
+
+
 \end{document}
 
