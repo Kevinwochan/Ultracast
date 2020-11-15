@@ -39,3 +39,4 @@ algoliasearch==2.4.0
 gunicorn==20.0.4
 snapshottest
 sklearn
+geocoder==1.38.1
