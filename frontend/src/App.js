@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
-  useLocation,
+  useHistory,
 } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import Page from "./common/Page";
@@ -23,8 +23,13 @@ import Subscriptions from "./pages/Subscriptions";
 import Search from "./pages/Search";
 import Following from "./pages/Following";
 import User from "./pages/User";
+import Bookmarks from "./pages/Bookmarks";
 
-function PrivateRoute({ cookies, children, ...rest }) {
+import NewPlayer from "./components/AudioPlayer/NewPlayer";
+import { markAsPlayed } from "./api/mutation";
+
+function PrivateRoute({ children, ...rest }) {
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   return (
     <Route
       {...rest}
@@ -44,171 +49,103 @@ function PrivateRoute({ cookies, children, ...rest }) {
   );
 }
 
+function LoggedInRedirect({ children, ...rest }) {
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        !cookies.token ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/",
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
+  );
+}
+
 export default function App() {
   //Top level state (variables that are stored between pages)
-  const [cookies, setCookie, removeCookie] = useCookies();
-  const [sessionState, setState] = useState({
-    open: true,
-    userID: "",
-    audioList: [],
-    playbackRate: 1,
-    isCreator: true, // TODO change this on sign-in/sign-up
-    creatorView: false,
-    cookies: cookies,
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const history = useHistory();
+  const [audioPlayerControls, setAudioPlayerControls] = useState({
+    addAudio: () => {},
+    playNow: () => {},
   });
-
-  // Update the session state
-  const updateState = (variable, value) => {
-    setState((prevState) => ({
-      ...prevState,
-      [variable]: value,
-    }));
-  };
-
-  const state = [sessionState, updateState];
-
-  function handleCookie(key, value) {
-    // Only downside to a single state object is that we need to setCookie in two places now
-    if (value === null) {
-      removeCookie(key);
-      updateState("cookies", key, null);
-    } else {
-      setCookie(key, value, { path: "/" });
-      updateState("cookies", { ...sessionState.cookies, [key]: value });
-    }
-  }
-
-  // Change the user's view based on the URL
-  const RoleHandler = () => {
-    const location = useLocation();
-    useEffect(() => {
-      if (!sessionState.isCreator) {
-        // Only concerned with users that are creators
-        return;
-      }
-
-      const creatorPath = location.pathname.includes("creators");
-      if (creatorPath && !sessionState.creatorView) {
-        // Change to creator view if they've navigated away from the listener view
-        updateState("creatorView", true);
-      } else if (!creatorPath && sessionState.creatorView) {
-        // Change to listener view if they've navigated away from the creator view
-        updateState("creatorView", false);
-      }
-    }, [location.pathname]);
-
-    return null;
-  };
+  const audioPlayer = useRef(
+    <NewPlayer setAudioPlayerControls={setAudioPlayerControls} />
+  );
 
   return (
     <Router>
-      <RoleHandler />
       <Switch>
         {/* Public Routes */}
-        <Route path="/signin">
-          <Page handleCookie={handleCookie} state={state}>
-            <SignIn handleCookie={handleCookie} />
+        <LoggedInRedirect path="/signin">
+          <Page>
+            <SignIn />
           </Page>
-        </Route>
+        </LoggedInRedirect>
         <Route path="/signup">
-          <Page handleCookie={handleCookie} state={state}>
-            <SignUp handleCookie={handleCookie} />
-          </Page>
+          <LoggedInRedirect>
+            <SignUp />
+          </LoggedInRedirect>
         </Route>
-
         {/* Creator Paths */}
-        <Route path="/creators/upload">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state}>
-              <Upload userToken={sessionState.cookies.token} />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/creators/podcasts">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state}>
-              <Edit userToken={sessionState.cookies.token} />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/creators/podcast/:podcastId">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state}>
-              <EditPodcast userToken={sessionState.cookies.token} />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/creators/analytics">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state}>
+        <PrivateRoute path="/creators">
+          <Page creator>
+            <PrivateRoute path="/creators/upload">
+              <Upload />
+            </PrivateRoute>
+            <PrivateRoute path="/creators/podcasts">
+              <Edit />
+            </PrivateRoute>
+            <PrivateRoute path="/creators/podcast/:podcastId">
+              <EditPodcast />
+            </PrivateRoute>
+            <PrivateRoute path="/creators/analytics">
               <Analytics />
-            </Page>
-          </PrivateRoute>
-        </Route>
-
+            </PrivateRoute>
+          </Page>
+        </PrivateRoute>
         {/* Listener Paths */}
-        <Route path="/podcast/:podcastId">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state} player>
-              <Podcast state={state} />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/history">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state} player>
-              <History state={state} />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/search">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state} player>
-              <Search />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/explore">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state} player>
-              <Explore state={state} />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/author/:id">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state} player>
-              <Author state={state} />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/subscriptions">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state} player>
-              <Subscriptions state={state} />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/following">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state} player>
-              <Following state={state} />
-            </Page>
-          </PrivateRoute>
-        </Route>
-        <Route path="/user/:id">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state} player>
-              <User state={state} />
-            </Page>
-          </PrivateRoute>
-        </Route>
         <Route path="/">
-          <PrivateRoute cookies={cookies}>
-            <Page handleCookie={handleCookie} state={state} player>
-              <Dashboard state={state} />
-            </Page>
-          </PrivateRoute>
+          <Page player={audioPlayer.current}>
+            <Switch>
+              <PrivateRoute path="/podcast/:podcastId">
+                <Podcast audioPlayerControls={audioPlayerControls} />
+              </PrivateRoute>
+              <PrivateRoute path="/history">
+                <History audioPlayerControls={audioPlayerControls} />
+              </PrivateRoute>
+              <PrivateRoute path="/search">
+                <Search />
+              </PrivateRoute>
+              <PrivateRoute path="/author/:id">
+                <Author />
+              </PrivateRoute>
+              <PrivateRoute path="/subscriptions">
+                <Subscriptions />
+              </PrivateRoute>
+              <PrivateRoute path="/following">
+                <Following audioPlayerControls={audioPlayerControls} />
+              </PrivateRoute>
+              <PrivateRoute path="/user/:id">
+                <User />
+              </PrivateRoute>
+              <PrivateRoute path="/bookmarks">
+                <Bookmarks audioPlayerControls={audioPlayerControls} />
+              </PrivateRoute>
+              <PrivateRoute path="/">
+                <Dashboard audioPlayerControls={audioPlayerControls} />
+              </PrivateRoute>
+            </Switch>
+          </Page>
         </Route>
       </Switch>
     </Router>

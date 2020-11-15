@@ -2,16 +2,18 @@ import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import React, { useState } from "react";
-import { subscribe, unsubscribe } from "../api/query";
+import { useCookies } from "react-cookie";
+import { subscribe, unsubscribe } from "../api/mutation";
 
-const SubscribeButton = ({ podcast, sessionState }) => {
+const SubscribeButton = ({ podcast }) => {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const [subscribed, setSubscription] = useState(podcast.subscribed);
   const toggleSubscription = () => {
     if (subscribed) {
       console.log(`unsubscribing to ${podcast.id}`);
-      unsubscribe(podcast.id, sessionState.cookies.token);
+      unsubscribe(podcast.id, cookies.token);
     } else {
-      subscribe(podcast.id, sessionState.cookies.token);
+      subscribe(podcast.id, cookies.token);
       console.log(`subscribing to ${podcast.id}`);
     }
     setSubscription(!subscribed);

@@ -1,4 +1,4 @@
-import configuration from "../api/configuration";
+import config from "../api/config";
 import axios from "axios";
 import { extractFiles } from "extract-files";
 
@@ -15,7 +15,7 @@ const graphql = async (query, variables, token = "", upload = false) => {
     // Otherwise, just make a normal query to the backend
     if (upload) {
       response = await fetch(
-        configuration.BACKEND_ENDPOINT,
+        config.BACKEND_ENDPOINT,
         uploadOptions(
           {
             query: query,
@@ -28,7 +28,7 @@ const graphql = async (query, variables, token = "", upload = false) => {
       response = await response.json();
     } else {
       response = await axios.post(
-        configuration.BACKEND_ENDPOINT,
+        config.BACKEND_ENDPOINT,
         JSON.stringify({
           query: query,
           variables: variables,
@@ -44,6 +44,7 @@ const graphql = async (query, variables, token = "", upload = false) => {
     }
   } catch (error) {
     if (error.response) {
+      console.log(error.response);
       const errors = error.response.data.errors;
       // Show the error
       console.error(
@@ -80,7 +81,7 @@ const graphql = async (query, variables, token = "", upload = false) => {
  */
 function uploadOptions(operation, token) {
   const fetchOptions = {
-    url: configuration.BACKEND_ENDPOINT,
+    url: config.BACKEND_ENDPOINT,
     method: "POST",
     headers: {
       Accept: "application/json",

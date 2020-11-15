@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import Box from "@material-ui/core/Box";
 import { EpisodeSlider, PodcastSlider } from "../components/Podcast";
 import Typography from "@material-ui/core/Typography";
@@ -20,31 +21,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Dashboard({ state }) {
+export default function Dashboard({ audioPlayerControls }) {
   const classes = useStyles();
-  const [sessionState, updateState] = state;
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const [recommended, setRecommended] = useState("loader");
   const [history, setHistory] = useState("loader");
 
   // Need to update recommended and history like this, otherwise it won't work for larger/longer queries
   useEffect(() => {
-    getMyRecommended(sessionState.cookies.token).then((data) => {
+    getMyRecommended(cookies.token).then((data) => {
       setRecommended(data);
     });
-    getMyHistory(sessionState.cookies.token,).then((data) => {
+    getMyHistory(cookies.token).then((data) => {
       setHistory(data);
     });
-  }, [sessionState]);
+  }, []);
 
   return (
-    <Container
-      className={classes.cardGrid}
-      maxWidth={sessionState.open ? "md" : "lg"}
-    >
-      <PodcastSliderTitle title="Recommended Podcasts" url="/" />
-      <PodcastSlider state={state} podcasts={recommended} />
+    <Container className={classes.cardGrid}>
+      <PodcastSliderTitle title="Recommended Podcasts" url={null} />
+      <PodcastSlider podcasts={recommended} />
       <PodcastSliderTitle title="Recently Listened" url="/history" />
-      <EpisodeSlider state={state} episodes={history} />
+      <EpisodeSlider
+        audioPlayerControls={audioPlayerControls}
+        episodes={history}
+      />
     </Container>
   );
 }
@@ -56,9 +57,13 @@ const PodcastSliderTitle = ({ title, url }) => {
       <Typography gutterBottom variant="h5">
         <b>{title}</b>
       </Typography>
-      <Typography gutterBottom variant="subtitle1">
-        <Link to={url}>See all</Link>
-      </Typography>
+      {url ? (
+        <Typography gutterBottom variant="subtitle1">
+          <Link to={url}>See all</Link>
+        </Typography>
+      ) : (
+        ""
+      )}
     </Box>
   );
 };

@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { useCookies } from "react-cookie";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { getMyHistory } from "../api/query";
 import EpisodePlaylist from "../components/EpisodeList";
 
-const useStyles = makeStyles((theme) => ({
-  cardGrid: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-  },
-}));
-
-export default function History({ state }) {
-  const [sessionState, updateState] = state;
-  const classes = useStyles();
+export default function History({ audioPlayerControls }) {
+  const [cookies] = useCookies(["token"]);
 
   const [history, setHistory] = useState("loader");
   useEffect(() => {
-    getMyHistory(sessionState.cookies.token).then((data) => {
+    getMyHistory(cookies.token).then((data) => {
       setHistory(data);
     });
-  }, [sessionState]);
+  });
 
   return (
     <>
@@ -30,7 +22,10 @@ export default function History({ state }) {
           <b>Recently Listened</b>
         </Typography>
       </Box>
-      <EpisodePlaylist episodes={history} state={state} />
+      <EpisodePlaylist
+        episodes={history}
+        audioPlayerControls={audioPlayerControls}
+      />
     </>
   );
 }

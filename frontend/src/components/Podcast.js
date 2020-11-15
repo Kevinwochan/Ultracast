@@ -6,8 +6,8 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { uid } from "react-uid";
-import { addAudio } from "./Player";
 import ultraCastTheme from "../theme";
+import { toHHMMSS } from "../common/utils";
 
 const playlistStyles = makeStyles((theme) => ({
   card: {
@@ -87,9 +87,7 @@ export function Playlist({ episodes, state, variant = "episode" }) {
                       </Grid>
                       <Grid item lg={4}>
                         <Typography gutterBottom variant="subtitle1">
-                          {variant === "podcast"
-                            ? `${episode.length} episodes`
-                            : `${episode.length} minutes`}
+                          {toHHMMSS(episode.length)}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -192,7 +190,7 @@ const sliderStyles = makeStyles((theme) => ({
   },
 }));
 
-export function EpisodeSlider({ state, episodes }) {
+export function EpisodeSlider({ audioPlayerControls, episodes }) {
   const classes = sliderStyles();
 
   // Waiting for DB query - just show loader for now
@@ -213,7 +211,7 @@ export function EpisodeSlider({ state, episodes }) {
     <Grid container spacing={4} className={classes.podcastContainer}>
       {episodes.map((episode) => (
         <Grid item key={uid(episode)} xs={2} className={classes.podcast}>
-          <PodcastCard state={state} episode={episode} />
+          <PodcastCard audioPlayerControls={audioPlayerControls} episode={episode} />
         </Grid>
       ))}
     </Grid>
@@ -232,17 +230,21 @@ const podcastCardStyles = makeStyles((theme) => ({
   },
 }));
 
-export function PodcastCard({ state, episode }) {
+export function PodcastCard({ audioPlayerControls, episode }) {
   const classes = podcastCardStyles();
 
   const addEpisodeToPlaylist = () => {
-    addAudio(state, episode)
-  }
+    audioPlayerControls.addAudio(episode);
+  };
   return (
     <>
-      <PodcastCover episode={episode} state={state} />
+      <PodcastCover episode={episode} audioPlayerControls={audioPlayerControls} />
       <CardContent className={classes.podcastDetailsContainer}>
-        <Typography variant="subtitle2" className={classes.podcastDetails} onClick={addEpisodeToPlaylist}>
+        <Typography
+          variant="subtitle2"
+          className={classes.podcastDetails}
+          onClick={addEpisodeToPlaylist}
+        >
           <b>{episode.title}</b>
         </Typography>
         <Link to={`/author/${episode.podcast.author.id}`}>
@@ -277,7 +279,7 @@ const coverStyles = makeStyles((theme) => ({
 }));
 
 // Image for the podcast
-function PodcastCover({ episode, state, creator }) {
+function PodcastCover({ episode, audioPlayerControls, creator }) {
   const classes = coverStyles();
   const [play, updatePlay] = useState(false);
 
@@ -289,8 +291,8 @@ function PodcastCover({ episode, state, creator }) {
     updatePlay(false);
   }
 
-  const updateAudioList = () => {
-    addAudio(state, episode);
+  const addEpisodeToPlaylist = () => {
+    audioPlayerControls.addAudio(episode);
   };
 
   return (
@@ -298,7 +300,7 @@ function PodcastCover({ episode, state, creator }) {
       className={creator ? classes.editItem : classes.podcastItem}
       onMouseEnter={creator ? null : showPlay}
       onMouseLeave={creator ? null : hidePlay}
-      onClick={creator ? null : updateAudioList}
+      onClick={creator ? null : addEpisodeToPlaylist}
     >
       <img
         src={episode.podcast.image}
@@ -389,6 +391,12 @@ const SearchResult = ({ podcast }) => {
         <Link to={`/podcast/${podcast.podcast.id}`}>
           <Typography variant="subtitle2" className={classes.podcastDetails}>
             <b>{podcast.podcast.title}</b>
+          </Typography>
+          <Typography variant="body2" className={classes.podcastDetails}>
+            <b>
+              {podcast.podcast.subscribers} subscriber
+              {podcast.podcast.subscribers === 1 ? "" : "s"}
+            </b>
           </Typography>
         </Link>
         <Link to={`/author/${podcast.author.id}`}>

@@ -20,13 +20,13 @@ ALGOLIA_ID = "DLUH4B7HCZ"
 Fields that will be forwarded to algolia
 Note you can use __ to go into embedded doc's
 '''
-PODCAST_METADATA_FILEDS = ["description", "keywords", "name", "publish_date", "episodes__description", "cover_url",
+PODCAST_METADATA_FILEDS = ["description", "keywords", "name", "publish_date", "episodes__description", "cover_url", "subscribers", "author",
         "episodes__keywords", "episodes__name", "episodes__publish_date"]
 
 USER_FIELDS = ["name", "published_podcasts"]
 
 # Batch uploading to algolia
-BATCH_SIZE = 2
+BATCH_SIZE = 1
 
 class SearchEngine:
     '''
@@ -35,12 +35,12 @@ class SearchEngine:
     Saves modified documents into bounded queue
     Then in another thread, when the queue is larger than BATCH_SIZE, triggers an upload
     '''
-    def __init__(self):
-        self.algolia_client = SearchClient.create(ALGOLIA_ID, API_KEY)
+    def __init__(self, config):
+        self.algolia_client = SearchClient.create(config["ALGOLIA_ID"], config["ALGOLIA_API_KEY"])
         self.podcast_metadata_to_upload = queue.Queue() # thread safe queue
         self.is_shutdown = threading.Event()
         self.should_upload = threading.Event()
-        self.upload_thread = threading.Thread(target=self.upload_thread_cb)
+        self.upload_thread = threading.Thread(target=self.upload_thread_cb, daemon=True)
         self.upload_thread.start()
 
         # Register myself with mongo events
@@ -50,6 +50,7 @@ class SearchEngine:
                 sender=models.PodcastMetadata)
 
     def podcast_metadata_save_cb(self, sender, document, created=None):
+        print("cb podcast recieved")
         podcast_metadata = document
         assert(sender == models.PodcastMetadata)
         self.podcast_metadata_to_upload.put(podcast_metadata.id)
@@ -57,6 +58,7 @@ class SearchEngine:
             self.should_upload.set()
 
     def podcast_episode_metadata_save_cb(self, sender, document, created=None):
+        print("cb episode recieved")
         assert(sender == models.PodcastEpisodeMetadata)
         podcast_episode_metadata = document
         self.podcast_metadata_to_upload.put(podcast_episode_metadata.podcast_metadata.id)
@@ -87,15 +89,17 @@ class SearchEngine:
 
                 print("Uploading {} documents to algolia".format(len(to_upload)))
                 logging.info("Uploading {} documents to algolia".format(len(to_upload)))
-                self.upload_to_algolia("podcasts", 
+                self.upload_podcasts_to_algolia("podcasts", 
                         models.PodcastMetadata.objects(id__in=to_upload).only(*PODCAST_METADATA_FILEDS), 
                         query.PodcastMetadata)
 
-    def upload_podcasts(self):
-        return self.upload_to_algolia("podcasts", 
+    def upload_all_podcasts(self):
+        return self.upload_podcasts_to_algolia("podcasts", 
             models.PodcastMetadata.objects.only(*PODCAST_METADATA_FILEDS), query.PodcastMetadata)
 
-    def upload_to_algolia(self, index_name, mongo_objects, query_class):
+    def upload_podcasts_to_algolia(self, index_name, mongo_objects, query_class):
+        index_name = "podcasts"
+        query_class = query.PodcastMetadata
         index = self.algolia_client.init_index(index_name)
         records = []
         
@@ -104,14 +108,23 @@ class SearchEngine:
             # Replace mongo ID with agolia ID
             o_dict["objectID"] = schema.get_relay_id(query_class, o_dict["_id"])
             o_dict.pop("_id")
+
+            # Add number of subscribers
+            o_dict["numSubscribers"] = len(o.subscribers)
+            o_dict.pop("subscribers")
+
+            # Add author
+            author_id = o_dict.pop("author")
+            o_dict["authorName"] = models.User.objects(id=author_id).only("name").get().name
+
             records.append(o_dict)
 
             if (len(records) % BATCH_SIZE == 0):
                 # Trigger an upload
-                logging.info("index: {} uploading {} documents".format(index_name, len(records)))
+                print("index: {} uploading {} documents".format(index_name, len(records)))
                 index.save_objects(records)
                 records = []
 
-        logging.info("index: {} uploading {} documents".format(index_name, len(records)))
+        print("index: {} uploading {} documents".format(index_name, len(records)))
         index.save_objects(records)
 

@@ -6,10 +6,10 @@ port = process.argv[2] || 4000;
 
 app.use(express.static(path.join(__dirname, 'build')));
 
-app.get('/', function (req, res) {
+app.get('*', function (req, res) {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.listen(port);
 
-console.log(`Serving on port ${port}`);
+console.log(`Serving frontend at http://localhost:${port}/`);

@@ -16,10 +16,21 @@ This script will:
     \item Create a python venv for the backend
     \item Install all required python packages in the venv
     \item Install all npm packages that are required for the frontend
-    \item Launch the backend webserver
+    \item Launch the backend webserver (if the --local flag is used)
     \item Launch the frontend
     \item Open ultracast in your browser (this may not work on Vlab)
 \end{itemize}
+
+UltraCast can be run using either a local or remote GraphQL endpoint.
+The remote GraphQL endpoint is preffered due to lower latency (it must make successive MongoDB database operations which can be slow if network latency is high).
+It is highly recommended to run UltraCast in remote mode on UNSW CSE machines as the port used for the GraphQL endpoint is often already in use.
+
+To run UltraCast using a local backend webserver:
+
+\begin{verbatim}
+    # cd to the root directory of the git repo
+    ./start.sh --local
+\end{verbatim}
 
 Once the webserver is installed and running you will see a message like:
 
@@ -28,7 +39,6 @@ Once the webserver is installed and running you will see a message like:
 \end{verbatim}
 
 You can then navigate to UltraCast in a webbrowser at \verb|localhost:4000|
-
 
 \subsection{Configuration}
 
@@ -70,6 +80,14 @@ The frontend can be configured by editing the file \verb|frontend/src/api/config
     \item The backend GraphQL endpoint to use
     \item Algolia API key and user
 \end{itemize}
+
+\subsection{Logging}
+
+When \verb|./start.sh| or \verb|backend/start_production.sh| are used to launch the backend, by default backend logs will be recorded to \verb|backend/logs.txt|.
+This behaviour can be modified by changing the err-log option in \verb|backend/backend_app.py|.
+When the backend is run in development mode, logs are printed to the terminal.
+
+Frontend logs can be accessed via the webbrowser console.
 
 \newpage
 

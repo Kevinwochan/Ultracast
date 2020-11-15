@@ -1,3 +1,4 @@
+import { useCookies } from "react-cookie";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -38,12 +39,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Edit({ userToken }) {
+export default function Edit() {
+  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const classes = useStyles();
   const [podcasts, setPodcasts] = useState("loader");
 
   useEffect(() => {
-    getUserPodcastsInfo(userToken).then((data) => {
+    getUserPodcastsInfo(cookies.token).then((data) => {
       setPodcasts(data);
     });
   }, []);
@@ -66,7 +68,7 @@ export default function Edit({ userToken }) {
         </Grid>
       </Grid>
       {/* List of podcasts */}
-      <PodcastPlaylist podcasts={podcasts} state={[null, null]} creator />
+      <PodcastPlaylist podcasts={podcasts} creator />
     </>
   );
 }
