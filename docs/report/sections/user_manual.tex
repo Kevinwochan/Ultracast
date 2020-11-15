@@ -16,10 +16,20 @@ This script will:
     \item Create a python venv for the backend
     \item Install all required python packages in the venv
     \item Install all npm packages that are required for the frontend
-    \item Launch the backend webserver
+    \item Launch the backend webserver (if the --local flag is used)
     \item Launch the frontend
     \item Open ultracast in your browser (this may not work on Vlab)
 \end{itemize}
+
+UltraCast can be run using either a local or remote GraphQL endpoint.
+The remote GraphQL endpoint is preffered due to lower latency (it must make successive MongoDB database operations which can be slow if network latency is high).
+
+To run UltraCast using a local backend webserver:
+
+\begin{verbatim}
+    # cd to the root directory of the git repo
+    ./start.sh --local
+\end{verbatim}
 
 Once the webserver is installed and running you will see a message like:
 
@@ -28,7 +38,6 @@ Once the webserver is installed and running you will see a message like:
 \end{verbatim}
 
 You can then navigate to UltraCast in a webbrowser at \verb|localhost:4000|
-
 
 \subsection{Configuration}
 
