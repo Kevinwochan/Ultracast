@@ -51,7 +51,7 @@ which is powered by a ReactJS application. ReactJS was selected as the framework
 frontend application primarly due to it being a mature and world leading framework\cite{react} as well
 as due to previous experience with the framework.\\
 
-Flask, a python based micro-framework\cite{flask}, was used for the web-server, due ease of use which allowed
+Flask, a python based micro-framework\cite{flask}, was used for the web-server, due to its ease of use which allowed
 for rapid development. The React application communicates with Flask web-server through a GraphQL API: 
 a scalable alternative to the popular REST API\cite{graphql}. The Flask web-server also contains a
 recommendation service which drives recommendation functionality described in 
@@ -59,7 +59,7 @@ recommendation service which drives recommendation functionality described in
 (episode audio and podcast covers) to a static file storage server while
 the urls for these static files along with all other data is stored in MongoDB. MongoDB, a NoSQL database, 
 was selected to store metadata due to its scalability\cite{MongoDB2020}. MongoDB could not be hosted on
-CSE so was hosted on AWS EC2 instead, see \ref{tab:third_party} for reason. As a result the Flask web-server
+CSE so was hosted on AWS EC2 instead, see Table \ref{tab:third_party} for reason. As a result the Flask web-server
 needed to be on the the remote server as well to improve performance as described in \ref{sssec:backend_challenges}.
 Algolia, a search engine service\cite{algolia}, was used to maximise search performance and reduce development time.
 
@@ -90,8 +90,8 @@ of components which were notable and impacted functionality.
     \endhead
     %
     AWS S3        & Cloud: Static File Storage                                                      & \begin{tabular}[c]{@{}l@{}}Exceeded CSE server storage limits. \\ \textgreater 80GB of test data\end{tabular}        \\ \hline
-    AWS EC2       & Cloud: Remote Server                                                            & \begin{tabular}[c]{@{}l@{}}MongoDB not supported on Debian 6 \\ (Linux environment on the VLab machine)\end{tabular} \\ \hline
-    Algolia       & SaaS: Search Engine                                                             & Avoid building search engine from scratch                                                                            \\ \hline
+    AWS EC2       & Cloud: Remote Server                                                            & \begin{tabular}[c]{@{}l@{}l@{}}High scalability \\ MongoDB not supported on Debian 6 \\ (Linux environment on the VLab machine)\end{tabular} \\ \hline
+    Algolia       & SaaS: Search Engine                                                             & \begin{tabular}[c]{@{}l@{}}Excellent search performance \\ Avoids building search engine from scratch \end{tabular}                                                                            \\ \hline
     React         & Frontend Framework                                                              & Bootstrap and provide basic functionality                                                                            \\ \hline
     Flask         & Micro Framework                                                                 & Bootstrap and provide basic functionality                                                                            \\ \hline
     Graphene      & Python GraphQL Library                                                          & Standard library                                                                                                     \\ \hline
