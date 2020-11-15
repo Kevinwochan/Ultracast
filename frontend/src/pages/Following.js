@@ -7,7 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
-import { makeStyles } from "@material-ui/core";
+import { CircularProgress, makeStyles } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import { getMyFollowing } from "../api/query";
 import UserSearch from "../components/UserSearch";
@@ -32,22 +32,76 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Following({audioPlayerControls}) {
-  const [cookies] = useCookies(['token']);
-  const [users, setFollowing] = useState([]);
+const User = ({ user, audioPlayerControls }) => {
   const classes = useStyles();
-
-  useEffect(() => {
-    getMyFollowing(cookies.token).then((users) => {
-      setFollowing(users);
-    });
-  },[]);
 
   const playNow = (episode) => {
     return () => {
       audioPlayerControls.addAudio(episode);
     };
   };
+
+  return (
+    <Grid item xs={6}>
+      <Grid
+        container
+        spacing={1}
+        alignItems="center"
+        wrap="nowrap"
+        className={classes.user}
+      >
+        <Grid item>
+          <Link to={`/user/${user.id}`}>
+            <Avatar className={classes.avatar}>{user.name.substr(0, 1)}</Avatar>
+          </Link>
+        </Grid>
+        <Grid item>
+          <Link to={`/user/${user.id}`}>
+            <Typography variant="subtitle1">{user.name}</Typography>
+          </Link>
+          {user.episode ? (
+            <Tooltip title="add to playlist">
+              <Typography
+                variant="subtitle2"
+                onClick={playNow(user.episode)}
+                className={classes.listenTo}
+              >{`Listening to ${user.episode.title}`}</Typography>
+            </Tooltip>
+          ) : (
+            <Typography
+              variant="subtitle2"
+              className={classes.listenTo}
+            >{`hasn't listened to a podcast yet`}</Typography>
+          )}
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+};
+
+export default function Following({ audioPlayerControls }) {
+  const [cookies] = useCookies(["token"]);
+  const [users, setFollowing] = useState(null);
+
+  useEffect(() => {
+    getMyFollowing(cookies.token).then((users) => {
+      setFollowing(users);
+    });
+  }, []);
+
+  if (users === null) {
+    return (
+      <Box m={5}>
+        <UserSearch />
+        <Typography gutterBottom paragraph variant="h5">
+          <b>Following</b>
+        </Typography>
+        <Grid container spacing={3}>
+          <CircularProgress />
+        </Grid>
+      </Box>
+    );
+  }
 
   return users.length > 0 ? (
     <>
@@ -58,42 +112,11 @@ export default function Following({audioPlayerControls}) {
         </Typography>
         <Grid container spacing={3}>
           {users.map((user) => (
-            <Grid item xs={6} key={uid(user)}>
-              <Grid
-                container
-                spacing={1}
-                alignItems="center"
-                wrap="nowrap"
-                className={classes.user}
-              >
-                <Grid item>
-                  <Link to={`/user/${user.id}`}>
-                    <Avatar className={classes.avatar}>
-                      {user.name.substr(0, 1)}
-                    </Avatar>
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link to={`/user/${user.id}`}>
-                    <Typography variant="subtitle1">{user.name}</Typography>
-                  </Link>
-                  {user.episode ? (
-                    <Tooltip title="add to playlist">
-                      <Typography
-                        variant="subtitle2"
-                        onClick={playNow(user.episode)}
-                        className={classes.listenTo}
-                      >{`Listening to ${user.episode.title}`}</Typography>
-                    </Tooltip>
-                  ) : (
-                    <Typography
-                      variant="subtitle2"
-                      className={classes.listenTo}
-                    >{`hasn't listened to a podcast yet`}</Typography>
-                  )}
-                </Grid>
-              </Grid>
-            </Grid>
+            <User
+              user={user}
+              key={uid(user)}
+              audioPlayerControls={audioPlayerControls}
+            />
           ))}
         </Grid>
       </Box>

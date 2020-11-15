@@ -70,7 +70,6 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.secondary.main,
   },
   playbackRateSelector: {
-    transform: "translateY(-7px)",
   },
 }));
 
