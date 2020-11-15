@@ -80,7 +80,16 @@ The frontend can be configured by editing the file \verb|frontend/src/api/config
     \item Algolia API key and user
 \end{itemize}
 
+\subsection{Logging}
+
+When \verb|./start.sh| or \verb|backend/start_production.sh| are used to launch the backend, by default backend logs will be recorded to \verb|backend/logs.txt|.
+This behaviour can be modified by changing the err-log option in \verb|backend/backend_app.py|.
+When the backend is run in development mode, logs are printed to the terminal.
+
+Frontend logs can be accessed via the webbrowser console.
+
 \subsection{Site Usage and Functionality Guide}
+
 % Keep in mind this section is worth 50%
 
 % Extra subsection per story / functionality? Might group some together
