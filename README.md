@@ -21,10 +21,11 @@ The script `start.sh` will:
 Once the setup is completed and UltraCast is launched you will see a message like:
 
 ```
-Serving on port 4000
+Serving frontend at http://localhost:43689/
 ```
 
-You can then navigate in a webbrowser to `localhost:4000` to use UltraCast
+To avoid failing to launch because a port is already in use, the port which is used is decided at runtime.
+You can then navigate in a webbrowser to the link printed to the terminal to use UltraCast
 
 ## Advanced Usage
 
@@ -77,12 +78,10 @@ Here you can set options including:
     * The backend GraphQL endpoint to use
     * Algolia API key and user
 
+<!---
 
 ## Credentials:
 ### algolia
 Username: oli.richards.junk1@gmail.com
 Password: i9V5pSmHMzf7S2g
-
-## Challenges
-
-**Include any challenges here - 25% of the final mark goes towards the challenges we faced**
+-->
