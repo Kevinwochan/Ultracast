@@ -14,10 +14,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function User({ state }) {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+export default function User() {
+  const [cookies] = useCookies(["token"]);
   const { id } = useParams();
-  const [sessionState, ] = state;
   const [user, setUser] = useState("loader");
   const [history, setHistory] = useState("loader");
 
@@ -31,7 +30,9 @@ export default function User({ state }) {
         setUser(user);
         // check if episode has been watched
         getMyHistory(cookies.token).then((watchedEpisodes) => {
-          const watchedEpisodeIds = watchedEpisodes.map((episode) => episode.id);
+          const watchedEpisodeIds = watchedEpisodes.map(
+            (episode) => episode.id
+          );
           history.forEach((episode) => {
             episode.watched = watchedEpisodeIds.includes(episode.id);
           });
@@ -39,7 +40,7 @@ export default function User({ state }) {
         });
       });
     });
-  }, [id, sessionState]);
+  }, [id]);
 
   const classes = useStyles();
 
@@ -52,12 +53,10 @@ export default function User({ state }) {
           </Typography>
         </Grid>
         <Grid item xs>
-          {user.following !== undefined && (
-            <FollowButton state={state} user={user} />
-          )}
+          {user.following !== undefined && <FollowButton user={user} />}
         </Grid>
       </Grid>
-      <EpisodePlaylist episodes={history} state={state} />
+      <EpisodePlaylist episodes={history} />
     </>
   );
 }
