@@ -247,7 +247,7 @@ const Player = ({ setAudioPlayerControls }) => {
   };
 
   const prevButtonHandler = () => {
-    playNow.current(state.playlist[hasNext()]);
+    playNow.current(state.playlist[hasPrev()]);
   };
 
   const nextButtonHandler = () => {
