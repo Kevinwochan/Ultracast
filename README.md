@@ -28,6 +28,17 @@ You can then navigate in a webbrowser to `localhost:4000` to use UltraCast
 
 ## Advanced Usage
 
+### Local Backend Instance
+
+You can configure the frontend at runtime to use a local backend webserver for GraphQL queries instead of the remote webserver.
+To do this:
+
+```
+./start.sh --local
+```
+
+### Alternative Backend Run Methods
+
 There are two scripts which can be used to run the site's backend:
 
     * `backend/start.sh` runs the backend in a development environment (debugging enable and with a development WSGI webserver)
