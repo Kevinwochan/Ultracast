@@ -33,7 +33,8 @@ class BackendApp(gunicorn.app.base.BaseApplication):
         return app
 
     def on_exit(self, server):
-        self.search_engine.shutdown()
+        if (self.search_engine is not None):
+            self.search_engine.shutdown()
 
 class Server:
     def __init__(self):

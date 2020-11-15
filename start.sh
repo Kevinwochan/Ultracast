@@ -2,9 +2,8 @@
 
 start_backend() {
     cd backend
-    source env/bin/activate
-    cd webserver
-    flask run
+    ./setup.sh
+    ./start_production.sh
 }
 
 start_frontend() {
