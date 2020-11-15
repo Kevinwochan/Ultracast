@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
+import { useCookies } from "react-cookie";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
@@ -10,12 +10,13 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+import Grow from "@material-ui/core/Grow";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Copyright from "../components/Copyright";
-import axios from "axios";
-import configuration from "../api/configuration";
 import { useHistory } from "react-router-dom";
-import Page from "../common/Page";
 import ucTheme from "../theme";
+import Alert from "@material-ui/lab/Alert";
+import { register } from "../api/mutation";
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -37,47 +38,65 @@ const useStyles = makeStyles(() => ({
   },
   submit: {
     margin: ucTheme.spacing(3, 0, 2),
+    minHeight: 36
+  },
+  buttonProgress: {
+    color: "#4caf50",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -12,
+    marginLeft: -12,
   },
 }));
 
-export default function SignUp({ handleCookie }) {
+export default function SignUp() {
   const classes = useStyles();
-
+  const [, setCookie, ] = useCookies(['token']);
   const emailRef = React.useRef();
   const passwordRef = React.useRef();
+  const nameRef = React.useRef();
   const history = useHistory();
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
-    e.preventDefault(); /*
-    axios
-      .post(
-        configuration.BACKEND_ENDPOINT,
-        JSON.stringify({
-          query:
-            "mutation($email: String!, $password: String!) {createUser(input: {email: $email, password: $password}) {success}}",
-          variables: {
-            email: `${emailRef.current.value}`,
-            password: `${passwordRef.current.value}`,
-          },
-        }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        console.log(response.data.data.createUser.success);
-        if (response.data.data.createUser.success){
-          handleCookie("loggedin", true);
-          history.push("/");
-        }
-      })
-      .catch((err) => {console.log(err)});*/
-    handleCookie("loggedin", true);
-    history.push("/in");
+    e.preventDefault();
+    if (!validate()) {
+      return;
+    }
+    setLoading(true);
+    register(
+      nameRef.current.value,
+      emailRef.current.value,
+      passwordRef.current.value
+    ).then((data) => {
+      setLoading(false);
+      if (data.success) {
+        setCookie("token", data.token);
+        history.push("/");
+      } else {
+        setMessage(data.message);
+      }
+    });
+  };
+
+  const validate = (e) => {
+    console.log("validating");
+    if (!emailRef.current.value.includes("@")) {
+      setMessage("Invalid Email Address");
+      return false;
+    }
+    if (
+      emailRef.current.value.charAt(emailRef.current.value.length - 4) !==
+        "." &&
+      emailRef.current.value.charAt(emailRef.current.value.length - 3) !== "."
+    ) {
+      setMessage("Invalid Email Address");
+      return false;
+    }
+    setMessage("");
+    return true;
   };
 
   return (
@@ -91,6 +110,27 @@ export default function SignUp({ handleCookie }) {
         </Typography>
         <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <Grid container spacing={2}>
+            <Grow
+              in={message !== ""}
+              style={{ transformOrigin: "0 0 0" }}
+              {...(message !== "" ? { timeout: 1000 } : {})}
+            >
+              <Grid item xs={12}>
+                {message && <Alert severity="error">{message}</Alert>}
+              </Grid>
+            </Grow>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="name"
+                label="Name"
+                name="name"
+                autoComplete="given-name"
+                inputRef={nameRef}
+              />
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -101,6 +141,7 @@ export default function SignUp({ handleCookie }) {
                 name="email"
                 autoComplete="email"
                 inputRef={emailRef}
+                onBlur={validate}
               />
             </Grid>
             <Grid item xs={12}>
@@ -123,8 +164,16 @@ export default function SignUp({ handleCookie }) {
             variant="contained"
             color="primary"
             className={classes.submit}
+            disabled={loading}
           >
-            Sign Up
+            {loading ? (
+                  <CircularProgress
+                    size={24}
+                    className={classes.buttonProgress}
+                  />
+                ) : (
+                  "SIGN UP"
+                )}
           </Button>
           <Grid container justify="flex-end">
             <Grid item>

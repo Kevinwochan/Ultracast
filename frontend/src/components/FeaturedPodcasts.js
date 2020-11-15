@@ -9,7 +9,6 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Hidden from "@material-ui/core/Hidden";
-import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles({
   link: {

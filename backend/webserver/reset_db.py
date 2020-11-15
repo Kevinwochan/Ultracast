@@ -1,18 +1,22 @@
-from . import db
-from . import models
+from webserver import db
+from webserver import models
+from webserver import app
 
 import mongoengine
 import mongoengine.connection
 
 def drop_collections():
-    models.PodcastEpisode.drop_collection()
+    models.PodcastEpisodeMetadata.drop_collection()
     models.PodcastMetadata.drop_collection()
     models.User.drop_collection()
-    models.PodcastEpisode.drop_collection()
+    models.Stream.drop_collection()
 
 
 if __name__ == "__main__":
-    print("Dropping *ALL* collections. This will delete the entire DB!!!!")
+    config = app.get_config()
+    db.connect_mongo(config)
+    db = mongoengine.get_db()
+    print("Dropping *ALL* collections. This will delete the entire DB {}!!!!".format(db.name))
     word = input("Type 'yes' to do this (You can only blame yourself now :)")
     if (word == "yes"):
         print("Dropping collections...")

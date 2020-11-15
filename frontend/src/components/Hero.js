@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Hero({post}) {
+export default function Hero({ post }) {
   const classes = useStyles();
 
   return (
@@ -49,6 +49,9 @@ export default function Hero({post}) {
       {/* Increase the priority of the hero background image */}
       {
         <img
+          onError={(e) => {
+            e.target.src = `/branding/square.svg`;
+          }}
           style={{ display: "none" }}
           src={post.image}
           alt={post.imageText}
@@ -69,11 +72,7 @@ export default function Hero({post}) {
             <Typography variant="h5" color="inherit" paragraph>
               {post.description}
             </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              href={post.page}
-            >
+            <Button variant="contained" color="primary" href={post.page}>
               {post.linkText}
             </Button>
           </div>

@@ -11,7 +11,56 @@ Week 1
 
 During this week, we met as a team and decided our group name, the project we would work on (ultraCast), and assigned a scrum master. We discussed our interpretation of certain parts of the project spec - particularly how recommendations to the end user would work, and how that could be implemented. We plan on asking questions about this at the tutorial next week. I set up a when2meet link to help the team to find regular times to meet throughout the week, and we settled on Tuesday 8am, Wednesday 6pm (optional) and Thursday 3pm.
 
-In the coming week, we plan on each reading the project spec and assessment summary more closely, defining all of the user stories, and making a start on other parts of the project proposal. These other parts will decided our Tuesday meeting in Week 2, once we have all read the spec more closely.
+In the coming week, we plan on each reading the project spec and assessment summary more closely, defining all of the user stories, and making a start on other parts of the project proposal. These other parts will be decided in our Tuesday meeting in Week 2, once we have all read the spec more closely.
 
 
 Week 2
+
+This week I read the assignment guidelines and ultraCast spec. We all met at Dan's house to discuss our understanding of the overall assessment guidelines and specifically the ultraCast project spec. We came up with a basic model of how we would structure our solution, and assigned roles to each of the group members for working on the project proposal (I was assigned to background.)
+
+
+Week 3
+
+This week I wrote the background for the project proposal. This involved researching existing systems, testing their functionality and documenting their drawbacks. Next week, we will begin developing our solution as we look forward to the first progressive demo. I will mainly be learning the APIs that we have chosen for the development of the backend (I have been assigned to the backend), as I have no experience with any of them.
+
+
+Week 4
+
+This week I began to familiarise myself with the overall workings of each of our APIs - Mongo, GraphQL and Flask. I asked one of my team members, Oli, to walk me through the code he had already begun to write using these libraries and show me how they interacted with each other. With a rudimentary understanding of how these systems work, I will start thinking about the big picture of how the recommendation system (my primary responsibilty) will work next week.
+
+
+Week 5
+
+Oli found us an impressive podcast dataset this week, which meant that I could look through it and consider what information I had available to use when writing the recommendation system. I decided that I would start by using categories and subcategories for podcasts, and keywords for episodes. I passed this information onto the rest of the backend team to make sure that this information was stored in our database with all of the podcasts and their episodes. Next week, I will start looking at recommendation APIs already available and develop a query that the frontend can use to call my function.
+
+
+Week 6
+
+This week I researched recommendation methods, and decided on using a content-based recommendation system as we will not have enough users for a collaborative approach. Since we are already using the Algolia API for the frontend search interface, I looked at their website to see if they had anything that could be purposed into a recommender. Unfortunately their focus is entirely on search engines. I then started writing a hook that would allow the frontend to query my recommendation function - a very arduous task due to extremely sparse documentation.
+
+Next week I will finish the query hook and start the recommendation function.
+
+
+Week 7
+
+This week I finished the query hook - after writing something that was close to working I called Oli to confirm if I was on the right track. He pointed out that I could drastically reduce the arguments that the frontend would have to supply to my query if I used the JWT token for a logged in user (which we can assume exists, because it doesn't make much sense to recommend podcasts to a guest.) After implementing this advice, I started the recommendation function by printing out the shape of the data that was being passed into the function to ensure that it was working. Next week I hope to have a working prototype of the recommendation function complete, to be refined in week 9.
+
+
+Week 8
+
+ - Got the recommendation function actually working, sans search terms
+
+
+Week 9
+
+a
+
+
+Week 10
+
+a
+
+
+Week 11
+
+a

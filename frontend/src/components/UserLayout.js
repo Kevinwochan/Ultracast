@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
+import { useCookies } from "react-cookie";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
@@ -19,14 +20,18 @@ import Menu from "@material-ui/core/Menu";
 import Tooltip from "@material-ui/core/Tooltip";
 import HomeIcon from "@material-ui/icons/Home";
 import SearchIcon from "@material-ui/icons/Search";
-import ExploreIcon from "@material-ui/icons/Explore";
 import PublishIcon from "@material-ui/icons/Publish";
-import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
+import AlarmIcon from "@material-ui/icons/Alarm";
 import HistoryIcon from "@material-ui/icons/History";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
-import { Link, useHistory } from "react-router-dom";
+import PeopleIcon from "@material-ui/icons/People";
+import LibraryMusicIcon from "@material-ui/icons/LibraryMusic";
+import BookmarkIcon from "@material-ui/icons/Bookmark";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import ucTheme from "../theme";
 import Logo from "./Logo";
+import Notifications from "./Notifications";
+import { getUser } from "../api/query";
 
 const drawerWidth = 240;
 
@@ -120,18 +125,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserLayout({ handleCookie, state, children }) {
+export default function UserLayout({ children, creator }) {
   const classes = useStyles();
-  const [sessionState, updateState] = state;
-  const open = sessionState.open;
+  const [open, setOpen] = useState(true);
 
   const handleDrawerOpen = () => {
-    updateState("open", true);
+    setOpen(true);
   };
 
   const handleDrawerClose = () => {
-    updateState("open", false);
+    setOpen(false);
   };
+
+  const SideBar = creator
+    ? () => <CreatorSideBar classes={classes} open={open} />
+    : () => <ListenerSideBar classes={classes} open={open} />;
 
   return (
     <div className={classes.root}>
@@ -143,7 +151,8 @@ export default function UserLayout({ handleCookie, state, children }) {
       >
         <Toolbar className={classes.toolbar}>
           <Logo />
-          <AccountOptions classes={classes} handleCookie={handleCookie} />
+          <Notifications />
+          <AccountOptions creator={creator} />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -159,38 +168,42 @@ export default function UserLayout({ handleCookie, state, children }) {
           }),
         }}
       >
-        <ListenerSideBar classes={classes} open={open} />
+        <SideBar />
         <Divider />
-        <CreatorSideBar classes={classes} open={open} />
-        <Divider />
-        <IconButton
-          aria-label="open drawer"
-          onClick={handleDrawerOpen}
-          edge="start"
-          className={clsx(classes.menuButton, {
-            [classes.hide]: open,
-          })}
-        >
-          <ChevronRightIcon />
-        </IconButton>
-        <IconButton
-          color="primary"
-          aria-label="close drawer"
-          onClick={handleDrawerClose}
-          edge="start"
-          className={clsx(classes.menuButton, {
-            [classes.hide]: !open,
-          })}
-        >
-          <ChevronLeftIcon />
-        </IconButton>
+
+        <List>
+          <Tooltip title={open ? "" : "Open sidebar"} placement="right">
+            <ListItem
+              button
+              onClick={handleDrawerOpen}
+              className={open ? classes.hide : ""}
+            >
+              <ListItemIcon>
+                <ChevronRightIcon />
+              </ListItemIcon>
+            </ListItem>
+          </Tooltip>
+
+          <ListItem
+            button
+            onClick={handleDrawerClose}
+            className={!open ? classes.hide : ""}
+          >
+            <ListItemIcon>
+              <ChevronLeftIcon />
+            </ListItemIcon>
+            <ListItemText primary="Collapse sidebar" />
+          </ListItem>
+        </List>
       </Drawer>
       {children}
     </div>
   );
 }
 
-const ListenerSideBar = ({ classes, open }) => {
+const ListenerSideBar = ({ open }) => {
+  const location = useLocation();
+  const classes = useStyles();
   const listenerItems = [
     {
       name: "Home",
@@ -198,35 +211,37 @@ const ListenerSideBar = ({ classes, open }) => {
       link: "/",
     },
     {
+      name: "Bookmarks",
+      icon: <BookmarkIcon />,
+      link: "/bookmarks",
+    },
+    {
       name: "Search",
       icon: <SearchIcon />,
       link: "/search",
     },
     {
-      name: "Explore",
-      icon: <ExploreIcon />,
-      link: "/explore",
+      name: "Subscriptions",
+      icon: <AlarmIcon />,
+      link: "/subscriptions",
     },
     {
-      name: "Library",
-      icon: <LibraryMusicIcon />,
-      link: "/author/1",
+      name: "Following",
+      icon: <PeopleIcon />,
+      link: "/following",
     },
     {
-      name: "History",
+      name: "Recently Listened",
       icon: <HistoryIcon />,
-      link: "/History",
+      link: "/history",
     },
-
-    // TODO add recommended, history, friends and subscribed
   ];
-
   return (
-    <List>
+    <List disablePadding>
       {listenerItems.map((item) => (
         <Link to={item.link} className={classes.link} key={item.link}>
           <Tooltip title={open ? "" : item.name} placement="right">
-            <ListItem button key={item.name}>
+            <ListItem button key={item.name} selected={item.link === location.pathname}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.name} />
             </ListItem>
@@ -237,26 +252,33 @@ const ListenerSideBar = ({ classes, open }) => {
   );
 };
 
-const CreatorSideBar = ({ classes, open }) => {
+const CreatorSideBar = ({ open }) => {
+  const location = useLocation();
+  const classes = useStyles();
   const creatorItems = [
+    {
+      name: "My Podcasts",
+      icon: <LibraryMusicIcon />,
+      link: "/creators/podcasts",
+    },
     {
       name: "Upload",
       icon: <PublishIcon />,
-      link: "/upload",
+      link: "/creators/upload",
     },
     {
       name: "Analytics",
       icon: <ShowChartIcon />,
-      link: "/analytics",
+      link: "/creators/analytics",
     },
   ];
 
   return (
-    <List>
+    <List disablePadding>
       {creatorItems.map((item) => (
         <Link to={item.link} className={classes.link} key={item.link}>
           <Tooltip title={open ? "" : item.name} placement="right">
-            <ListItem button key={item.name}>
+            <ListItem button key={item.name} selected={location.pathname === item.link}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.name} />
             </ListItem>
@@ -267,9 +289,16 @@ const CreatorSideBar = ({ classes, open }) => {
   );
 };
 
-const AccountOptions = ({ classes, handleCookie }) => {
+const AccountOptions = ({ creator }) => {
+  const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [user, setUser] = React.useState(null);
   const history = useHistory();
+  const [cookies,, removeCookie] = useCookies(["token"]);
+
+  useEffect(() => {
+    getUser(cookies.token).then((user) => setUser(user));
+  }, [cookies.token]);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -281,12 +310,15 @@ const AccountOptions = ({ classes, handleCookie }) => {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    handleCookie("loggedin", null);
-    history.push("/");
+    removeCookie("token");
+    history.push("/signin");
   };
 
+  const creatorTitle = creator ? "For listeners" : "For creators";
+  const creatorLink = creator ? "/" : "/creators/podcasts";
+
   return (
-    <div>
+    <>
       <IconButton
         aria-label="account of current user"
         aria-controls="menu-appbar"
@@ -314,18 +346,16 @@ const AccountOptions = ({ classes, handleCookie }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose}>
-          <Link to="/profile" className={classes.link}>
-            Profile
-          </Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to="/profile" className={classes.link}>
-            Account Settings
-          </Link>
-        </MenuItem>
+        {user && user.name && <ListItem>{user.name}</ListItem>}
+        {
+          <MenuItem>
+            <Link to={creatorLink} className={classes.link}>
+              {creatorTitle}
+            </Link>
+          </MenuItem>
+        }
         <MenuItem onClick={handleLogout}>Log Out</MenuItem>
       </Menu>
-    </div>
+    </>
   );
 };

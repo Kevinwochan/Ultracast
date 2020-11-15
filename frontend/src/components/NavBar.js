@@ -32,10 +32,6 @@ export default function NavBar() {
   const classes = useStyles();
   const navBarItems = [
     {
-      name: "Popular",
-      link: "/landing",
-    },
-    {
       name: "Sign Up",
       link: "/signup",
     },
