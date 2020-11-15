@@ -273,7 +273,9 @@ const Player = ({ setAudioPlayerControls }) => {
                 }}
               />
             )}
-            <img
+            <img                   onError={(e) => {
+                    e.target.src = `/branding/square.svg`;
+                  }}
               alt={state.nowPlaying ? state.nowPlaying.title : ""}
               src={
                 state.nowPlaying

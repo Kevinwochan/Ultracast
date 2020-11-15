@@ -25,7 +25,6 @@ this components expects podcast.subscribed, the parent component should evaluate
 */
 export default function PodcastList({ podcasts, creator }) {
   const classes = useStyles();
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
 
   if (podcasts === "loader") {
     return <CircularProgress />;
@@ -93,11 +92,7 @@ export default function PodcastList({ podcasts, creator }) {
             </Link>
           </Grid>
           <Grid item>
-            {creator ? (
-              ""
-            ) : (
-              <SubscribeButton podcast={podcast}/>
-            )}
+            {creator ? "" : <SubscribeButton podcast={podcast} />}
           </Grid>
         </Grid>
       ))}

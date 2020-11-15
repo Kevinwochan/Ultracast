@@ -14,7 +14,13 @@ export default function Logo() {
   return (
     <div className={classes.grow}>
       <Link className={classes.grow} to="/">
-        <img src="/branding/white.svg" alt="ultracast" />
+        <img
+          onError={(e) => {
+            e.target.src = `/branding/square.svg`;
+          }}
+          src="/branding/white.svg"
+          alt="ultracast"
+        />
       </Link>
     </div>
   );

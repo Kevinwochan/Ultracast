@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {useCookies} from "react-cookie";
+import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -51,7 +51,7 @@ const timeSince = (timestamp) => {
 };
 
 const Notifications = ({ audioPlayerControls }) => {
-  const [cookies] = useCookies(['token']);
+  const [cookies] = useCookies(["token"]);
   const [count, setCount] = useState(0);
   const [dismissed, setDismissed] = useState(0);
   const [episodes, setEpisodes] = useState([]);
@@ -74,7 +74,7 @@ const Notifications = ({ audioPlayerControls }) => {
           setEpisodes(episodes);
         });
       }
-      if (dismissed > count){
+      if (dismissed > count) {
         setDismissed(count);
       }
       setCount(count);
@@ -92,7 +92,10 @@ const Notifications = ({ audioPlayerControls }) => {
   return (
     <>
       <IconButton color="secondary" onClick={handleClick}>
-        <Badge badgeContent={count - dismissed < 0 ? 0 : count - dismissed} color="error">
+        <Badge
+          badgeContent={count - dismissed < 0 ? 0 : count - dismissed}
+          color="error"
+        >
           <NotificationsIcon />
         </Badge>
       </IconButton>
@@ -132,6 +135,9 @@ const Notifications = ({ audioPlayerControls }) => {
                 <Grid container spacing={2}>
                   <Grid item>
                     <img
+                      onError={(e) => {
+                        e.target.src = `/branding/square.svg`;
+                      }}
                       className={classes.podcastCover}
                       src={episode.podcast.image}
                       alt={`${episode.podcast.title} cover`}

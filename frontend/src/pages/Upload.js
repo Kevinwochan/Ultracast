@@ -65,7 +65,7 @@ function getStepContent(step, fieldState, handleNext, handleBack) {
 
 export default function Upload() {
   const classes = useStyles();
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
+  const [cookies] = useCookies(["token"]);
   const [activeStep, setActiveStep] = useState(0);
   const fieldState = useState({
     podcast: {
@@ -101,7 +101,7 @@ export default function Upload() {
     ],
     isNewPodcast: false,
     status: 0,
-    token: cookies.token
+    token: cookies.token,
   });
   const [fields, setFields] = fieldState;
 
@@ -505,7 +505,14 @@ const PodcastPreview = ({ hidden, image, title, description }) => {
     <Card hidden={hidden} variant="outlined" className={classes.preview}>
       <Box mt={7}>
         <div className={classes.previewHeader}>
-          <img className={classes.media} src={image} alt="Preview podcast" />
+          <img
+            onError={(e) => {
+              e.target.src = `/branding/square.svg`;
+            }}
+            className={classes.media}
+            src={image}
+            alt="Preview podcast"
+          />
           <CardContent className={classes.mediaText}>
             <Typography variant="h6" align="center">
               {title}
@@ -668,6 +675,9 @@ const EpisodePreview = ({ image, title, description, podcast, duration }) => {
       <Box mt={7}>
         <div className={classes.previewHeader}>
           <img
+            onError={(e) => {
+              e.target.src = `/branding/square.svg`;
+            }}
             className={classes.media}
             src={image}
             alt="Preview podcast"

@@ -1,4 +1,5 @@
 import React from "react";
+import { useCookies } from "react-cookie";
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -9,7 +10,6 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import theme from "../theme";
 import { newPodcast, updatePodcast, newEpisode } from "../api/mutation";
-import getDominantColour from "../common/dominantColor";
 
 const selectPodcastStyle = makeStyles({
   root: {
@@ -45,6 +45,7 @@ const selectPodcastStyle = makeStyles({
 });
 
 const SelectPodcast = ({ fieldState }) => {
+  const [cookies] = useCookies(['token']);
   const classes = selectPodcastStyle();
   const [fields, setFields] = fieldState;
 
@@ -77,7 +78,7 @@ const SelectPodcast = ({ fieldState }) => {
         subCategory: "",
         keywords: [""],
       },
-      user.token
+      cookies.token
     ).then((data) => {
       // Show the button again
       button.style.display = "inherit";
@@ -174,6 +175,9 @@ const PodcastPreview = ({ hidden, image, title, description }) => {
       <Box mt={7}>
         <div className={classes.previewHeader}>
           <img
+            onError={(e) => {
+              e.target.src = `/branding/square.svg`;
+            }}
             className={classes.media}
             src={image}
             alt="Preview podcast"

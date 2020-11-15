@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
 this components expects podcast.subscribed, the parent component should evaluate this
 */
 export default function PodcastList({ podcasts, creator }) {
-  const [cookies, setCookie, removeCookie] = useCookies(['token']);
   const classes = useStyles();
 
   if (podcasts === "loader") {

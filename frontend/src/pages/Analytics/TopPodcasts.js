@@ -59,6 +59,9 @@ export default function TopPodcasts({ data }) {
               <TableCell>
                 <Link href={`/creators/podcast/${podcast.id}`}>
                   <img
+                    onError={(e) => {
+                      e.target.src = `/branding/square.svg`;
+                    }}
                     src={podcast.image}
                     alt={`${podcast.title} cover`}
                     className={classes.podcastCover}

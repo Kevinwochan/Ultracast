@@ -344,13 +344,13 @@ function PodcastCover({ episode, audioPlayerControls, creator }) {
       ></img>
       <div
         className={classes.overlay}
-        style={ play ? { opacity: 0.6, boxShadow: "5px 5px 5px #bfbfbf" } : {}}
+        style={play ? { opacity: 0.6, boxShadow: "5px 5px 5px #bfbfbf" } : {}}
       ></div>
       <div
         className={classes.podcastPlay}
         style={{ display: play ? "block" : "none" }}
       >
-        <PlayCircleFilledIcon fontSize="large" color="secondary"/>
+        <PlayCircleFilledIcon fontSize="large" color="secondary" />
       </div>
     </div>
   );
