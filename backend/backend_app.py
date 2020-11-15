@@ -57,8 +57,9 @@ if __name__ == '__main__':
     options = {
         'bind': '%s:%s' % (host_ip, '5000'),
         'workers': number_of_workers(),
-        'capture-output': True,
+        'capture_output': True,
         'errorlog': "logs.txt",
+        'log-level': "debug",
         'on_exit': server.on_exit
     }
     '''
