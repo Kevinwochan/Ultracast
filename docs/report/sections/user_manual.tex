@@ -110,18 +110,19 @@ If all tests are passed, something similar to the following will be printed:
 
 \subsection{Generating Podcast Data}
 
-UltraCast includes functionalities to scrape a variety of public podcast sources and add them to the platform.
-This only needs to performed when a new database is setup.
-To do this, create a new MongoDB database, or clear an existing one.
-The scraping scripts use the same MongoDB connection configuration as the webapp.
-See \cref{sec:backend_config} on how to configure the MongoDB connection.
-
-After configuring the connection, run the following to scrape podcasts and add them to the platform:
-
+UltraCast includes a script to generate podcast data based on this dataset of podcasts
+from 2007-2016: https://data.world/brandon-telle/podcasts-dataset. Note: The MongoDB
+database should already have this data unless you are creating a new MongoDB instance.
+Before running the script to generate data, ensure that you:
+\begin{itemize}
+    \item Create or connect to your MongoDB instance (see \cref{sec:backend_config})
+    \item Download and unzip "episodes.csv" and "shows.csv" to backend/generate\_data
+\end{itemize}
+Then run the following:
 \begin{verbatim}
     cd backend
     source env/bin/activate
-    python generate_data/generate_data.py
+    python -m generate_data.generate_data
 \end{verbatim}
 
 \newpage
@@ -139,6 +140,7 @@ Please ensure that:
 \subsubsection{Login}
 
 Enter the url printed to the launching terminal into your browser to reach the UltraCast e.g. \verb|http://localhost:4000|
+(port may vary)
 login page as seen in \cref{fig:UM_Login}. After filling in your email and password 
 click "SIGN IN" to be redirected to the homepage.
 %
