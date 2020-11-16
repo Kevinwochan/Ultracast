@@ -1,7 +1,7 @@
 svg-extract
 svg-inkscape
 ## Core latex/pdflatex auxiliary files:
-*.pdf
+#*.pdf
 *.pdf_tex
 *.aux
 *.lof
