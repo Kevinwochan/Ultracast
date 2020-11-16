@@ -21,7 +21,7 @@ UltraCast differentiates itself from competitors by allowing users to:
 \end{itemize}
 
 \subsection{Project Requirements}
-The minimun project requirements from the specifications are:
+The minimum project requirements from the specifications are:
 \begin{itemize}
     \item Listeners must be able to search for podcasts that interest them by keywords, resulting in a list of matching podcast titles, where the total number of subscriptions on the UltraCast platform (function described later) for each podcast is shown next to the title
     \item Listeners must be able to select a podcast show from returned search results to view its full details, including its title, description, any author details that exist, as well as a list of episodes for the show 
@@ -45,10 +45,10 @@ The following additional requirements have also been implemented:
 
 \subsection{System Architecture}
 
-The highlevel system architecture can be seen in \cref{fig:system_architecture}.
+The high-level system architecture can be seen in \cref{fig:system_architecture}.
 The end users, podcast listeners and content creators, connect to the presentation layer 
 which is powered by a ReactJS application. ReactJS was selected as the framework for the 
-frontend application primarly due to it being a mature and world leading framework\cite{react} as well
+frontend application primarily due to it being a mature and world leading framework\cite{react} as well
 as due to previous experience with the framework.\\
 
 Flask, a python based micro-framework\cite{flask}, was used for the web-server, due to its ease of use which allowed
@@ -58,9 +58,9 @@ recommendation service which drives recommendation functionality described in
 \cref{ssec:recommendations_and_following,ssec:system}. The Flask web-server uploads static files 
 (episode audio and podcast covers) to a static file storage server while
 the urls for these static files along with all other data is stored in MongoDB. MongoDB, a NoSQL database, 
-was selected to store metadata due to its scalability\cite{MongoDB2020}. MongoDB could not be hosted on
+was selected to store meta-data due to its scalability\cite{MongoDB2020}. MongoDB could not be hosted on
 CSE so was hosted on AWS EC2 instead, see Table \ref{tab:third_party} for reason. As a result the Flask web-server
-needed to be on the the remote server as well to improve performance as described in \cref{ssec:backend_challenges}.
+needed to be on the remote server as well to improve performance as described in \cref{ssec:backend_challenges}.
 Algolia, a search engine service\cite{algolia}, was used to maximise search performance and reduce development time.
 
 \begin{figure}[ht] 
@@ -95,7 +95,7 @@ of components which were notable and impacted functionality.
     React         & Frontend Framework                                                              & Bootstrap and provide basic functionality                                                                            \\ \hline
     Flask         & Micro Framework                                                                 & Bootstrap and provide basic functionality                                                                            \\ \hline
     Graphene      & Python GraphQL Library                                                          & Standard library                                                                                                     \\ \hline
-    Mongoengine   & \begin{tabular}[c]{@{}l@{}}Python object data mapper\\ for MongoDB\end{tabular} & Standard library                                                                                                     \\ \hline
+    MongoEngine   & \begin{tabular}[c]{@{}l@{}}Python object data mapper\\ for MongoDB\end{tabular} & Standard library                                                                                                     \\ \hline
     Pandas        & Python data Library                                                             & Standard library                                                                                                     \\ \hline
     NumPy         & Python maths Library                                                            & Standard library                                                                                                     \\ \hline
 \end{longtable}

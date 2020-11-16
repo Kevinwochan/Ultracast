@@ -9,14 +9,14 @@ Outlined below is a series of the major challenges we encountered, how they impa
 \paragraph{Technology stack and libraries}
 
 UltraCast employed an unusual combination of technology as its core stack.
-MongoDB was used in the persistence layer, Flask as a webserver framework, GraphQL (through the graphene and graphene-mongo Python libraries) as the API layer and React for the frontend.
+MongoDB was used in the persistence layer, Flask as a web server framework, GraphQL (through the Graphene and Graphene-Mongo Python libraries) as the API layer and React for the frontend.
 Flask and React were chosen as some team members were familiar with it, while MongoDB and GraphQL were chosen due to their popularity and desire to learn them.
 Unfortunately, this decision process did not consider how these technologies would interact with each other.
 For example, GraphQL had been released in 2018, so there was not a lot of example applications that had it implemented in Flask.
 This problem had two different impacts: firstly, the team had to manage navigating through incomplete documentation; secondly, the team could find many examples to use while developing.
 As a result, additional research and prototyping had to be conducted in the first few sprints.
 
-Halfway into the project, the team considered switching from Flask to Django, as the webserver had better documentation and examples.
+Halfway into the project, the team considered switching from Flask to Django, as the web server had better documentation and examples.
 After some research, it was decided that the change was not worth implementing, as most of the backend would have to be redone.
 Retrospectively, this decision seemed to be the right choice - the team became more familiar with the new technologies and less problems arose as time went on.
 
@@ -29,7 +29,7 @@ The Flask-GraphQL-Auth library\footnote{Available at https://github.com/November
 After much research, user authentication was implemented using the flask-jwt-extended library\footnote{Available at https://github.com/vimalloc/flask-jwt-extended}.
 This library allows authentication to be required on a per-function level, rather than for an entire route.
 Hence, certain GraphQL mutations and queries can be protected with user authentication where required.
-The frontend calls a signin mutation which returns a Json Web Token (JWT).
+The frontend calls a sign in mutation which returns a Json Web Token (JWT).
 This mutation does not require authentication.
 The frontend then stores this JWT as a cookie and sends it in the header of any future GraphQL API requests.
 
@@ -75,8 +75,8 @@ These database operations are performed sequentially.
 Since the MongoDB instance is hosted in the cloud, each database operation takes some number of milliseconds due to network latency.
 When a large number of parent nodes were fetched, this resulted in very slow queries.
 It was not feasible to modify the Graphene-Mongo library to issue less database operations.
-Hence, the decision was made to move the GraphQL API webserver to the same cloud container as the MongoDB instance.
-This improved the time for some queries from over fourty seconds to less than a second.
+Hence, the decision was made to move the GraphQL API web server to the same cloud container as the MongoDB instance.
+This improved the time for some queries from over forty seconds to less than a second.
 
 \paragraph{Database integrity}
 

@@ -13,32 +13,32 @@ For the simple case where no API keys need to be changed, setting up and running
 %
 This script will: 
 \begin{itemize}
-    \item Create a python venv for the backend
+    \item Create a python virtual environment (venv) for the backend
     \item Install all required python packages in the venv
     \item Install all npm packages that are required for the frontend
-    \item Launch the backend webserver (if the --local flag is used)
+    \item Launch the backend web server (if the --local flag is used)
     \item Launch the frontend
-    \item Open ultracast in your browser (this may not work on Vlab)
+    \item Open UltraCast in your browser (this may not work on VLab)
 \end{itemize}
 
 UltraCast can be run using either a local or remote GraphQL endpoint.
-The remote GraphQL endpoint is preffered due to lower latency (it must make successive MongoDB database operations which can be slow if network latency is high).
+The remote GraphQL endpoint is preferred due to lower latency (it must make successive MongoDB database operations which can be slow if network latency is high).
 It is highly recommended to run UltraCast in remote mode on UNSW CSE machines as the port used for the GraphQL endpoint is often already in use.
 
-To run UltraCast using a local backend webserver:
+To run UltraCast using a local backend web server:
 
 \begin{verbatim}
     # cd to the root directory of the git repo
     ./start.sh --local
 \end{verbatim}
 
-Once the webserver is installed and running you will see a message like:
+Once the web server is installed and running you will see a message like:
 
 \begin{verbatim}
     Serving frontend at http://localhost:43689/
 \end{verbatim}
 
-You can then navigate to UltraCast in a webbrowser at the link printed to the terminal e.g. \verb|http://localhost:43689|.
+You can then navigate to UltraCast in a web-browser at the link printed to the terminal e.g. \verb|http://localhost:43689|.
 To avoid failing to launch because a port is already in use, the port which is used is decided at runtime. Ensure that you use the correct port.
 
 \subsection{Configuration}
@@ -58,8 +58,8 @@ Some of these variables need to be set for the frontend and some for the backend
 
 The backend is configured by using python files which set various configuration variables. These include options including:
 \begin{itemize}
-    \item The IP address of the MonogDB instance
-    \item The MonogDB database
+    \item The IP address of the MongoDB instance
+    \item The MongoDB database
     \item Flask secret keys (for encryption)
     \item Algolia API key and user
 \end{itemize}
@@ -88,7 +88,7 @@ When \verb|./start.sh| or \verb|backend/start_production.sh| are used to launch 
 This behaviour can be modified by changing the err-log option in \verb|backend/backend_app.py|.
 When the backend is run in development mode, logs are printed to the terminal.
 
-Frontend logs can be accessed via the webbrowser console.
+Frontend logs can be accessed via the web-browser console.
 
 \newpage
 
@@ -159,8 +159,8 @@ will be able to view and click on a saved "Stream" to apply that search term.
 
 \newpage
 
-TODO viewing podcasts once it has been clicked on
-TODO at what point describe "click on" on the cover art with play button
+%TODO viewing podcasts once it has been clicked on \todo{remove me}
+%TODO at what point describe "click on" on the cover art with play button
 
 \subsubsection{Playing Podcast Episodes} \label{sssec:UM_playing_episodes}
 
@@ -182,8 +182,8 @@ The components of the Episode Player, marked in \cref{fig:UM_episode_player}, ar
     \item \textbf{Bookmarks} - Click on to create Bookmark (See \cref{sssec:UM_bookmarks})
     \item \textbf{Playback Speed Control}
     \item \textbf{Volume Control}
-    \item \textbf{Player Toggle} - Toggle the Player popup on/off
-    \item \textbf{Player} - Playist of episodes. Click on episode in player to start it. Click the bin icon to remove an episode. Player will automatically play the next episode once the current one has ended.
+    \item \textbf{Player Toggle} - Toggle the Player pop-up on/off
+    \item \textbf{Player} - Playlist of episodes. Click on episode in player to start it. Click the bin icon to remove an episode. Player will automatically play the next episode once the current one has ended.
 \end{enumerate}
 
 \subsubsection{Bookmarks} \label{sssec:UM_bookmarks}
@@ -191,7 +191,7 @@ The components of the Episode Player, marked in \cref{fig:UM_episode_player}, ar
 Bookmarks allow you to create a note which is linked to a timestamp in an episode. To create a bookmark , then fill in the title and description. 
 \begin{enumerate}
     \item Click the bookmark icon, 4 in \cref{fig:UM_episode_player}, when you are at the timestamp in the episode that you to mark
-    \item Optionally, fill in the title and description in the popup
+    \item Optionally, fill in the title and description in the pop-up
     \item Click the "SAVE" button
 \end{enumerate}
 %
@@ -260,7 +260,7 @@ Creator analytics can be accessed as follows, as shown in \cref{fig:UM_Analytics
 \begin{enumerate}
     \item Click "Analytics" on the pages sidebar
     \item Click "Overview" to view podcast/episode metrics
-    \item Click "Audience" to view a geographical heatmap of viewers
+    \item Click "Audience" to view a geographical heat-map of viewers
 \end{enumerate}
 \begin{figure}[ht]
     \centering
