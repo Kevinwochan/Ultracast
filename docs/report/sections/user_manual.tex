@@ -54,7 +54,7 @@ The following external services are used and their IP addresses and/or API keys 
 
 Some of these variables need to be set for the frontend and some for the backend.
 
-\subsubsection{Backend Configuration}
+\subsubsection{Backend Configuration} \label{sec:backend_config}
 
 The backend is configured by using python files which set various configuration variables. These include options including:
 \begin{itemize}
@@ -106,6 +106,22 @@ If all tests are passed, something similar to the following will be printed:
     Ran 32 tests in 121.359s
 
     OK
+\end{verbatim}
+
+\subsection{Generating Podcast Data}
+
+UltraCast includes functionalities to scrape a variety of public podcast sources and add them to the platform.
+This only needs to performed when a new database is setup.
+To do this, create a new MongoDB database, or clear an existing one.
+The scraping scripts use the same MongoDB connection configuration as the webapp.
+See \cref{sec:backend_config} on how to configure the MongoDB connection.
+
+After configuring the connection, run the following to scrape podcasts and add them to the platform:
+
+\begin{verbatim}
+    cd backend
+    source env/bin/activate
+    python generate_data/generate_data.py
 \end{verbatim}
 
 \newpage
