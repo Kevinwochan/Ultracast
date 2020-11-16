@@ -81,26 +81,40 @@ The third party components which had a notable impact on the functionality
 of UltraCast are shown in \cref{tab:third_party}. This is not an exhaustive
 list of all the libraries and system libraries in UltraCast but rather a list
 of components which were notable and impacted functionality.
-
-\begin{longtable}[c]{|l|l|l|}
+% Please add the following required packages to your document preamble:
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+% \usepackage{longtable}
+% Note: It may be necessary to compile the document several times to get a multi-page table to line up properly
+\begin{longtable}[c]{|l|l|l|l|}
     \caption{Third Party Components}
     \label{tab:third_party}\\
     \hline
     \rowcolor[HTML]{E2E2E2} 
-    \textbf{Name} & \textbf{Component Type}                                                         & \textbf{Reason For Use}                                                                                              \\ \hline
+    \textbf{Name} & \textbf{Component Type}                                                            & \textbf{Reason For Use}                                                                                 & \textbf{License} \\ \hline
     \endfirsthead
     %
     \endhead
     %
-    AWS S3        & Cloud: Static File Storage                                                      & \begin{tabular}[c]{@{}l@{}}Exceeded CSE server storage limits. \\ \textgreater 80GB of test data\end{tabular}        \\ \hline
-    AWS EC2       & Cloud: Remote Server                                                            & \begin{tabular}[c]{@{}l@{}l@{}}High scalability \\ MongoDB not supported on Debian 6 \\ (Linux environment on the VLab machine)\end{tabular} \\ \hline
-    Algolia       & SaaS: Search Engine                                                             & \begin{tabular}[c]{@{}l@{}}Excellent search performance \\ Avoids building search engine from scratch \end{tabular}                                                                            \\ \hline
-    React         & Frontend Framework                                                              & Bootstrap and provide basic functionality                                                                            \\ \hline
-    Flask         & Micro Framework                                                                 & Bootstrap and provide basic functionality                                                                            \\ \hline
-    Graphene      & Python GraphQL Library                                                          & Standard library                                                                                                     \\ \hline
-    MongoEngine   & \begin{tabular}[c]{@{}l@{}}Python object data mapper\\ for MongoDB\end{tabular} & Standard library                                                                                                     \\ \hline
-    Pandas        & Python data Library                                                             & Standard library                                                                                                     \\ \hline
-    NumPy         & Python maths Library                                                            & Standard library                                                                                                     \\ \hline
+    AWS S3        & \begin{tabular}[c]{@{}l@{}}Cloud: Static \\ File Storage\end{tabular}              & \begin{tabular}[c]{@{}l@{}}Exceeded CSE \\ server storage limits. \\ $>$ 80GB of test data\end{tabular} & Custom           \\ \hline
+    AWS EC2       & Cloud: Remote Server                                                               & \begin{tabular}[c]{@{}l@{}}MongoDB unsupported \\ on Debian 6 \\ (CSE VLab)\end{tabular}                & Custom           \\ \hline
+    Algolia       & SaaS: Search Engine                                                                & \begin{tabular}[c]{@{}l@{}}Avoid building search \\ engine from scratch\end{tabular}                    & Custom           \\ \hline
+    React         & Frontend Framework                                                                 & Bootstrap functionality                                                                                 & MIT              \\ \hline
+    Flask         & Micro Framework                                                                    & Bootstrap functionality                                                                                 & BSD-3 Clause     \\ \hline
+    Graphene      & \begin{tabular}[c]{@{}l@{}}Python GraphQL \\ Library\end{tabular}                  & Standard library                                                                                        & MIT              \\ \hline
+    Mongoengine   & \begin{tabular}[c]{@{}l@{}}Python object \\ data mapper\\ for MongoDB\end{tabular} & Standard library                                                                                        & MIT              \\ \hline
+    Pandas        & Python data Library                                                                & Standard library                                                                                        & BSD-3 Clause     \\ \hline
+    NumPy         & Python maths Library                                                               & Standard library                                                                                        & BSD-3 Clause     \\ \hline
+    Gunicorn      & Python WSGI                                                                        & \begin{tabular}[c]{@{}l@{}}Maximize server\\ performance\end{tabular}                                   & MIT              \\ \hline
 \end{longtable}
+%
+In terms of liscencing the 3-Clause BSD license was the most restrictive license involved.
+The custom liscencing, terms and conditions of other 3rd party components was largely 
+disclaimers. Compared to the MIT license, the 3-Clause BSD license contains an extra
+non-attribution clause. As a result the either a modified MIT license or a 2-Clause BSD
+license would be best suitable (as the 2+ BSD license requires the copyright notice to be 
+reproduced). To protect the authors of the UltraCast project a 3-Clause BSD license was
+selected for the project.
+
 
 \end{document}
