@@ -48,19 +48,14 @@ This week I finished the query hook - after writing something that was close to 
 
 Week 8
 
- - Got the recommendation function actually working, sans search terms
+This week I got the recommender to a basic functioning level - recommending podcasts of the same categories based on the subscriptions and recently listened episodes of the user. Recommendations based on searches have been delayed until next week as the tracking of searches by the user hasn't been implemented in the frontend yet. This should not impact development due to the way that I'm including this information in the recommendation algorithm - should be one extra line of code. Next week I plan on applying some form of natural language processing on the descriptions of podcasts to increase the accuracy of recommendations.
 
 
 Week 9
 
-a
+The recommender now considers the past searches of the user as well at their subscriptions and recently listened episodes when recommending new podcasts. I did a lot of research into NLP methods that would be suitable for calculating the 'similarity' between the descriptions of podcasts, and landed on using Term Frequency-Inverse Document Frequency (TF-IDF). This algorithm doesn't require a very large dataset to be effective, and since we have over 200 podcasts in our database it should be more than suitable. The recommendations are no longer constrained to podcasts of the same category, as there may be podcasts that cover a similar topic but from different angles (different categories). Since I have finished the part of the project that was assigned to me, next week I will just be working on the report.
 
 
 Week 10
 
-a
-
-
-Week 11
-
-a
+This week I wrote the 'System' section of the project report - focusing on covering the reliability, scalability and consistency of each of the major components we chose to develop the backend of our solution.
