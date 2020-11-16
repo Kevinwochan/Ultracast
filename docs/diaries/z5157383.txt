@@ -53,3 +53,12 @@ Week 9:
 
 This week I am focusing on begining the report. I plan to write out some of the challenges that have been faced and the introduction.
 I have also written the backend functionalities to allow searches to be saved for the recommendation engine.
+Furthermore, I finalised the startup and install scripts for the project. 
+I finished the deployment of the backend to a remote webserver, using Supervisor to manage the webserver and ensure it stays up.
+
+Week 10:
+
+My aims for this week are to:
+    - Finalise the project report (including formatting and spell checking)
+    - Testing deployment scripts for the assessors
+    - Preparing my sections of the project demonstration

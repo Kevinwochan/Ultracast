@@ -77,11 +77,3 @@ Here you can set options including:
 
     * The backend GraphQL endpoint to use
     * Algolia API key and user
-
-<!---
-
-## Credentials:
-### algolia
-Username: oli.richards.junk1@gmail.com
-Password: i9V5pSmHMzf7S2g
--->
