@@ -180,47 +180,50 @@ The subscribe functionalities are described in \cref{tab:func_subscribe} below.
 %  - Google each and figure out how to fit our project to the definition of each
 \subsubsection{Engineering Capability}
 
-\subsection{Implementation Challenges}
+\iffalse
+    \subsection{Implementation Challenges}
 
-\subsubsection{Backend Stack} \label{sssec:backend_challenges}
+    \subsubsection{Backend Stack} \label{sssec:backend_challenges}
 
-The backend of UltraCast employs an unusual technology stack, with MongoDB as a persistence layer, flask as a webserver framework and graphql (via graphene and graphene-mongo libraries) as an API layer.
-This created difficulties in implementing common web-app functionalities due to (1) a lack of documentation on the libraries being used and (2) no online examples implementing these functionalities with this stack.
+    The backend of UltraCast employs an unusual technology stack, with MongoDB as a persistence layer, flask as a webserver framework and graphql (via graphene and graphene-mongo libraries) as an API layer.
+    This created difficulties in implementing common web-app functionalities due to (1) a lack of documentation on the libraries being used and (2) no online examples implementing these functionalities with this stack.
 
-\paragraph{User Authentication}
+    \paragraph{User Authentication}
 
-Implementing user authentication for the backend was a non-trivial task because the Graphene and Graphene-Mongo libraries which are used for the API layer do not natively support this functionality.
-A major challenge in applying general purpose authentication libraries, for example flask-jwt\footnote{Available at https://github.com/mattupstate/flask-jwt}, is that only one route is used for all API calls.
-Some of these API calls need to be authenticated e.g. deleting a podcast where others should not be e.g. signing up to the site.
-The Flask-GraphQL-Auth library\footnote{Available at https://github.com/NovemberOscar/Flask-GraphQL-Auth} provides the required authentication methods, however, it is not actively maintained.
-After much research, user authentication was implemented using the flask-jwt-extended library\footnote{Available at https://github.com/vimalloc/flask-jwt-extended}.
-This library allows authentication to be required on a per-function level, rather than for an entire route.
-Hence, certain mutations and queries can be protected with user authentication where required.
-The frontend calls a signin mutation which returns a Json Web Token (JWT).
-This mutation does not require authentication.
-The frontend then stores this JWT as a cookie and sends it in the header of any future GraphQL API requests.
+    Implementing user authentication for the backend was a non-trivial task because the Graphene and Graphene-Mongo libraries which are used for the API layer do not natively support this functionality.
+    A major challenge in applying general purpose authentication libraries, for example flask-jwt\footnote{Available at https://github.com/mattupstate/flask-jwt}, is that only one route is used for all API calls.
+    Some of these API calls need to be authenticated e.g. deleting a podcast where others should not be e.g. signing up to the site.
+    The Flask-GraphQL-Auth library\footnote{Available at https://github.com/NovemberOscar/Flask-GraphQL-Auth} provides the required authentication methods, however, it is not actively maintained.
+    After much research, user authentication was implemented using the flask-jwt-extended library\footnote{Available at https://github.com/vimalloc/flask-jwt-extended}.
+    This library allows authentication to be required on a per-function level, rather than for an entire route.
+    Hence, certain mutations and queries can be protected with user authentication where required.
+    The frontend calls a signin mutation which returns a Json Web Token (JWT).
+    This mutation does not require authentication.
+    The frontend then stores this JWT as a cookie and sends it in the header of any future GraphQL API requests.
 
-\paragraph{Resolving Nested Queries} 
+    \paragraph{Resolving Nested Queries} 
 
-While testing the frontend, it was discovered that some backend GraphQL queries were taking upwards of one minute to return.
-The site was still responsive, however it took a long time for recommended podcasts to be displayed.
-Further investigation revealed that where nested references were used in the database models, and the GraphQL query involved dereferencing these references, the Graphene-Mongo library would perform one database operation per parent node.
-These database operations are performed sequentially. 
-Since the MongoDB instance is hosted in the cloud, each database operation takes some number of milliseconds due to network latency.
-When a large number of parent nodes were fetched, this resulted in very slow queries.
-It was not feasible to modify the Graphene-Mongo libary to issue less database operations.
-Hence, the decision was made to move the GraphQL API webserver to the same cloud container as the MongoDB instance.
-This improved the time for some queries from over fourty seconds to less than a second.
+    While testing the frontend, it was discovered that some backend GraphQL queries were taking upwards of one minute to return.
+    The site was still responsive, however it took a long time for recommended podcasts to be displayed.
+    Further investigation revealed that where nested references were used in the database models, and the GraphQL query involved dereferencing these references, the Graphene-Mongo library would perform one database operation per parent node.
+    These database operations are performed sequentially. 
+    Since the MongoDB instance is hosted in the cloud, each database operation takes some number of milliseconds due to network latency.
+    When a large number of parent nodes were fetched, this resulted in very slow queries.
+    It was not feasible to modify the Graphene-Mongo libary to issue less database operations.
+    Hence, the decision was made to move the GraphQL API webserver to the same cloud container as the MongoDB instance.
+    This improved the time for some queries from over fourty seconds to less than a second.
 
-\paragraph{Database Integrity}
+    \paragraph{Database Integrity}
 
-\paragraph{Populating the Site}
+    \paragraph{Populating the Site}
 
-To build a meaningful recommendation system, the website must have a reasonable amount of podcasts already uploaded to it.
-Since UltraCast has not been released, there are no users to generate this data.
-To allow for experimentation with different approaches to recommending podcasts to users, a podcast dataset was scraped.
-It was difficult to find a suitable dataset that contained the required category, sub-category and keyword tags for podcasts that did not impose commercial obligations on UltraCast (due to terms of use of the dataset).
-A dataset which is an aggregation of public domain podcasts was found and scraped, providing over 200 podcasts and 2000 podcast episodes for the site.
+    To build a meaningful recommendation system, the website must have a reasonable amount of podcasts already uploaded to it.
+    Since UltraCast has not been released, there are no users to generate this data.
+    To allow for experimentation with different approaches to recommending podcasts to users, a podcast dataset was scraped.
+    It was difficult to find a suitable dataset that contained the required category, sub-category and keyword tags for podcasts that did not impose commercial obligations on UltraCast (due to terms of use of the dataset).
+    A dataset which is an aggregation of public domain podcasts was found and scraped, providing over 200 podcasts and 2000 podcast episodes for the site.
+
+\fi
 
 
 % TODO - Descriptions of the functionalities developed by the teamand how they map/addressallproject objectives

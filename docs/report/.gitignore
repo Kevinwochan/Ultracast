@@ -1,5 +1,6 @@
 svg-extract
 svg-inkscape
+build
 ## Core latex/pdflatex auxiliary files:
 #*.pdf
 *.pdf_tex
