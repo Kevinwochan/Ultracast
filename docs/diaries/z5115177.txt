@@ -1,14 +1,3 @@
-You should also include in this diary the following information (if applicable)
-about the project progress:
-
-- what was planned for the period since the last work diary entry - what was finished 
-- what were the main technical and non-technical obstacles and how they were
-  overcome (or what was tried and did not work)
-- what was not finished, why this happened, how this affects the overall project
-  progress and what adjustments (if any) are needed so the success of the
-  project is not endangered
-- what is planned for the next period (e.g., next week)
-
 Week 1
 
 Group was formed and the project selected (ultracast) and meeting times
@@ -68,3 +57,17 @@ as this would have been a difficult challenge otherwise.
 I also added the inital backend logic for podcast bookmarks. For the next sprint 
 I am going to create the backend logic to do with statistics about views for podcast 
 episodes and following other users.
+
+Week 8
+
+The backend logic was created succesfully for views and following other users. At this point
+the backend work left is mostly bug fixing. The goal of the next sprint for me is to
+primary work on the structure of the upcoming final report but also work on testing 
+functionality and recording bugs encountered.
+
+Week 9/10
+
+Did the testing for functionality around staying up to date (UL-7,8,9,30) as well as
+the following sections of the report: System Architecture, Functionality to Project
+Objectives mapping and the User Manual Functionality guide. Performed testing on 
+various features and passed bugs on to Kevin who was fantastic with fixing them.
