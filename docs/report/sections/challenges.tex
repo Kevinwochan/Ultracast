@@ -3,27 +3,22 @@
 
 \subsection{Implementation Challenges} \label{ssec:backend_challenges}
 
-% TODO - proofread and make it sound nicer
-% TODO make everything either paragraph or subsubsection - Oli to decide what looks nicer :) 
-
 Throughout the duration of the project, our team faced many implementation challenges.
 Outlined below is a series of the major challenges we encountered, how they impacted the project and how we overcame those challenges.
 
 \paragraph{Technology stack and libraries}
 
-The core stack of UltraCast employed an unusual combination of technology.
+UltraCast employed an unusual combination of technology as its core stack.
 MongoDB was used in the persistence layer, Flask as a webserver framework, GraphQL (through the graphene and graphene-mongo Python libraries) as the API layer and React for the frontend.
-Flask and React were chosen as some team members were familiar with it, while MongoDB and GraphQL were chosen due to their popularity and the desire to learn them.
-Unfortunately, this decision process did not take account how these technologies would interact with each other.
-On top of being uncommon, GraphQL has been out for 2 years only, making it an incredibly new technology.
-As the stack was uncommon, there was not a lot of documentation on interfacing between the technologies and the libraries used.
-To increase the problem, no examples could be found online that implemented basic functionalities with this stack, so a lot of work and research had to be done.
-The impact to UltraCast was quite large - the majority of the first two sprints was spent learning how to use GraphQL.
+Flask and React were chosen as some team members were familiar with it, while MongoDB and GraphQL were chosen due to their popularity and desire to learn them.
+Unfortunately, this decision process did not consider how these technologies would interact with each other.
+For example, GraphQL had been released in 2018, so there was not a lot of example applications that had it implemented in Flask.
+This problem had two different impacts: firstly, the team had to manage navigating through incomplete documentation; secondly, the team could find many examples to use while developing.
+As a result, additional research and prototyping had to be conducted in the first few sprints.
 
-Halfway into the project, the team considered switching from Flask to Django, as that technology had better documentation and examples.
-However, after doing some research, it was decided that it was not worth effectively redoing most of the backend.
-Ultimately this decision worked out well for us - in the final sprint, the backend team had finalised most of the functionality and was able to properly test the system.
-If the move to Django had been made, it was estimated to have set us back by a week, leaving little to no time for testing.
+Halfway into the project, the team considered switching from Flask to Django, as the webserver had better documentation and examples.
+After some research, it was decided that the change was not worth implementing, as most of the backend would have to be redone.
+Retrospectively, this decision seemed to be the right choice - the team became more familiar with the new technologies and less problems arose as time went on.
 
 \paragraph{User Authentication}
 
@@ -33,10 +28,43 @@ Some of these API calls need to be authenticated e.g. deleting a podcast where o
 The Flask-GraphQL-Auth library\footnote{Available at https://github.com/NovemberOscar/Flask-GraphQL-Auth} provides the required authentication methods, however, it is not actively maintained.
 After much research, user authentication was implemented using the flask-jwt-extended library\footnote{Available at https://github.com/vimalloc/flask-jwt-extended}.
 This library allows authentication to be required on a per-function level, rather than for an entire route.
-Hence, certain mutations and queries can be protected with user authentication where required.
+Hence, certain GraphQL mutations and queries can be protected with user authentication where required.
 The frontend calls a signin mutation which returns a Json Web Token (JWT).
 This mutation does not require authentication.
 The frontend then stores this JWT as a cookie and sends it in the header of any future GraphQL API requests.
+
+\paragraph{Populating the Site}
+
+To build a meaningful recommendation system, the website must have a reasonable amount of podcasts already uploaded to it.
+Since UltraCast has not been released, there are no users to generate this data.
+To allow for experimentation with different approaches to recommending podcasts to users, a podcast dataset was scraped from an online resource.
+It was difficult to find a suitable dataset that contained the required category, sub-category and keyword tags for podcasts that did not impose commercial obligations on UltraCast (due to terms of use of the dataset).
+A dataset which is an aggregation of public domain podcasts was found and scraped, providing over 200 podcasts and 2000 podcast episodes for the site.
+
+\paragraph{Backend Business Layer}
+
+Early in the project, the team did not believe that the backend needed to have a business layer implemented - the original specification was relatively simple, so no business rules had to be applied.
+However, due to the limitations of the technology stack chosen, it was later found to be necessary, as some work had been doubled up in the Flask server.
+For example, creating a podcast would occur twice - once between the frontend and backend (via GraphQL), and another between the backend and the database (via Graphene-Mongo).
+By implementing a business layer, all operations would go through a unified location, removing the need to double up on code.
+
+\paragraph{Streamline Website Design}
+
+While developing UltraCast, the design of the website became fractured.
+For example, it was possible to play a podcast in two different locations on the same page - creating confusion for developers.
+The reason this problem arose was because some team members had diverged from the original Figma designs, while others had not.
+The result was that some frontend work had been duplicated, wasting time in the sprint.
+To overcome this, the frontend team met and agreed to design future pages on Figma.
+By doing this, the design could be kept consistent and could be referred to when creating new pages.
+
+\paragraph{Frontend State Management}
+
+Originally, the frontend state was considered to be quite small - the user's information only had to be saved.
+As a result, the entire application state was saved into one variable in the top level React component, and was then passed around in the lower level components.
+As time went on, it became harder to manage state without affecting older features due to the single state variable.
+For example, the audio player had to keep track of the podcast queue and so the queue was saved into the state variable.
+Adding to the queue would trigger a re-render of the entire application and therefore break some older, more stable features.
+Ultimately, the state was refactored towards the end of the project into different variables, resolving this issue.
 
 \paragraph{Resolving Nested Queries}
 
@@ -52,39 +80,12 @@ This improved the time for some queries from over fourty seconds to less than a 
 
 \paragraph{Database integrity}
 
-Problem: the database lost integrity throughout the majority of development.
-Reason: Constant development to the database schema would result in some records becoming mismatched or missing.
-Impact: The database would be very unstable, usually making completed features on the frontend break.
-Solution: Created a production and development copy of the database and backend server, allowing the frontend to develop using the production database to keep things consistent, and when the backend was finished with schema changes, move the records from development into production.
-
-\paragraph{Populating the Site}
-
-To build a meaningful recommendation system, the website must have a reasonable amount of podcasts already uploaded to it.
-Since UltraCast has not been released, there are no users to generate this data.
-To allow for experimentation with different approaches to recommending podcasts to users, a podcast dataset was scraped.
-It was difficult to find a suitable dataset that contained the required category, sub-category and keyword tags for podcasts that did not impose commercial obligations on UltraCast (due to terms of use of the dataset).
-A dataset which is an aggregation of public domain podcasts was found and scraped, providing over 200 podcasts and 2000 podcast episodes for the site.
-
-\paragraph{Backend Business Layer}
-
-Problem: Early in the sprint, no business layer was implemented in the backend.
-Reason: Did not think one was necessary - the application was planned to be relatively simple. However, due to the limitations of the libraries and technologies chosen, it was found to be necessary.
-Impact: Work was doubled up - there was code to interface between MongoDB and Python, as well as GraphQL and Python.
-Solution: Implemented a core business logic layer to handle interfacing between MongoDB and GraphQL.
-
-\paragraph{Streamline Website Design}
-
-Problem: The design of the website initially did not sync up. At one point, you could play a podcast in two places at once.
-Reason: We diverged from the original Figma designs because they weren't detailed enough
-Impact: Doubling up on design work, which was already time consuming enough.
-Solution: Met up and agreed to design future pages with the shared Figma file.
-
-\paragraph{Frontend State Management}
-
-Problem: All the state was saved into one variable, which was passed around through the application and made it difficult to manage.
-Reason: This was done initially because it was thought that the state would be quiet small, but it ended up being quite large.
-Impact: The more time went on, it became harder to develop new features without impacting the state of the previous features.
-Solution: Refactored the frontend towards the end.
+Throughout the majority of project development, the database lost integrity multiple times.
+Constant development changes to the database schema would result in records having missing or mismatched columns.
+This would result in the database becoming unstable, making it hard for the frontend to complete features that required a stable schema.
+To combat this, unit tests were created in the backend to ensure the stability of the database schema.
+However, if the schema and unit test changed, the issue would go unnoticed in the frontend.
+Towards the end of the project, a production and development copy of the database and backend server was created: this allowed the frontend to develop on the production system and made it more stable.
 
 \paragraph{The `jinke-music-player' library}
 
@@ -93,12 +94,5 @@ It was easy to setup and the team was able to complete multiple user stories at 
 However, the music player lacked some major functionality, namely, it could not handle fast seeking on the audio track (in other words, it could not jump forward to some section in the podcast that had not been loaded yet).
 The team had attempted to mount this functionality onto the library, but for technical reasons, this would only work roughly 80\% of the time.
 Ultimately, the decision was made to remove the library completely, opting to use a less constrictive audio player.
-
-\paragraph{Searching with Algolia}
-
-Problem: database would occasionally become out of sync with Algolia
-Reason: Decided to only send batches of records to increase efficiency, as opposed to a new record at every update.
-Impact: Doing one action on the frontend may not end up showing instantly. For example, subscribing to a podcast, then searching it will not show an increase in podcast subscribers.
-Solution: Trial and error upload amount vs efficiency?
 
 \end{document}
