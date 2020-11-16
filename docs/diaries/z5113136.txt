@@ -1,0 +1,64 @@
+Week 1: 
+This week we i attended our first meeting where we decided on the project we wanted to tackle, planned a time everyone was available for weekly standups and sprints, organised the group into teams (frontend and backend) and voted a Scrum Master.
+Next week we plan on researching existing software we can leverage and agreeing software development architecture and processes.
+
+Week 2:
+Last week we planned on researching existing software we can use and agreeing software development
+architecture and processes.
+Early in the week, as part of the frontend team, we decided on using ReactJS and MaterialUI to leverage the team's existing skills. With the frontend framework decided, i initialised our frontend codebase with template designs for the Signing in, Registration, Navigation Bar, Side bar, Dashboard and displaying episodes of a podcast.
+For next week, we have delegated components of the project proposal across the team where i've been assigned to complete the storyboarding for our user stories.
+
+Week 3: 
+Last week, I was assigned to storyboards our user stories for the project proposal.
+Over the week, I was able to complete 80% of the 30 User Stories the team generated, with Oli helping me
+by completing the remaining storyboards. After attending our weekly standup, we started using Jira to assign and distribute tasks for each User Story.
+For next week, I have been assigned to architect the integration between the frontend and backend.
+
+Week 4: 
+Last week, I was assigned to architect the integration between the frontend and backend.
+This week, i completed my assigned task by initialising a configuration file in the frontend that determined the API endpoint the frontend application would use as well as implementing the web pages for displaying multiple podcasts on a page.
+For next week, I have been assigned to implement the frontend for allowing a user to log out and the backend for allowing a user to log into our application as well as integrating this with the already completed sign in page.
+
+Week 5:
+Last week, i was assigned to implement the frontend and backend for user authentication.
+This week i spent most of my week reading through documentation for the backend 3rd party software (Graphene, GraphQL and Relay) as well as researching existing implementations for use authentication. I was unable to complete the assigned task in the planned week. My biggest challenge was understanding how Graphene worked, i found the documentation provided was scarce and could not find many example usages to reference. Although i was not able to implement the backend functionality for this, i was able to implement session management in the frontend and redirect unauthenticated users to the login page.
+In preparation for our progressive demo i have inserted the expected structured data that will be available from our backend to demonstrate the progress of the frontend and finished off the upload page that was written by Dan so that new podcasts could be created as well as new episodes.
+Next week, I will be working more closely with Oli (who has figured out how this all works) to implement the backend requirements for user authentication. In addition, i have also been assigned to replace all hardcoded data with actually API queries.
+
+Week 6:
+Last week i was tasked with completing user authentication and integrating the frontend with the backend.
+This week i had a working solution for user authentication and completed the backend queries so that all pages are dynamically populated using the backend. My user authentication solution was  sub-par and was replaced by a much better solution Oli implemented. 
+Next week, i have been assigned the frontend requirements for retrieving audio URLS from the backend to feed into the audio player, marking episodes as listened and managing podcast subscriptions.
+
+Week 7:
+Last week, I was tasked with:
+- the frontend requirements for retrieving audio URLS from the backend to feed into the audio player
+- marking episodes as listened
+- managing podcast subscriptions
+These have all been completed with a MVP page to view podcast subscriptions to demonstrate working subscription queries.
+Next week, i have been assigned to touch up on the subscription page that i prototyped, notify users of new subscription notifications and find a deployment solutions for our application to CSE machines.
+
+Week 8:
+Last week i was tasked with: 
+- Converting my prototype into a page to complete a the subscription page user story
+- Create a notification system that will notify users of newly published podcasts
+- Find a deployment solution for the frontend application
+Over the week, all of these objectives were completed.
+Next week, i have been assigned to begin fixing the miscellaneous bugs/misinterpreted implementations the team encounters/encountered while using the application.
+
+Week 9:
+Last week i was tasked with fixing:
+- removing unused UI elements
+- client side email validation
+- handling bad episode length data from the backend
+- fixing unexpected player UI behaviour
+- displaying episodes instead of podcasts on the homepage
+- adding the latest episode reference on the subscription page
+- clearing the notification bell after read
+- improving audio track slider responsiveness
+As well as:
+- debugging the log in issue from Progressive Demo B
+- finding a solution for a 3rd party dependency that was not meeting our requirements
+- implementing the analytics page
+- implementing a marker to distinguish between listened/unlistened episodes
+All implemented. Over the next week i'll be looking for more potential issues and preparing for our demonstration.
