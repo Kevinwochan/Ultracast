@@ -11,6 +11,7 @@ from bson.objectid import ObjectId
 import werkzeug
 
 from webserver import db
+from webserver import app
 from webserver import models
 from webserver import schema
 from generate_data.download_upload_thread import DownloadUploadThread
@@ -56,8 +57,9 @@ def main():
     episode_id_to_data = download_upload_files(df, UPLOADED_AUDIO_FILE, ['id', 'audio_url'], VALID_AUDIO_FORMATS)
     # Keep only mapped urls
     df = df[df['id'].isin(list(episode_id_to_data.keys()))]
+    app_config = app.get_config()
     # Write documents to mongodb
-    db.connect_mongo()
+    db.connect_mongo(app_config)
     write_to_db(df, podcasts_df, episode_id_to_data, podcast_id_to_cover_url)
     print(f"{OKGREEN}Finished Successfully{ENDCOL}")
 
