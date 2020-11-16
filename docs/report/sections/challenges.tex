@@ -16,7 +16,7 @@ For example, GraphQL had been released in 2018, so there was not a lot of exampl
 This problem had two different impacts: firstly, the team had to manage navigating through incomplete documentation; secondly, the team could find many examples to use while developing.
 As a result, additional research and prototyping had to be conducted in the first few sprints.
 
-Halfway into the project, the team considered switching from Flask to Django, as the web server had better documentation and examples.
+Halfway into the project, the team considered switching from Flask to Django, as the framework had better documentation and examples.
 After some research, it was decided that the change was not worth implementing, as most of the backend would have to be redone.
 Retrospectively, this decision seemed to be the right choice - the team became more familiar with the new technologies and less problems arose as time went on.
 
@@ -32,6 +32,7 @@ Hence, certain GraphQL mutations and queries can be protected with user authenti
 The frontend calls a sign in mutation which returns a Json Web Token (JWT).
 This mutation does not require authentication.
 The frontend then stores this JWT as a cookie and sends it in the header of any future GraphQL API requests.
+This token is then used to authenticate further queries.
 
 \paragraph{Populating the Site}
 
@@ -80,8 +81,8 @@ This improved the time for some queries from over forty seconds to less than a s
 
 \paragraph{Database integrity}
 
-Throughout the majority of project development, the database lost integrity multiple times.
-Constant development changes to the database schema would result in records having missing or mismatched columns.
+During project development, the database lost integrity multiple times.
+Constant development changes to the database schema would result in records having missing or mismatched fields.
 This would result in the database becoming unstable, making it hard for the frontend to complete features that required a stable schema.
 To combat this, unit tests were created in the backend to ensure the stability of the database schema.
 However, if the schema and unit test changed, the issue would go unnoticed in the frontend.

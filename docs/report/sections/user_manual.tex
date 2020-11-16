@@ -18,7 +18,7 @@ This script will:
     \item Install all npm packages that are required for the frontend
     \item Launch the backend web server (if the --local flag is used)
     \item Launch the frontend
-    \item Open UltraCast in your browser (this may not work on VLab)
+    \item Open UltraCast in a web-browser (this may not work on VLab)
 \end{itemize}
 
 UltraCast can be run using either a local or remote GraphQL endpoint.
@@ -90,6 +90,24 @@ When the backend is run in development mode, logs are printed to the terminal.
 
 Frontend logs can be accessed via the web-browser console.
 
+\subsection{Integration Tests}
+
+Integration tests have been implemented to test the backend functionality.
+These start up a flask \textit{test app} and then query it using GraphQL queries and mutations.
+\\
+To run the integration tests:
+\begin{verbatim}
+    cd backend
+    ./run_tests.sh
+\end{verbatim}
+
+If all tests are passed, something similar to the following will be printed:
+\begin{verbatim}
+    Ran 32 tests in 121.359s
+
+    OK
+\end{verbatim}
+
 \newpage
 
 \subsection{Site Usage and Functionality Guide}
@@ -104,7 +122,7 @@ Please ensure that:
 
 \subsubsection{Login}
 
-Enter \verb|localhost:4000| into your browser to reach the UltraCast
+Enter the url printed to the launching terminal into your browser to reach the UltraCast e.g. \verb|http://localhost:4000|
 login page as seen in \cref{fig:UM_Login}. After filling in your email and password 
 click "SIGN IN" to be redirected to the homepage.
 %
@@ -126,7 +144,7 @@ After logging in you will be directed to the homepage as seen in \cref{fig:UM_Ho
 homepage consists of two components \underline{which will be empty if you are a new user}:
 %
 \begin{itemize}
-    \item \textbf{Recommended Podcasts}: Podcasts our recommended suggests based on your activity
+    \item \textbf{Recommended Podcasts}: Podcasts which our recommendation engine suggests based on your activity
     \item \textbf{Recently Listened}: Podcast Episodes that you have listened to sorted by most recently listened left to right
 \end{itemize}
 %
@@ -209,6 +227,34 @@ Bookmarks can be viewed in the Bookmarks page as seen in \cref{fig:UM_bookmark}.
     \label{fig:UM_bookmark} 
 \end{figure}
 
+\subsubsection{Subscribing}
+To follow another user and view their listen history see the steps below with reference to \cref{fig:UM_subscribe}:
+\begin{enumerate}
+    \item Click "Subscribe" on a podcast
+    \item Click "Subscriptions" on the pages sidebar to view podcasts your are subscribed to
+    \item When an episode you are subscribed to uploads a new episode a notification will be displayed on the bell icon
+\end{enumerate}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=16cm]{resources/UM_Subscribe}
+    \caption{UltraCast Subscribing}
+    \label{fig:UM_subscribe} 
+\end{figure}
+
+
+\subsubsection{Following}
+To follow another user and view their listen history see the steps below with reference to \cref{fig:UM_following}:
+\begin{enumerate}
+    \item Click "Following" on the pages sidebar
+    \item Search user by their email and hit enter
+    \item Click "Follow" on that user
+\end{enumerate}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=16cm]{resources/UM_Follow}
+    \caption{UltraCast Following}
+    \label{fig:UM_following} 
+\end{figure}
 \newpage
 
 \subsubsection{Creator / Listener Mode and Logging Out} \label{sssec:user_modes}
@@ -269,34 +315,6 @@ Creator analytics can be accessed as follows, as shown in \cref{fig:UM_Analytics
     \label{fig:UM_Analytics} 
 \end{figure}
 
-\subsubsection{Subscribing}
-To follow another user and view their listen history see the steps below with reference to \cref{fig:UM_subscribe}:
-\begin{enumerate}
-    \item Click "Subscribe" on a podcast
-    \item Click "Subscriptions" on the pages sidebar to view podcasts your are subscribed to
-    \item When an episode you are subscribed to uploads a new episode a notification will be displayed on the bell icon
-\end{enumerate}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=16cm]{resources/UM_Subscribe}
-    \caption{UltraCast Subscribing}
-    \label{fig:UM_subscribe} 
-\end{figure}
-
-
-\subsubsection{Following}
-To follow another user and view their listen history see the steps below with reference to \cref{fig:UM_following}:
-\begin{enumerate}
-    \item Click "Following" on the pages sidebar
-    \item Search user by their email and hit enter
-    \item Click "Follow" on that user
-\end{enumerate}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=16cm]{resources/UM_Follow}
-    \caption{UltraCast Following}
-    \label{fig:UM_following} 
-\end{figure}
 
 \end{document}
 
