@@ -1,0 +1,233 @@
+\documentclass[../report.tex]{subfiles}
+\begin{document}   
+
+\subsection{Functionalities}
+
+The subsections below describe the functionalities of UltraCast broken down into 5
+major functionality groupings. Each functionality is directly connected to a User Story,
+defined in the Proposal, as well as a project objective if it addresses it. The colour 
+schema defined in \cref{tab:func_table_colours} was used for functionalities in  
+\cref{tab:func_viewing_and_searching,tab:func_playing_episode,tab:func_recommend_and_follow,tab:func_creator,tab:func_subscribe}.
+
+\begin{longtable}[c]{|l|l|}
+  \caption{Functionality Table Colour Schema}
+  \label{tab:func_table_colours}\\
+  \hline
+  \rowcolor[HTML]{E2E2E2} 
+  \textbf{Colour} & \textbf{Meaning} \\ \hline
+  \endfirsthead
+  %
+  \endhead
+  %
+  \cellcolor[HTML]{FFFDD1} & Functionality relates to project objective \\ \hline
+  \cellcolor[HTML]{FAFAFA} & Functionality not specified in project objective \\ \hline
+  \cellcolor[HTML]{E8FBFF} & As above, but functionality is novel \\ \hline
+\end{longtable}
+
+\subsubsection{Viewing and Searching}
+
+The viewing and searching functionalities are described in \cref{tab:func_viewing_and_searching} below.
+
+\begin{longtable}[c]{|l|l|l|}
+  \caption{Viewing and Searching Functionality Mapping}
+  \label{tab:func_viewing_and_searching} \\
+  \hline
+  \rowcolor[HTML]{E2E2E2} 
+  \textbf{\begin{tabular}[c]{@{}l@{}}Story \\ ID\end{tabular}} & \textbf{Functionality}                                                                                                                              & \textbf{Project Objective}                                                                                                                                                                                                                                                                                                                                                 \\ \hline
+  \endfirsthead
+  %
+  \endhead
+  %
+  \rowcolor[HTML]{FFFDD1} 
+  UL-2                                                         & \begin{tabular}[c]{@{}l@{}}Use keywords to search for \\ podcasts, return list of podcasts\\ (See UL-4 for format)\\ \vphantom{filler}\end{tabular} & \cellcolor[HTML]{FFFDD1}                                                                                                                                                                                                                                                                                                                                                   \\
+  \rowcolor[HTML]{FFFDD1} 
+  UL-3                                                         & \begin{tabular}[c]{@{}l@{}}View the total number of \\ subscribers for each podcast \\ returned from a search\\ \vphantom{filler}\end{tabular}      & \multirow{-6}{*}{\cellcolor[HTML]{FFFDD1}\begin{tabular}[c]{@{}l@{}}Listeners must be able to search for \\ podcasts that interest them by keywords, \\ resulting in a list of matching podcast \\ titles, where the total number of \\ subscriptions on the UltraCast platform \\ (function described later) for each \\ podcast is shown next to the title\end{tabular}} \\ \hline
+  \rowcolor[HTML]{FFFDD1} 
+  UL-4                                                         & \begin{tabular}[c]{@{}l@{}}View the title, description, author \\ details and list of episodes for \\ a podcast\end{tabular}                        & \begin{tabular}[c]{@{}l@{}}Listeners must be able to select a \\ podcast show from returned search \\ results to view its full details, \\ including its title, description, any \\ author details that exist, as well as a \\ list of episodes for the show\end{tabular}                                                                                                  \\ \hline
+  \rowcolor[HTML]{FAFAFA} 
+  UL-14                                                        & Login as specific user                                                                                                                              & -                                                                                                                                                                                                                                                                                                                                                                          \\ \hline
+  \rowcolor[HTML]{FAFAFA} 
+  UL-24                                                        & \begin{tabular}[c]{@{}l@{}}View a title, length, upload \\ date for episodes\end{tabular}                                                           & -                                                                                                                                                                                                                                                                                                                                                                          \\ \hline
+  \rowcolor[HTML]{E8FBFF} 
+  UL-29                                                        & Save search as a "Stream"                                                                                                                           & -                                                                                                                                                                                                                                                                                                                                                                          \\ \hline
+  \rowcolor[HTML]{FAFAFA} 
+  UL-41                                                        & Sign up as user                                                                                                                                      & -                                                                                                                                                                                                                                                                                                                                                                          \\ \hline
+\end{longtable}
+
+\subsubsection{Playing Podcast Episode}
+
+The playing podcast episode functionalities are described in \cref{tab:func_playing_episode} below.
+
+\begin{longtable}[c]{|l|l|l|}
+  \caption{Playing Episode Functionality Mapping}
+  \label{tab:func_playing_episode}\\
+  \hline
+  \rowcolor[HTML]{E2E2E2} 
+  \textbf{\begin{tabular}[c]{@{}l@{}}Story \\ ID\end{tabular}} & \textbf{Functionality}                                                                                                                     & \textbf{Project Objective}                                                                                                                                                                                                                                                                      \\ \hline
+  \endfirsthead
+  %
+  \endhead
+  %
+  \rowcolor[HTML]{FFFDD1} 
+  UL-5                                                         & \begin{tabular}[c]{@{}l@{}}Play episodes\\ \vphantom{filler}\end{tabular}                                                                  & \cellcolor[HTML]{FFFDD1}                                                                                                                                                                                                                                                                        \\
+  \rowcolor[HTML]{FFFDD1} 
+  UL-6                                                         & \begin{tabular}[c]{@{}l@{}}\vphantom{filler}\\ Once episode starts being played \\ it is marked as played\\ \vphantom{filler}\end{tabular} & \multirow{-4}{*}{\cellcolor[HTML]{FFFDD1}\begin{tabular}[c]{@{}l@{}}Listeners must be able to play a selected \\ episode within a podcast show, and once \\ that episode starts being played, the \\ listener must be able to also clearly see \\ this episode marked as ”Played"\end{tabular}} \\ \hline
+  \rowcolor[HTML]{FAFAFA} 
+  UL-18                                                        & Pause episode that is playing                                                                                                              & -                                                                                                                                                                                                                                                                                               \\ \hline
+  \rowcolor[HTML]{FAFAFA} 
+  UL-19                                                        & Adjust playback volume                                                                                                                     & -                                                                                                                                                                                                                                                                                               \\ \hline
+  \rowcolor[HTML]{FAFAFA} 
+  UL-20                                                        & \begin{tabular}[c]{@{}l@{}}Skip to next episode, previous \\ episode and start of current episode\end{tabular}                             & -                                                                                                                                                                                                                                                                                               \\ \hline
+  \rowcolor[HTML]{FAFAFA} 
+  UL-21                                                        & Jump to a point in an episode                                                                                                              & -                                                                                                                                                                                                                                                                                               \\ \hline
+  \rowcolor[HTML]{FAFAFA} 
+  UL-22                                                        & Adjust playback speed                                                                                                                      & -                                                                                                                                                                                                                                                                                               \\ \hline
+  \rowcolor[HTML]{FAFAFA} 
+  UL-23                                                        & \begin{tabular}[c]{@{}l@{}}Auto-play episodes in a podcast \\ (after added to playlist)\end{tabular}                                       & -                                                                                                                                                                                                                                                                                               \\ \hline
+  \rowcolor[HTML]{E8FBFF} 
+  UL-26                                                        & \begin{tabular}[c]{@{}l@{}}"Bookmark" a point in an episode \\ with a title and description\end{tabular}                                   & -                                                                                                                                                                                                                                                                                               \\ \hline
+\end{longtable}
+
+
+\subsubsection{Recommendation and Following} \label{ssec:recommendations_and_following}
+
+The recommendation and following functionalities are described in \cref{tab:func_recommend_and_follow} below.
+
+\begin{longtable}[c]{|l|l|l}
+  \caption{Recommendation and Following Functionality Mapping}
+  \label{tab:func_recommend_and_follow}\\
+  \hline
+  \rowcolor[HTML]{E2E2E2} 
+  \textbf{\begin{tabular}[c]{@{}l@{}}Story \\ ID\end{tabular}} & \textbf{Functionality}                                                                                                                                                      & \multicolumn{1}{l|}{\cellcolor[HTML]{E2E2E2}\textbf{Project Objective}}                                                                                                                                                                                                                                                        \\ \hline
+  \endfirsthead
+  %
+  \endhead
+  %
+  \rowcolor[HTML]{FFFDD1} 
+  UL-10                                                        & \begin{tabular}[c]{@{}l@{}}View episode history\\ \vphantom{filler}\end{tabular}                                                                                            & \multicolumn{1}{l|}{\cellcolor[HTML]{FFFDD1}}                                                                                                                                                                                                                                                                                  \\
+  \rowcolor[HTML]{FFFDD1} 
+  UL-11                                                        & \begin{tabular}[c]{@{}l@{}}Episode history is sorted by most \\ recent to least recent\end{tabular}                                                                         & \multicolumn{1}{l|}{\multirow{-3.5}{*}{\cellcolor[HTML]{FFFDD1}\begin{tabular}[c]{@{}l@{}}Listeners must be able to see a history of \\ the podcast episodes that they have played, \\ sorted in order from most recently played \\ to least recently played\end{tabular}}}                                                      \\ \hline
+  \rowcolor[HTML]{FFFDD1} 
+  UL-12                                                        & \begin{tabular}[c]{@{}l@{}}Podcast recommendations are \\ based on: Existing subscriptions\\ recently played episodes and \\ past searches\\ \vphantom{filler}\end{tabular} & \cellcolor[HTML]{FFFDD1}                                                                                                                                                                                                                                                                                                       \\
+  \rowcolor[HTML]{FFFDD1} 
+  UL-13                                                        & \begin{tabular}[c]{@{}l@{}}A "recommended" panel shows \\ recommended podcasts\end{tabular}                                                                                 & \multirow{-6}{*}{\cellcolor[HTML]{FFFDD1}\begin{tabular}[c]{@{}l@{}}UltraCast must be able to recommend new \\ podcast shows to a listener based on at \\ least information about the podcast shows \\ they are subscribed to, podcast episodes \\ they have recently played, and their past \\ podcast searches\end{tabular}} \\ \hline
+  \rowcolor[HTML]{E8FBFF} 
+  UL-18                                                        & \begin{tabular}[c]{@{}l@{}}Follow users, view their \\ listen history\end{tabular}                                                                                          & \multicolumn{1}{l|}{\cellcolor[HTML]{E8FBFF}-}                                                                                                                                                                                                                                                                                 \\ \hline
+\end{longtable}
+
+
+\subsubsection{Creator Mode}
+
+The creator functionalities are described in \cref{tab:func_creator} below.
+
+\begin{longtable}[c]{|l|l|l|}
+  \caption{Creator Mode Functionality Mapping}
+  \label{tab:func_creator}\\
+  \hline
+  \rowcolor[HTML]{E2E2E2} 
+  \textbf{\begin{tabular}[c]{@{}l@{}}Story \\ ID\end{tabular}} & \textbf{Functionality}                       & \textbf{Project Objective}                  \\ \hline
+  \endfirsthead
+  %
+  \endhead
+  %
+  \rowcolor[HTML]{FAFAFA} 
+  UL-15                                                        & Create podcasts and episodes                 & \cellcolor[HTML]{FAFAFA}                    \\
+  \rowcolor[HTML]{FAFAFA} 
+  UL-16                                                        & Delete podcasts and episodes                 & \multirow{-2}{*}{\cellcolor[HTML]{FAFAFA}-} \\ \hline
+  \rowcolor[HTML]{FAFAFA} 
+  UL-17                                                        & Update podcasts and episodes                 & -                                           \\ \hline
+  \rowcolor[HTML]{E8FBFF} 
+  UL-27                                                        & Access to podcast and episode viewer metrics & -                                           \\ \hline
+\end{longtable}
+
+\subsubsection{Subscribe}
+
+The subscribe functionalities are described in \cref{tab:func_subscribe} below.
+
+\begin{longtable}[c]{|l|l|l|}
+  \caption{Subscribe Functionality Mapping}
+  \label{tab:func_subscribe}\\
+  \hline
+  \rowcolor[HTML]{E2E2E2} 
+  \textbf{\begin{tabular}[c]{@{}l@{}}Story \\ ID\end{tabular}} & \textbf{Functionality}                                                                                                             & \textbf{Project Objective}                                                                                                                                                                                                                          \\ \hline
+  \endfirsthead
+  %
+  \endhead
+  %
+  \rowcolor[HTML]{FFFDD1} 
+  UL-7                                                         & \begin{tabular}[c]{@{}l@{}}Subscribe to podcasts\\ \vphantom{filler}\\ \vphantom{filler}\end{tabular}                              & \cellcolor[HTML]{FFFDD1}                                                                                                                                                                                                                            \\
+  \rowcolor[HTML]{FFFDD1} 
+  UL-8                                                         & Unsubscribe to podcasts                                                                                                            & \multirow{-4}{*}{\cellcolor[HTML]{FFFDD1}\begin{tabular}[c]{@{}l@{}}Listeners must be able to see a history \\ of the podcast episodes that they have\\ played, sorted in order from most \\ recently played to least recently played\end{tabular}} \\ \hline
+  \rowcolor[HTML]{FFFDD1} 
+  UL-9                                                         & \begin{tabular}[c]{@{}l@{}}User receives notification for \\ each new episode in a podcast \\ they are subscribed to\end{tabular}  & \begin{tabular}[c]{@{}l@{}}Listeners must be notified by the \\ platform when a new episode for \\ a show they are subscribed appear\end{tabular}                                                                                                    \\ \hline
+  \rowcolor[HTML]{FFFDD1} 
+  UL-30                                                        & \begin{tabular}[c]{@{}l@{}}The latest episode for each \\ subscribed podcast is linked \\ in the "Subscriptions" page\end{tabular} & \begin{tabular}[c]{@{}l@{}}Listeners must be able to see the latest \\ episode available for each show that\\ they subscribed to in a ”Podcast \\ Subscription Preview” panel\end{tabular}                                                          \\ \hline
+\end{longtable}
+
+
+% Implementation (justify why we’ve chosen GraphQL and MongoDB)
+% Engingeering capability (reliability, scalability, consistency)
+\subsection{System} \label{ssec:system}
+\subsubsection{GraphQL}
+GraphQL is a query language for APIs and a runtime for fulfilling these queries. It provides a complete and understandable description of the data in your API, with a type system to ensure that apps can only make logical requests - providing clear and helpful errors when necessary. This works to improve the reliability of any solution built upon it.
+
+GraphQL queries also return predictable results by allowing clients to define the structure of the data required; the queries supply exactly what a client asks for and nothing more. This ensures the speed and stability of the apps built using GraphQL, since the app itself controls the data it receives instead of the server. GraphQL also comes with a powerful developer GUI that allows you to visualise exactly what data your API has available. It also highlights potential errors in test queries and leverages code intelligence to make helpful suggestions on how to fix them.
+
+GraphQL is naturally scalable, as any type or amount of data can be contained inside a single query. New queries can be developed on the fly and existing queries can be modified all without breaking existing functionality.
+
+\subsubsection{MongoDB}
+MongoDB is a document database designed to be used in the development of scalable applications using agile methodologies. MongoDB naturally supports rapid iterative development, which fits the nature of this project perfectly. It scales to high levels of read and write traffic and to a massive database size, and can easily evolve the type of deployment as necessary; removing roadblocks to development if the structure of our solution changes. As MongoDB relies on JSON files to store data, the structure of the information is under the control of the developer. Developers can adjust and reformat the database as the application evolves with ease - further supporting the RAD approach.
+
+
+\iffalse
+    \subsection{Implementation Challenges}
+
+    \subsubsection{Backend Stack} \label{sssec:backend_challenges}
+
+    The backend of UltraCast employs an unusual technology stack, with MongoDB as a persistence layer, flask as a webserver framework and graphql (via graphene and graphene-mongo libraries) as an API layer.
+    This created difficulties in implementing common web-app functionalities due to (1) a lack of documentation on the libraries being used and (2) no online examples implementing these functionalities with this stack.
+
+    \paragraph{User Authentication}
+
+    Implementing user authentication for the backend was a non-trivial task because the Graphene and Graphene-Mongo libraries which are used for the API layer do not natively support this functionality.
+    A major challenge in applying general purpose authentication libraries, for example flask-jwt\footnote{Available at https://github.com/mattupstate/flask-jwt}, is that only one route is used for all API calls.
+    Some of these API calls need to be authenticated e.g. deleting a podcast where others should not be e.g. signing up to the site.
+    The Flask-GraphQL-Auth library\footnote{Available at https://github.com/NovemberOscar/Flask-GraphQL-Auth} provides the required authentication methods, however, it is not actively maintained.
+    After much research, user authentication was implemented using the flask-jwt-extended library\footnote{Available at https://github.com/vimalloc/flask-jwt-extended}.
+    This library allows authentication to be required on a per-function level, rather than for an entire route.
+    Hence, certain mutations and queries can be protected with user authentication where required.
+    The frontend calls a signin mutation which returns a Json Web Token (JWT).
+    This mutation does not require authentication.
+    The frontend then stores this JWT as a cookie and sends it in the header of any future GraphQL API requests.
+
+    \paragraph{Resolving Nested Queries} 
+
+    While testing the frontend, it was discovered that some backend GraphQL queries were taking upwards of one minute to return.
+    The site was still responsive, however it took a long time for recommended podcasts to be displayed.
+    Further investigation revealed that where nested references were used in the database models, and the GraphQL query involved dereferencing these references, the Graphene-Mongo library would perform one database operation per parent node.
+    These database operations are performed sequentially. 
+    Since the MongoDB instance is hosted in the cloud, each database operation takes some number of milliseconds due to network latency.
+    When a large number of parent nodes were fetched, this resulted in very slow queries.
+    It was not feasible to modify the Graphene-Mongo libary to issue less database operations.
+    Hence, the decision was made to move the GraphQL API webserver to the same cloud container as the MongoDB instance.
+    This improved the time for some queries from over fourty seconds to less than a second.
+
+    \paragraph{Database Integrity}
+
+    \paragraph{Populating the Site}
+
+    To build a meaningful recommendation system, the website must have a reasonable amount of podcasts already uploaded to it.
+    Since UltraCast has not been released, there are no users to generate this data.
+    To allow for experimentation with different approaches to recommending podcasts to users, a podcast dataset was scraped.
+    It was difficult to find a suitable dataset that contained the required category, sub-category and keyword tags for podcasts that did not impose commercial obligations on UltraCast (due to terms of use of the dataset).
+    A dataset which is an aggregation of public domain podcasts was found and scraped, providing over 200 podcasts and 2000 podcast episodes for the site.
+
+\fi
+
+
+% TODO - Descriptions of the functionalities developed by the teamand how they map/addressallproject objectives
+% TODO - how to nicely achieve the above + explain implementation challenges (which may span across multiple objectives)
+
+% For implementation challenges every choice needs to be justified  
+
+\end{document}

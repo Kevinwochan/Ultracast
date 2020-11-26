@@ -1,0 +1,99 @@
+\documentclass[../report.tex]{subfiles}
+\begin{document}
+
+\subsection{Implementation Challenges} \label{ssec:backend_challenges}
+
+Throughout the duration of the project, our team faced many implementation challenges.
+Outlined below is a series of the major challenges we encountered, how they impacted the project and how we overcame those challenges.
+
+\paragraph{Technology stack and libraries}
+
+UltraCast employed an unusual combination of technology as its core stack.
+MongoDB was used in the persistence layer, Flask as a web server framework, GraphQL (through the Graphene and Graphene-Mongo Python libraries) as the API layer and React for the frontend.
+Flask and React were chosen as some team members were familiar with it, while MongoDB and GraphQL were chosen due to their popularity and desire to learn them.
+Unfortunately, this decision process did not consider how these technologies would interact with each other.
+For example, GraphQL had been released in 2018, so there was not a lot of example applications that had it implemented in Flask.
+This problem had two different impacts: firstly, the team had to manage navigating through incomplete documentation; secondly, the team could find many examples to use while developing.
+As a result, additional research and prototyping had to be conducted in the first few sprints.
+
+Halfway into the project, the team considered switching from Flask to Django, as the framework had better documentation and examples.
+After some research, it was decided that the change was not worth implementing, as most of the backend would have to be redone.
+Retrospectively, this decision seemed to be the right choice - the team became more familiar with the new technologies and less problems arose as time went on.
+
+\paragraph{User Authentication}
+
+Implementing user authentication for the backend was a non-trivial task because the Graphene and Graphene-Mongo libraries which are used for the API layer do not natively support this functionality.
+A major challenge in applying general purpose authentication libraries, for example flask-jwt\footnote{Available at https://github.com/mattupstate/flask-jwt}, is that only one route is used for all API calls.
+Some of these API calls need to be authenticated e.g. deleting a podcast where others should not be e.g. signing up to the site.
+The Flask-GraphQL-Auth library\footnote{Available at https://github.com/NovemberOscar/Flask-GraphQL-Auth} provides the required authentication methods, however, it is not actively maintained.
+After much research, user authentication was implemented using the flask-jwt-extended library\footnote{Available at https://github.com/vimalloc/flask-jwt-extended}.
+This library allows authentication to be required on a per-function level, rather than for an entire route.
+Hence, certain GraphQL mutations and queries can be protected with user authentication where required.
+The frontend calls a sign in mutation which returns a Json Web Token (JWT).
+This mutation does not require authentication.
+The frontend then stores this JWT as a cookie and sends it in the header of any future GraphQL API requests.
+This token is then used to authenticate further queries.
+
+\paragraph{Populating the Site}
+
+To build a meaningful recommendation system, the website must have a reasonable amount of podcasts already uploaded to it.
+Since UltraCast has not been released, there are no users to generate this data.
+To allow for experimentation with different approaches to recommending podcasts to users, a podcast dataset was scraped from an online resource.
+It was difficult to find a suitable dataset that contained the required category, sub-category and keyword tags for podcasts that did not impose commercial obligations on UltraCast (due to terms of use of the dataset).
+A dataset which is an aggregation of public domain podcasts was found and scraped, providing over 200 podcasts and 2000 podcast episodes for the site.
+
+\paragraph{Backend Business Layer}
+
+Early in the project, the team did not believe that the backend needed to have a business layer implemented - the original specification was relatively simple, so no business rules had to be applied.
+However, due to the limitations of the technology stack chosen, it was later found to be necessary, as some work had been doubled up in the Flask server.
+For example, creating a podcast would occur twice - once between the frontend and backend (via GraphQL), and another between the backend and the database (via Graphene-Mongo).
+By implementing a business layer, all operations would go through a unified location, removing the need to double up on code.
+
+\paragraph{Streamline Website Design}
+
+While developing UltraCast, the design of the website became fractured.
+For example, it was possible to play a podcast in two different locations on the same page - creating confusion for developers.
+The reason this problem arose was because some team members had diverged from the original Figma designs, while others had not.
+The result was that some frontend work had been duplicated, wasting time in the sprint.
+To overcome this, the frontend team met and agreed to design future pages on Figma.
+By doing this, the design could be kept consistent and could be referred to when creating new pages.
+
+\paragraph{Frontend State Management}
+
+Originally, the frontend state was considered to be quite small - the user's information only had to be saved.
+As a result, the entire application state was saved into one variable in the top level React component, and was then passed around in the lower level components.
+As time went on, it became harder to manage state without affecting older features due to the single state variable.
+For example, the audio player had to keep track of the podcast queue and so the queue was saved into the state variable.
+Adding to the queue would trigger a re-render of the entire application and therefore break some older, more stable features.
+Ultimately, the state was refactored towards the end of the project into different variables, resolving this issue.
+
+\paragraph{Resolving Nested Queries}
+
+While testing the frontend, it was discovered that some backend GraphQL queries were taking upwards of one minute to return.
+The site was still responsive, however it took a long time for recommended podcasts to be displayed.
+Further investigation revealed that where nested references were used in the database models, and the GraphQL query involved dereferencing these references, the Graphene-Mongo library would perform one database operation per parent node.
+These database operations are performed sequentially.
+Since the MongoDB instance is hosted in the cloud, each database operation takes some number of milliseconds due to network latency.
+When a large number of parent nodes were fetched, this resulted in very slow queries.
+It was not feasible to modify the Graphene-Mongo library to issue less database operations.
+Hence, the decision was made to move the GraphQL API web server to the same cloud container as the MongoDB instance.
+This improved the time for some queries from over forty seconds to less than a second.
+
+\paragraph{Database integrity}
+
+During project development, the database lost integrity multiple times.
+Constant development changes to the database schema would result in records having missing or mismatched fields.
+This would result in the database becoming unstable, making it hard for the frontend to complete features that required a stable schema.
+To combat this, unit tests were created in the backend to ensure the stability of the database schema.
+However, if the schema and unit test changed, the issue would go unnoticed in the frontend.
+Towards the end of the project, a production and development copy of the database and backend server was created: this allowed the frontend to develop on the production system and made it more stable.
+
+\paragraph{The `jinke-music-player' library}
+
+Initially, a small third-party library was used to play podcasts on the website - called `jinke-music-player'.
+It was easy to setup and the team was able to complete multiple user stories at the same time, at once.
+However, the music player lacked some major functionality, namely, it could not handle fast seeking on the audio track (in other words, it could not jump forward to some section in the podcast that had not been loaded yet).
+The team had attempted to mount this functionality onto the library, but for technical reasons, this would only work roughly 80\% of the time.
+Ultimately, the decision was made to remove the library completely, opting to use a less constrictive audio player.
+
+\end{document}

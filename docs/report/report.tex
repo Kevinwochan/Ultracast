@@ -1,36 +1,90 @@
 \documentclass[12pt]{article}
 
+\usepackage[utf8]{inputenc}
 \usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{multirow}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{longtable}
 \usepackage{graphicx}
 \usepackage{rotating}
 \usepackage[english]{babel}
 \usepackage{appendix}
 \usepackage{listings}
+\usepackage{lscape}
 \usepackage{url}
+\usepackage{pdfpages}
 \usepackage{todonotes}
 \usepackage{tabularx}
 \usepackage{amssymb}
+\usepackage{amsfonts}
 \usepackage{tablefootnote}
 \usepackage{appendix}
 \usepackage{threeparttable}
+\usepackage[hidelinks]{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
 
 % REPORT SPEC:
 % https://webcms3.cse.unsw.edu.au/static/uploads/course/COMP9900/20T3/e54a2e1c967d6d0e5eedb04ab1d811a0dc6271f6847ad8b3cac9057b97386834/COMP39900AssessmentGuidelines.pdf
 
-\graphicspath{{./resources}}
-  
+\graphicspath{{resources/}{../resources/}}
+
+\usepackage{blindtext}
+\usepackage{subfiles} % Best last in preammble
+
 \title{COMP3900-H15A-capSquad - Project Report}
 \date{\today}
 \author{
-    Daniel Latimer \\ z5115175 \and
-    Connor O'Shea \\ z5115177 \and
-    Kevin Chan \\ z5113136 \and
-    Oliver Richards \\ z5157383 \and
+    Daniel Latimer \\ z5115175 
+    \and
+    Connor O'Shea \\ z5115177 
+    \and
+    Kevin Chan \\ z5113136 
+    \and
+    Oliver Richards \\ z5157383 
+    \and
     Peter Kerr \\ z5115807} 
 
 \begin{document}
 
-\maketitle
+\makeatletter
+\begin{titlepage}
+    \begin{center}
+        \vfill
+        \includegraphics[width=0.35\textwidth]{resources/unsw_logo}
+
+        \textbf{School of Computer Science and Engineering}
+
+        \textbf{Faculty of Engineering}
+
+        \textbf{UNSW Sydney}
+        \vfill
+
+        \textbf{UltraCast}
+        \vfill
+
+        \textbf{BY}
+        \vfill
+
+        \textbf{CAPSQUAD}
+        \vfill
+        
+        \textbf{
+        \begin{tabular}{ccccc}
+            Daniel Latimer  & Connor O'Shea & Kevin Chan & Oliver Richards & Peter Kerr \\
+            z5115175        & z5115177      & z5113136   & z5157383        & z5115807
+        \end{tabular}
+    }
+
+        \vfill
+
+    \end{center}
+
+    Submitted: \@date
+
+    Tutor: Tatjana Zrimec
+
+\end{titlepage}
+\makeatother
 \tableofcontents
 
 \newpage
@@ -39,46 +93,25 @@
 %1. Proper references and brief descriptions of ALL third-party functionalities (clouds/services/APIs/libraries/code) used by the team, with justification for their use and discussion how their licensing terms impact results of this project.
 
 \section{Overview}
-\subsection{System Architecture}
-
-% TODO nice diagram and high level explaination
-
-% + justification on why this design was selected
+\subfile{sections/overview}
 
 \section{Functionalities and Implementation Challenges}
-
-\subsection{Functionalities}
-% TODO - Descriptions of the functionalities developed by the team and how they map/address all project objectives
+\subfile{sections/functionalities_and_implementation_challenges}
+\subfile{sections/challenges}
+% TODO - Descriptions of the functionalities developed by the teamand how they map/addressallproject objectives
 % TODO - how to nicely achieve the above + explain implementation challenges (which may span across multiple objectives)
 
-\subsection{System Implementation}
-
-
-\subsection{Challenges}
 % For implementation challenges every choice needs to be justified  
 
 \section{User Manual}
-
-\subsection{Software Setup Instructions}
-
-% TODO run dis shell script plz
-
-\subsection{Site Usage and Functionality Guide}
-% Keep in mind this section is worth 50%
-
-% Extra subsection per story / functionality? Might group some together
-
-% Each person has to demo a set of features for the final demo, it might make sense for each
-% person to add to the manual for the features they are demoing.
-%      - NOTE: We should agree of how these instrustions are laid out (+ how images are displayed) tho so things are uniform
-%      - Might have one person do it earlier / set the standard for everyone else to follow
-
+\subfile{sections/user_manual.tex}
 
 \newpage
 \bibliography{library.bib}
 \bibliographystyle{plain}
 
-% \begin{appendices}
-% \end{appendices}
+\begin{appendices}
+    \subfile{sections/appendix}
+\end{appendices}
 
 \end{document}
