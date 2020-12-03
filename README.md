@@ -1,5 +1,12 @@
 # capSquad Presents: ultraCast
 
+
+## Preview
+![A preview of the user dashboard](./Demo.png)
+
+## Overview
+For the full report on this project, please see this [PDF](https://raw.githubusercontent.com/Kevinwochan/Ultracast/main/docs/report/report.pdf)
+
 ## Running on CSE
 
 
